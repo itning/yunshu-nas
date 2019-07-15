@@ -1,0 +1,6 @@
+logging:
+  level:
+    top: debug
+utils:
+  email:
+    enabled: false
