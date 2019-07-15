@@ -20,8 +20,8 @@ import java.io.IOException;
 public class VideoCache {
     private static final Logger logger = LoggerFactory.getLogger(VideoCache.class);
 
-    private LoadingCache<String, byte[]> m3u8Cache;
-    private LoadingCache<String, byte[]> tsCache;
+    private final LoadingCache<String, byte[]> m3u8Cache;
+    private final LoadingCache<String, byte[]> tsCache;
 
     public VideoCache(IVideoRepository iVideoRepository) {
         m3u8Cache = CacheBuilder.newBuilder()

@@ -14,6 +14,7 @@ import top.itning.yunshu.yunshunas.video.VideoCache;
 import top.itning.yunshu.yunshunas.video.VideoTransformQueue;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -77,6 +78,8 @@ public class VideoController {
             return "progress";
         } else {
             String hex = DigestUtils.md5DigestAsHex(location.getBytes());
+            int i = location.lastIndexOf(File.separator);
+            model.addAttribute("file", location.substring(i + 1));
             model.addAttribute("name", hex);
             return "video";
         }
