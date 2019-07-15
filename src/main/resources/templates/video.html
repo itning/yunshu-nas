@@ -7,6 +7,7 @@
     <link rel="stylesheet" th:href="@{/video/video-js.min.css}">
     <script th:src="@{/video/video.min.js}"></script>
     <script th:src="@{/video/zh-CN.js}"></script>
+    <script th:src="@{/video/videojs.hotkeys.min.js}"></script>
     <title th:text="${file+' 云舒NAS'}"></title>
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -26,7 +27,13 @@
 <script th:src="@{/mdui/js/mdui.min.js}"></script>
 <script th:inline="javascript">
     'use strict';
-    videojs('video-id', {playbackRates: [0.5, 1, 1.5, 2, 2.5, 3]});
+    videojs('video-id', {playbackRates: [0.5, 1, 1.5, 2, 2.5, 3]}).ready(function () {
+        this.hotkeys({
+            volumeStep: 0.1,
+            seekStep: 5,
+            enableModifiersForNumbers: false
+        });
+    });
     //player.playbackRate(speed);
 </script>
 </body>
