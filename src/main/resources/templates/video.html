@@ -18,7 +18,7 @@
 <body class="mdui-drawer-body-left mdui-appbar-with-toolbar mdui-theme-primary-indigo mdui-theme-accent-pink">
 <header th:replace="common :: header"></header>
 <nav th:replace="common :: nav"></nav>
-<section class="mdui-container">
+<section class="mdui-container-fluid">
     <video id="video-id" class="video-js vjs-default-skin vjs-big-play-centered vjs-fluid" controls preload="auto">
         <source th:src="${'/hls/'+name+'.m3u8'}" type="application/x-mpegURL">
     </video>
@@ -26,12 +26,8 @@
 <script th:src="@{/mdui/js/mdui.min.js}"></script>
 <script th:inline="javascript">
     'use strict';
-    videojs('video-id', {});
-    const $$ = mdui.JQ;
-
-    $$(function () {
-
-    })
+    videojs('video-id', {playbackRates: [0.5, 1, 1.5, 2, 2.5, 3]});
+    //player.playbackRate(speed);
 </script>
 </body>
 </html>
