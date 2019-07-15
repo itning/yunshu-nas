@@ -18,7 +18,7 @@
 <body class="mdui-drawer-body-left mdui-appbar-with-toolbar mdui-theme-primary-indigo mdui-theme-accent-pink">
 <header th:replace="common :: header"></header>
 <nav th:replace="common :: nav"></nav>
-<section class="mdui-container-fluid">
+<section class="mdui-container">
     <video id="video-id" class="video-js vjs-default-skin vjs-big-play-centered vjs-fluid" controls preload="auto">
         <source th:src="${'/hls/'+name+'.m3u8'}" type="application/x-mpegURL">
     </video>
