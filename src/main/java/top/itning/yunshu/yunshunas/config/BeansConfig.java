@@ -1,9 +1,13 @@
 package top.itning.yunshu.yunshunas.config;
 
+import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 import top.itning.yunshu.yunshunas.entity.NasProperties;
 import top.itning.yunshu.yunshunas.video.Video2M3u8Helper;
+
+import javax.servlet.MultipartConfigElement;
 
 /**
  * @author itning
@@ -20,5 +24,17 @@ public class BeansConfig {
     @Bean
     public Video2M3u8Helper video2M3u8Helper() {
         return new Video2M3u8Helper(nasProperties.getFfmpegBinDir());
+    }
+
+    @Bean
+    public ServerEndpointExporter serverEndpointExporter() {
+        return new ServerEndpointExporter();
+    }
+
+    @Bean
+    MultipartConfigElement multipartConfigElement() {
+        MultipartConfigFactory factory = new MultipartConfigFactory();
+        factory.setLocation(System.getProperty("java.io.tmpdir"));
+        return factory.createMultipartConfig();
     }
 }

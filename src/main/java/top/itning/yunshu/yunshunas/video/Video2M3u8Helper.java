@@ -61,16 +61,46 @@ public class Video2M3u8Helper {
     /**
      * 进度条
      */
-    @FunctionalInterface
     public interface Progress {
+        /**
+         * 日志
+         *
+         * @param line 每条日志
+         */
+        default void onLine(String line) {
+        }
+
+        /**
+         * 视频转换完成
+         *
+         * @param fromFile 源文件
+         * @param toPath   目标路径
+         * @param fileName 文件名（不要扩展名）
+         */
+        default void onFinish(String fromFile, String toPath, String fileName) {
+        }
+
+        /**
+         * 视频转换错误时
+         *
+         * @param e        出现的异常
+         * @param fromFile 源文件
+         * @param toPath   目标路径
+         * @param fileName 文件名（不要扩展名）
+         */
+        default void onError(Exception e, String fromFile, String toPath, String fileName) {
+        }
+
         /**
          * 转换进度
          *
          * @param frame       当前帧数
          * @param totalFrames 总帧数
          * @param percentage  百分比
+         * @param line        原始消息
          */
-        void progress(long frame, long totalFrames, String percentage);
+        default void onProgress(long frame, long totalFrames, String percentage, String line) {
+        }
     }
 
     /**
@@ -85,7 +115,7 @@ public class Video2M3u8Helper {
      */
     private String copy(String fromFile, String toPath, boolean copyVideo, boolean copyAudio) throws IOException {
         if (logger.isDebugEnabled()) {
-            logger.debug("start copy");
+            logger.debug("start copy {} {} {} {}", fromFile, toPath, copyAudio, copyAudio);
         }
         final long videoFrames = getVideoFrames(fromFile);
         String randomFileName = DigestUtils.md5DigestAsHex(fromFile.getBytes()) + ".mp4";
@@ -108,11 +138,13 @@ public class Video2M3u8Helper {
         command.add(toPath + File.separator + randomFileName);
 
         process(command, line -> {
-            logger.debug(line);
-            progress(line, videoFrames);
+            if (progress != null) {
+                progress.onLine(line);
+                progress(line, videoFrames);
+            }
         });
         if (logger.isDebugEnabled()) {
-            logger.debug("end copy");
+            logger.debug("end copy {} {} {} {}", fromFile, toPath, copyAudio, copyAudio);
         }
         return command.get(command.size() - 1);
     }
@@ -124,43 +156,58 @@ public class Video2M3u8Helper {
      * @param toPath   目标路径
      * @param fileName 文件名（不要扩展名）
      * @param progress 进度条
-     * @throws IOException IOException
      */
-    public void videoConvert(String fromFile, String toPath, String fileName, Progress progress) throws IOException {
+    public void videoConvert(final String fromFile, final String toPath, final String fileName, Progress progress) {
         if (logger.isDebugEnabled()) {
-            logger.debug("start videoConvert");
+            logger.debug("start videoConvert {} {} {}", fromFile, toPath, fileName);
         }
         this.progress = progress;
-        Tuple2<Boolean, Boolean> compliance = checkComplianceWithSpecificationsForHls(fromFile);
-        if (logger.isDebugEnabled()) {
-            logger.debug("video: {} audio: {}", compliance.getT1(), compliance.getT2());
-        }
-        String copy = copy(fromFile, toPath, compliance.getT1(), compliance.getT2());
-        // 构建命令
-        List<String> command = new ArrayList<>(16);
-        command.add(ffmpegLocation);
-        command.add("-i");
-        command.add(copy);
-        command.add("-codec");
-        command.add("copy");
-        command.add("-vbsf");
-        command.add("h264_mp4toannexb");
-        command.add("-map");
-        command.add("0");
-        command.add("-f");
-        command.add("segment");
-        command.add("-segment_list");
-        command.add(toPath + File.separator + fileName + ".m3u8");
-        command.add("-segment_time");
-        command.add("10");
-        command.add(toPath + File.separator + fileName + "-%03d.ts");
+        try {
+            Tuple2<Boolean, Boolean> compliance = checkComplianceWithSpecificationsForHls(fromFile);
+            if (logger.isDebugEnabled()) {
+                logger.debug("video: {} audio: {}", compliance.getT1(), compliance.getT2());
+            }
+            String copy = copy(fromFile, toPath, compliance.getT1(), compliance.getT2());
+            // 构建命令
+            List<String> command = new ArrayList<>(16);
+            command.add(ffmpegLocation);
+            command.add("-i");
+            command.add(copy);
+            command.add("-codec");
+            command.add("copy");
+            command.add("-vbsf");
+            command.add("h264_mp4toannexb");
+            command.add("-map");
+            command.add("0");
+            command.add("-f");
+            command.add("segment");
+            command.add("-segment_list");
+            command.add(toPath + File.separator + fileName + ".m3u8");
+            command.add("-segment_time");
+            command.add("10");
+            command.add(toPath + File.separator + fileName + "-%03d.ts");
 
-        process(command, logger::debug);
+            process(command, line -> {
+                if (progress != null) {
+                    progress.onLine(line);
+                }
+            });
 
-        boolean delete = new File(toPath + File.separator + DigestUtils.md5DigestAsHex(fromFile.getBytes()) + ".mp4").delete();
-        if (logger.isDebugEnabled()) {
-            logger.debug("delete fromFile copy file {}", delete);
-            logger.debug("end videoConvert");
+            boolean delete = new File(toPath + File.separator + DigestUtils.md5DigestAsHex(fromFile.getBytes()) + ".mp4").delete();
+            if (logger.isDebugEnabled()) {
+                logger.debug("delete fromFile copy file {}", delete);
+                logger.debug("end videoConvert {} {} {}", fromFile, toPath, fileName);
+            }
+            if (progress != null) {
+                progress.onFinish(fromFile, toPath, fileName);
+            }
+        } catch (Exception e) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("video convert exception: {}", e.getMessage());
+            }
+            if (progress != null) {
+                progress.onError(e, fromFile, toPath, fileName);
+            }
         }
     }
 
@@ -185,7 +232,7 @@ public class Video2M3u8Helper {
      */
     private Tuple2<Boolean, Boolean> checkComplianceWithSpecificationsForHls(String wantCheckVideoFile) throws IOException {
         if (logger.isDebugEnabled()) {
-            logger.debug("start checkComplianceWithSpecificationsForHls");
+            logger.debug("start checkComplianceWithSpecificationsForHls {}", wantCheckVideoFile);
         }
         List<String> command = new ArrayList<>(3);
         command.add(ffmpegLocation);
@@ -197,7 +244,7 @@ public class Video2M3u8Helper {
         boolean video = s.contains(VIDEO_H_264);
         boolean audio = s.contains(AUDIO_AAC);
         if (logger.isDebugEnabled()) {
-            logger.debug("end checkComplianceWithSpecificationsForHls");
+            logger.debug("end checkComplianceWithSpecificationsForHls {}", wantCheckVideoFile);
         }
         //音视频都是HLS规范
         if (video && audio) {
@@ -222,12 +269,14 @@ public class Video2M3u8Helper {
      * @param totalFrames 视频总共帧数
      */
     private void progress(String line, final long totalFrames) {
-        if (progress != null && line.startsWith(START_FRAME_STR)) {
+        if (progress != null && totalFrames != -1 && line.startsWith(START_FRAME_STR)) {
             int j = line.indexOf(END_FRAME_STR);
             String frame = line.substring(6, j).trim();
             long f = NumberUtils.toLong(frame, -1);
             String percentage = DECIMAL_FORMAT.format((double) f / (double) totalFrames);
-            progress.progress(f, totalFrames, percentage);
+            progress.onProgress(f, totalFrames, percentage, line);
+        } else if (progress != null) {
+            progress.onProgress(-1, totalFrames, null, line);
         }
     }
 

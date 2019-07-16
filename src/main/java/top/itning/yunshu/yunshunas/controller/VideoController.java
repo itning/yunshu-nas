@@ -8,9 +8,8 @@ import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import top.itning.yunshu.yunshunas.service.VideoService;
-import top.itning.yunshu.yunshunas.video.VideoTransformQueue;
+import top.itning.yunshu.yunshunas.video.VideoTransformHandler;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
@@ -23,11 +22,11 @@ import java.io.IOException;
 public class VideoController {
     private static final Logger logger = LoggerFactory.getLogger(VideoController.class);
 
-    private final VideoTransformQueue videoTransformQueue;
+    private final VideoTransformHandler videoTransformHandler;
     private final VideoService videoService;
 
-    public VideoController(VideoTransformQueue videoTransformQueue, VideoService videoService) {
-        this.videoTransformQueue = videoTransformQueue;
+    public VideoController(VideoTransformHandler videoTransformHandler, VideoService videoService) {
+        this.videoTransformHandler = videoTransformHandler;
         this.videoService = videoService;
     }
 
@@ -72,7 +71,7 @@ public class VideoController {
      */
     @GetMapping("/video")
     public String video(@RequestParam String location, Model model) {
-        boolean put = videoTransformQueue.put(location);
+        boolean put = videoTransformHandler.put(location);
         if (put) {
             return "progress";
         } else {
@@ -82,17 +81,5 @@ public class VideoController {
             model.addAttribute("name", hex);
             return "video";
         }
-    }
-
-    /**
-     * 进度
-     *
-     * @return {@link SseEmitter}
-     */
-    @GetMapping("/progress")
-    public SseEmitter cover() {
-        SseEmitter emitter = new SseEmitter(60L * 60L * 1000L);
-        videoTransformQueue.setProgress(emitter);
-        return emitter;
     }
 }
