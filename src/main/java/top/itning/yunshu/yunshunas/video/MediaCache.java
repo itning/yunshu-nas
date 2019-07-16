@@ -18,13 +18,13 @@ import java.io.IOException;
  * @date 2019/7/14 11:15
  */
 @Component
-public class VideoCache {
-    private static final Logger logger = LoggerFactory.getLogger(VideoCache.class);
+public class MediaCache {
+    private static final Logger logger = LoggerFactory.getLogger(MediaCache.class);
 
     private final LoadingCache<String, byte[]> m3u8Cache;
     private final LoadingCache<String, byte[]> tsCache;
 
-    public VideoCache(IVideoRepository iVideoRepository) {
+    public MediaCache(IVideoRepository iVideoRepository) {
         m3u8Cache = CacheBuilder.newBuilder()
                 .softValues()
                 .initialCapacity(100)

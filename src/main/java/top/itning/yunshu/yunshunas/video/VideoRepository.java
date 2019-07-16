@@ -28,8 +28,8 @@ public class VideoRepository implements IVideoRepository {
         this.nasProperties = nasProperties;
         this.locationMd5Cache = CacheBuilder.newBuilder()
                 .softValues()
-                .initialCapacity(1000)
-                .maximumSize(1000)
+                .initialCapacity(100)
+                .maximumSize(100)
                 .build(new CacheLoader<String, String>() {
                     @Override
                     public String load(@Nonnull String key) {
