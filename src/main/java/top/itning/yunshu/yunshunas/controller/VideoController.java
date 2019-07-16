@@ -84,6 +84,11 @@ public class VideoController {
         }
     }
 
+    /**
+     * 进度
+     *
+     * @return {@link SseEmitter}
+     */
     @GetMapping("/progress")
     public SseEmitter cover() {
         SseEmitter emitter = new SseEmitter(60L * 60L * 1000L);
