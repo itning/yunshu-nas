@@ -34,7 +34,7 @@
             <i class="mdui-switch-icon"></i>
         </label>
         <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme-accent mdui-btn-dense mdui-m-l-1"
-                onclick="clearMsg()">清空
+                onclick="refresh()">刷新
         </button>
     </div>
     <div id="message"></div>
@@ -93,8 +93,8 @@
         }
     }
 
-    function clearMsg() {
-        $$('#message').html('');
+    function refresh() {
+        window.location.reload();
     }
 
     function onAutoScrollChange(that) {

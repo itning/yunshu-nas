@@ -5,8 +5,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import top.itning.yunshu.yunshunas.entity.FileEntity;
+import top.itning.yunshu.yunshunas.entity.Link;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -21,7 +23,10 @@ public class FileController {
     private static final String[] VIDEO_SUFFIX = new String[]{"mp4", "avi", "3gp", "wmv", "mkv", "mpeg", "rmvb"};
 
     @GetMapping("/")
-    public String index(Model model, String location) {
+    public String index(Model model, String location) throws UnsupportedEncodingException {
+        if (location != null) {
+            model.addAttribute("links", Link.build(location));
+        }
         File[] files;
         if (location == null) {
             files = File.listRoots();
