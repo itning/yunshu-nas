@@ -1,12 +1,13 @@
 package top.itning.yunshu.yunshunas.video;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import javax.annotation.Nonnull;
 import java.io.File;
-import java.io.IOException;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -16,11 +17,13 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Component
 public class VideoTransformQueue {
+    private static final Logger logger = LoggerFactory.getLogger(VideoTransformQueue.class);
+
     private final LinkedBlockingQueue<String> linkedBlockingQueue;
 
     private final Video2M3u8Helper video2M3u8Helper;
-    private final ExecutorService transformExecutorService;
-    private final ExecutorService synchronousBlockingSingleService;
+    private final ThreadPoolExecutor transformExecutorService;
+    private final ThreadPoolExecutor synchronousBlockingSingleService;
     private final IVideoRepository iVideoRepository;
     private Video2M3u8Helper.Progress progress;
     private SseEmitter sseEmitter;
@@ -47,7 +50,10 @@ public class VideoTransformQueue {
             if (sseEmitter != null) {
                 try {
                     sseEmitter.send(frame + "/" + totalFrames + " " + percentage, MediaType.TEXT_PLAIN);
-                } catch (IOException e) {
+                } catch (Exception e) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("sseEmitter send error {}", e.getMessage());
+                    }
                     sseEmitter.completeWithError(e);
                 }
             }
@@ -76,14 +82,21 @@ public class VideoTransformQueue {
                             );
                             if (sseEmitter != null) {
                                 sseEmitter.send("OK", MediaType.TEXT_PLAIN);
+
+                            }
+                            if (transformExecutorService.getActiveCount() == 0) {
                                 sseEmitter.complete();
                             }
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                        } catch (Exception e) {
+                            if (logger.isDebugEnabled()) {
+                                logger.debug("get exception in submit {}", e.getMessage());
+                            }
                         }
                     });
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                } catch (Exception e) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("get exception {}", e.getMessage());
+                    }
                 }
             }
         });

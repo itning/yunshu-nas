@@ -5,12 +5,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.DigestUtils;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-import top.itning.yunshu.yunshunas.video.VideoCache;
+import top.itning.yunshu.yunshunas.service.VideoService;
 import top.itning.yunshu.yunshunas.video.VideoTransformQueue;
 
 import javax.servlet.http.HttpServletResponse;
@@ -24,12 +23,12 @@ import java.io.IOException;
 public class VideoController {
     private static final Logger logger = LoggerFactory.getLogger(VideoController.class);
 
-    private final VideoCache videoCache;
     private final VideoTransformQueue videoTransformQueue;
+    private final VideoService videoService;
 
-    public VideoController(VideoCache videoCache, VideoTransformQueue videoTransformQueue) {
-        this.videoCache = videoCache;
+    public VideoController(VideoTransformQueue videoTransformQueue, VideoService videoService) {
         this.videoTransformQueue = videoTransformQueue;
+        this.videoService = videoService;
     }
 
     /**
@@ -44,7 +43,7 @@ public class VideoController {
         if (logger.isDebugEnabled()) {
             logger.debug("request {}.m3u8", name);
         }
-        FileCopyUtils.copy(videoCache.getm3u8(name), response.getOutputStream());
+        videoService.getM3u8File(name, response.getOutputStream());
     }
 
     /**
@@ -60,7 +59,7 @@ public class VideoController {
         if (logger.isDebugEnabled()) {
             logger.debug("request {}-{}.ts", name, index);
         }
-        FileCopyUtils.copy(videoCache.getts(String.format("%s-%s", name, index)), response.getOutputStream());
+        videoService.getTsFile(String.format("%s-%s", name, index), response.getOutputStream());
     }
 
 

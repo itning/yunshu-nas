@@ -84,6 +84,9 @@ public class Video2M3u8Helper {
      * @throws IOException IOException
      */
     private String copy(String fromFile, String toPath, boolean copyVideo, boolean copyAudio) throws IOException {
+        if (logger.isDebugEnabled()) {
+            logger.debug("start copy");
+        }
         final long videoFrames = getVideoFrames(fromFile);
         String randomFileName = DigestUtils.md5DigestAsHex(fromFile.getBytes()) + ".mp4";
         List<String> command = new ArrayList<>(8);
@@ -108,6 +111,9 @@ public class Video2M3u8Helper {
             logger.debug(line);
             progress(line, videoFrames);
         });
+        if (logger.isDebugEnabled()) {
+            logger.debug("end copy");
+        }
         return command.get(command.size() - 1);
     }
 
@@ -121,6 +127,9 @@ public class Video2M3u8Helper {
      * @throws IOException IOException
      */
     public void videoConvert(String fromFile, String toPath, String fileName, Progress progress) throws IOException {
+        if (logger.isDebugEnabled()) {
+            logger.debug("start videoConvert");
+        }
         this.progress = progress;
         Tuple2<Boolean, Boolean> compliance = checkComplianceWithSpecificationsForHls(fromFile);
         if (logger.isDebugEnabled()) {
@@ -151,6 +160,7 @@ public class Video2M3u8Helper {
         boolean delete = new File(toPath + File.separator + DigestUtils.md5DigestAsHex(fromFile.getBytes()) + ".mp4").delete();
         if (logger.isDebugEnabled()) {
             logger.debug("delete fromFile copy file {}", delete);
+            logger.debug("end videoConvert");
         }
     }
 
@@ -174,6 +184,9 @@ public class Video2M3u8Helper {
      * @throws IOException IOException
      */
     private Tuple2<Boolean, Boolean> checkComplianceWithSpecificationsForHls(String wantCheckVideoFile) throws IOException {
+        if (logger.isDebugEnabled()) {
+            logger.debug("start checkComplianceWithSpecificationsForHls");
+        }
         List<String> command = new ArrayList<>(3);
         command.add(ffmpegLocation);
         command.add("-i");
@@ -183,7 +196,9 @@ public class Video2M3u8Helper {
         String s = stringBuilder.toString();
         boolean video = s.contains(VIDEO_H_264);
         boolean audio = s.contains(AUDIO_AAC);
-
+        if (logger.isDebugEnabled()) {
+            logger.debug("end checkComplianceWithSpecificationsForHls");
+        }
         //音视频都是HLS规范
         if (video && audio) {
             return new Tuple2<>(true, true);
@@ -224,6 +239,9 @@ public class Video2M3u8Helper {
      * @throws IOException IOException
      */
     private long getVideoFrames(String videoFile) throws IOException {
+        if (logger.isDebugEnabled()) {
+            logger.debug("start getVideoFrames");
+        }
         List<String> command = new ArrayList<>(8);
         command.add(ffprobeLocation);
         command.add("-v");
@@ -239,6 +257,9 @@ public class Video2M3u8Helper {
 
         Filter videoFilter = filter(where("codec_type").is("video"));
         JSONArray read = JsonPath.read(s, "$.streams[?].nb_frames", videoFilter);
+        if (logger.isDebugEnabled()) {
+            logger.debug("end getVideoFrames");
+        }
         if (read.isEmpty()) {
             if (logger.isDebugEnabled()) {
                 logger.debug("json array is empty");
