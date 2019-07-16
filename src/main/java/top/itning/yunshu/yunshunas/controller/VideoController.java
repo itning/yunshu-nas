@@ -82,4 +82,10 @@ public class VideoController {
             return "video";
         }
     }
+
+    @GetMapping("/video_queue")
+    public String videoQueue(Model model) {
+        model.addAllAttributes(videoTransformHandler.status());
+        return "video_queue";
+    }
 }

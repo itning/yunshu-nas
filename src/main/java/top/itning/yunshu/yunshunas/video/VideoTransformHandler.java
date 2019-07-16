@@ -8,6 +8,8 @@ import top.itning.yunshu.yunshunas.repository.IVideoRepository;
 import top.itning.yunshu.yunshunas.socket.ProgressWebSocket;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -105,5 +107,16 @@ public class VideoTransformHandler {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public Map<String, Object> status() {
+        Map<String, Object> statusMap = new HashMap<>(6);
+        statusMap.put("activeCount", transformExecutorService.getActiveCount());
+        statusMap.put("completedTaskCount", transformExecutorService.getCompletedTaskCount());
+        statusMap.put("corePoolSize", transformExecutorService.getCorePoolSize());
+        statusMap.put("poolSize", transformExecutorService.getPoolSize());
+        statusMap.put("taskCount", transformExecutorService.getTaskCount());
+        statusMap.put("queue", linkedBlockingQueue.toArray(new String[0]));
+        return statusMap;
     }
 }
