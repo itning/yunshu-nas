@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import top.itning.yunshu.yunshunas.repository.IVideoRepository;
 
 import javax.annotation.Nonnull;
 import java.io.File;

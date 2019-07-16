@@ -3,7 +3,7 @@ package top.itning.yunshu.yunshunas.service.impl;
 import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
 import top.itning.yunshu.yunshunas.service.VideoService;
-import top.itning.yunshu.yunshunas.video.IVideoRepository;
+import top.itning.yunshu.yunshunas.repository.IVideoRepository;
 
 import java.io.File;
 import java.io.IOException;

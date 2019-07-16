@@ -1,4 +1,4 @@
-package top.itning.yunshu.yunshunas.video;
+package top.itning.yunshu.yunshunas.repository;
 
 /**
  * @author itning

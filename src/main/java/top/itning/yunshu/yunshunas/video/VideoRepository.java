@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.DigestUtils;
 import top.itning.yunshu.yunshunas.entity.NasProperties;
+import top.itning.yunshu.yunshunas.repository.IVideoRepository;
 
 import javax.annotation.Nonnull;
 import java.io.File;
