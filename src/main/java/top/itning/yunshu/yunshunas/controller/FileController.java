@@ -56,12 +56,6 @@ public class FileController {
         return "index";
     }
 
-    @GetMapping("/down_queue")
-    public String downQueue() {
-        return "down_queue";
-
-    }
-
     private boolean isVideoFile(String name) {
         String suffix = name.substring(name.lastIndexOf(".") + 1).toLowerCase();
         for (String s : VIDEO_SUFFIX) {
