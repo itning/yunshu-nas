@@ -9,14 +9,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.DigestUtils;
 import top.itning.utils.tuple.Tuple2;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 import static com.jayway.jsonpath.Criteria.where;
 import static com.jayway.jsonpath.Filter.filter;
+import static top.itning.yunshu.yunshunas.util.CommandUtils.process;
 
 /**
  * ffmpeg 4.1.3 版本测试通过
@@ -316,27 +317,6 @@ public class Video2M3u8Helper {
             return -1;
         } else {
             return NumberUtils.toLong(read.get(0).toString(), -1);
-        }
-    }
-
-    /**
-     * 执行命令
-     *
-     * @param command     命令
-     * @param commandInfo 输出信息
-     * @throws IOException IOException
-     */
-    private void process(List<String> command, Consumer<String> commandInfo) throws IOException {
-        ProcessBuilder builder = new ProcessBuilder(command);
-        builder.redirectErrorStream(true);
-        Process process = builder.start();
-        try (InputStream inputStream = process.getInputStream();
-             InputStreamReader isr = new InputStreamReader(inputStream);
-             BufferedReader br = new BufferedReader(isr)) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                commandInfo.accept(line);
-            }
         }
     }
 }

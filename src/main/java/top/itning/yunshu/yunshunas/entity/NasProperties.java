@@ -19,6 +19,10 @@ public class NasProperties {
      * ffmpeg bin 目录
      */
     private String ffmpegBinDir;
+    /**
+     * aria2c所在目录
+     */
+    private String aria2cDir;
 
     public String getOutDir() {
         return outDir;
@@ -34,5 +38,13 @@ public class NasProperties {
 
     public void setFfmpegBinDir(String ffmpegBinDir) {
         this.ffmpegBinDir = ffmpegBinDir;
+    }
+
+    public String getAria2cDir() {
+        return aria2cDir;
+    }
+
+    public void setAria2cDir(String aria2cDir) {
+        this.aria2cDir = aria2cDir;
     }
 }
