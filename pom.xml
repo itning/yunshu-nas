@@ -61,6 +61,22 @@
             <artifactId>guava</artifactId>
             <version>28.0-jre</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.java-websocket/Java-WebSocket -->
+        <dependency>
+            <groupId>org.java-websocket</groupId>
+            <artifactId>Java-WebSocket</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ikidou</groupId>
+            <artifactId>TypeBuilder</artifactId>
+            <version>1.0</version>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
