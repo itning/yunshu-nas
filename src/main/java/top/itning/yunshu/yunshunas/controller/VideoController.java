@@ -8,12 +8,15 @@ import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import top.itning.yunshu.yunshunas.entity.Link;
 import top.itning.yunshu.yunshunas.service.VideoService;
 import top.itning.yunshu.yunshunas.video.VideoTransformHandler;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 /**
  * @author itning
@@ -70,11 +73,14 @@ public class VideoController {
      * @return html
      */
     @GetMapping("/video")
-    public String video(@RequestParam String location, Model model) {
+    public String video(@RequestParam String location, Model model) throws UnsupportedEncodingException {
         boolean put = videoTransformHandler.put(location);
         if (put) {
             return "progress";
         } else {
+            List<Link> linkList = Link.build(location);
+            linkList.remove(linkList.size() - 1);
+            model.addAttribute("links", linkList);
             String hex = DigestUtils.md5DigestAsHex(location.getBytes());
             int i = location.lastIndexOf(File.separator);
             model.addAttribute("file", location.substring(i + 1));
