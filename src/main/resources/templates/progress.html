@@ -86,6 +86,9 @@
                 $$('#message').append('<p></p>');
                 //let child = $$('#message').children()[$$('#message').children().length - 1];
                 $$('#message').children().last().text(strArray[s]);
+                if (strArray[s].indexOf("完成转换") !== -1) {
+                    setTimeout(refresh, 2000);
+                }
             }
         }
         if (autoScroll) {

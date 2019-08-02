@@ -1,14 +1,21 @@
 package top.itning.yunshu.yunshunas.controller;
 
 import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import top.itning.yunshu.yunshunas.entity.FileEntity;
 import top.itning.yunshu.yunshunas.entity.Link;
+import top.itning.yunshu.yunshunas.repository.IVideoRepository;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -21,6 +28,13 @@ import java.util.stream.Collectors;
 @Controller
 public class FileController {
     private static final String[] VIDEO_SUFFIX = new String[]{"mp4", "avi", "3gp", "wmv", "mkv", "mpeg", "rmvb"};
+
+    private final IVideoRepository iVideoRepository;
+
+    @Autowired
+    public FileController(IVideoRepository iVideoRepository) {
+        this.iVideoRepository = iVideoRepository;
+    }
 
     @GetMapping("/")
     public String index(Model model, String location) throws UnsupportedEncodingException {
@@ -54,6 +68,20 @@ public class FileController {
                 .collect(Collectors.toList());
         model.addAttribute("files", fileEntityList);
         return "index";
+    }
+
+    @PostMapping("/del")
+    @ResponseBody
+    public void delFile(@RequestParam String location) throws IOException {
+        String writeDir = iVideoRepository.getWriteDir(location);
+        FileUtils.deleteDirectory(new File(writeDir));
+        File file = new File(location);
+        if (!file.exists()) {
+            throw new RuntimeException("文件不存在");
+        }
+        if (!file.delete()) {
+            throw new RuntimeException("文件删除失败");
+        }
     }
 
     private boolean isVideoFile(String name) {

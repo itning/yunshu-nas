@@ -29,10 +29,17 @@
     <video id="video-id" class="video-js vjs-default-skin vjs-big-play-centered vjs-fluid" controls preload="auto">
         <source th:src="${'/hls/'+name+'.m3u8'}" type="application/x-mpegURL">
     </video>
+    <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme-accent mdui-btn-dense mdui-m-t-1"
+            onclick="del()">删除
+    </button>
 </section>
 <script th:src="@{/mdui/js/mdui.min.js}"></script>
 <script th:inline="javascript">
     'use strict';
+    const $$ = mdui.JQ;
+    const links = [[${links}]];
+    const path = links[links.length - 1].link;
+
     videojs('video-id', {playbackRates: [0.5, 1, 1.5, 2, 2.5, 3]}).ready(function () {
         this.hotkeys({
             volumeStep: 0.1,
@@ -40,7 +47,26 @@
             enableModifiersForNumbers: false
         });
     });
+
     //player.playbackRate(speed);
+
+    function del() {
+        const r = window.confirm("确认删除？");
+        if (r === true) {
+            $$.ajax({
+                method: 'POST',
+                url: './del' + document.location.search,
+                success: function (data) {
+                    window.location.href = '/?location=' + path;
+                },
+                error: function (xhr, textStatus) {
+                    // xhr 为 XMLHttpRequest 对象
+                    // textStatus 为包含错误代码的字符串
+                    window.alert(textStatus)
+                }
+            });
+        }
+    }
 </script>
 </body>
 </html>
