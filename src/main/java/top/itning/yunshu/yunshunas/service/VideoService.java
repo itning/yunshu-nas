@@ -1,7 +1,10 @@
 package top.itning.yunshu.yunshunas.service;
 
+import top.itning.yunshu.yunshunas.entity.FileEntity;
+
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 
 /**
  * @author itning
@@ -25,4 +28,12 @@ public interface VideoService {
      * @throws IOException IOException
      */
     void getTsFile(String name, OutputStream outputStream) throws IOException;
+
+    /**
+     * 获取文件列表
+     *
+     * @param location 路径
+     * @return 文件列表
+     */
+    List<FileEntity> getFileEntities(String location);
 }

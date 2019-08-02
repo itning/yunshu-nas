@@ -29,9 +29,30 @@
     <video id="video-id" class="video-js vjs-default-skin vjs-big-play-centered vjs-fluid" controls preload="auto">
         <source th:src="${'/hls/'+name+'.m3u8'}" type="application/x-mpegURL">
     </video>
-    <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme-accent mdui-btn-dense mdui-m-t-1"
+    <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme-accent mdui-btn-dense mdui-m-t-1 mdui-m-b-1"
             onclick="del()">删除
     </button>
+    <div class="mdui-table-fluid">
+        <table class="mdui-table mdui-table-hoverable">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Size</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="file: ${files}" onclick="go(this)" th:data-dir="${!file.file}"
+                th:data-location="${file.location}">
+                <td><i th:if="${file.isFile()}" class="mdui-icon material-icons">insert_drive_file</i>
+                    <i th:if="${!file.isFile()}" class="mdui-icon material-icons">folder</i>
+                    <span th:if="${file.name==''}" th:text="${file.location}"></span>
+                    <span th:if="${file.name!=''}" th:text="${file.name}"></span>
+                </td>
+                <td th:text="${file.size}">Mark</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </section>
 <script th:src="@{/mdui/js/mdui.min.js}"></script>
 <script th:inline="javascript">
@@ -39,6 +60,10 @@
     const $$ = mdui.JQ;
     const links = [[${links}]];
     const path = links[links.length - 1].link;
+
+    $$(function () {
+        window.scrollTo(0, 0);
+    });
 
     videojs('video-id', {playbackRates: [0.5, 1, 1.5, 2, 2.5, 3]}).ready(function () {
         this.hotkeys({
@@ -65,6 +90,14 @@
                     window.alert(textStatus)
                 }
             });
+        }
+    }
+
+    function go(location) {
+        if (location.dataset.dir === 'true') {
+            window.location.href = "/?location=" + encodeURIComponent(location.dataset.location)
+        } else {
+            window.location.href = "/video?location=" + encodeURIComponent(location.dataset.location)
         }
     }
 </script>

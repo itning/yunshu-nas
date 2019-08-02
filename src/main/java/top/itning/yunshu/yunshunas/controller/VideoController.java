@@ -8,6 +8,7 @@ import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import top.itning.yunshu.yunshunas.entity.FileEntity;
 import top.itning.yunshu.yunshunas.entity.Link;
 import top.itning.yunshu.yunshunas.service.VideoService;
 import top.itning.yunshu.yunshunas.video.VideoTransformHandler;
@@ -83,6 +84,8 @@ public class VideoController {
             model.addAttribute("links", linkList);
             String hex = DigestUtils.md5DigestAsHex(location.getBytes());
             int i = location.lastIndexOf(File.separator);
+            List<FileEntity> fileEntityList = videoService.getFileEntities(location.substring(0, i));
+            model.addAttribute("files", fileEntityList);
             model.addAttribute("file", location.substring(i + 1));
             model.addAttribute("name", hex);
             return "video";
