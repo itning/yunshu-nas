@@ -32,6 +32,9 @@
     <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme-accent mdui-btn-dense mdui-m-t-1 mdui-m-b-1"
             onclick="del()">删除
     </button>
+    <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme-accent mdui-btn-dense mdui-m-t-1 mdui-m-b-1"
+            onclick="copyVideoPath()">复制视频地址
+    </button>
     <div class="mdui-table-fluid">
         <table class="mdui-table mdui-table-hoverable">
             <thead>
@@ -59,6 +62,7 @@
     'use strict';
     const $$ = mdui.JQ;
     const links = [[${links}]];
+    const name = [[${name}]];
     const path = links[links.length - 1].link;
 
     $$(function () {
@@ -99,6 +103,20 @@
         } else {
             window.location.href = "/video?location=" + encodeURIComponent(location.dataset.location)
         }
+    }
+
+    function copyVideoPath() {
+        const input = document.createElement('input');
+        document.body.appendChild(input);
+        input.setAttribute('value', document.location.origin + "/hls/" + name + ".m3u8");
+        input.select();
+        if (document.execCommand('copy')) {
+            document.execCommand('copy');
+            window.alert("已复制")
+        } else {
+            window.alert("无法复制");
+        }
+        document.body.removeChild(input);
     }
 </script>
 </body>
