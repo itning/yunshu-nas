@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8766
 logging:
   level:
     top: debug
@@ -9,4 +9,4 @@ utils:
 nas:
   ffmpeg-bin-dir: G:\ffmpeg-4.1.3-win64-static\bin
   out-dir: F:\tmpq
-  aria2c-dir: G:\
+  aria2c-file: G:\aria2c.exe

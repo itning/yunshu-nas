@@ -10,7 +10,7 @@
     </parent>
     <groupId>top.itning.yunshu</groupId>
     <artifactId>yunshu-nas</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0.RELEASE</version>
     <name>yunshu-nas</name>
     <description>Demo project for Spring Boot</description>
 

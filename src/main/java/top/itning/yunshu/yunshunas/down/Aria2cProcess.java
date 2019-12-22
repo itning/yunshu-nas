@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import top.itning.yunshu.yunshunas.entity.NasProperties;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -33,7 +32,7 @@ public class Aria2cProcess {
                 new ThreadFactoryBuilder().setNameFormat("aria2c-pool-%d").build());
         synchronousBlockingSingleService.submit(() -> {
             List<String> command = new ArrayList<>();
-            command.add(nasProperties.getAria2cDir() + File.separator + "aria2c.exe");
+            command.add(nasProperties.getAria2cFile());
             command.add("--rpc-listen-port");
             command.add("6800");
             command.add("--enable-rpc");

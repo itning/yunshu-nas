@@ -12,6 +12,7 @@ import top.itning.yunshu.yunshunas.repository.IVideoRepository;
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author itning
@@ -27,7 +28,7 @@ public class MediaCache {
     public MediaCache(IVideoRepository iVideoRepository) {
         m3u8Cache = CacheBuilder.newBuilder()
                 .softValues()
-                .initialCapacity(100)
+                .expireAfterAccess(60, TimeUnit.MINUTES)
                 .maximumSize(100)
                 .build(new CacheLoader<String, byte[]>() {
                     @Override
@@ -42,9 +43,8 @@ public class MediaCache {
 
         tsCache = CacheBuilder.newBuilder()
                 .softValues()
-                .initialCapacity(1000)
+                .expireAfterAccess(60, TimeUnit.MINUTES)
                 .maximumSize(1000)
-                .recordStats()
                 .build(new CacheLoader<String, byte[]>() {
                     @Override
                     public byte[] load(@Nonnull String key) throws IOException {

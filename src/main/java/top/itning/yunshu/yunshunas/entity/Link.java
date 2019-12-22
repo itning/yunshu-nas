@@ -11,12 +11,32 @@ import java.util.List;
  * @date 2019/7/16 23:46
  */
 public class Link {
+    private static final String WINDOWS_SYSTEM = "win";
+
     private String name;
     private String link;
+    private static String SPLIT_REGEX;
+
+    static {
+        String os = System.getProperty("os.name");
+        if (os.toLowerCase().startsWith(WINDOWS_SYSTEM)) {
+            SPLIT_REGEX = "\\\\";
+        } else {
+            SPLIT_REGEX = "/";
+        }
+        SPLIT_REGEX = "/";
+    }
 
     public static List<Link> build(String location) throws UnsupportedEncodingException {
-        String[] locationArray = location.split("\\\\");
+        String[] locationArray = location.split(SPLIT_REGEX);
         List<Link> linkList = new ArrayList<>(locationArray.length);
+        if (locationArray.length == 0) {
+            Link link = new Link();
+            link.setName(location);
+            link.setLink(location);
+            linkList.add(link);
+            return linkList;
+        }
         String last = locationArray[0];
         for (int i = 0; i < locationArray.length; i++) {
             Link link = new Link();
