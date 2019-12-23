@@ -49,6 +49,8 @@ nohup aria2c --rpc-listen-port 6800 --enable-rpc --rpc-listen-all >aria2c.log 2>
 
 - [ ] 资料加密
 
+- [ ] axel 下载支持
+
 # 截图
 
 ![](https://raw.githubusercontent.com/itning/yunshu-nas/master/pic/a.png)
