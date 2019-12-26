@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -64,6 +65,7 @@ public class VideoServiceImpl implements VideoService {
         return fileEntities
                 .parallelStream()
                 .filter(fileEntity -> !fileEntity.isFile() || isVideoFile(fileEntity.getName()))
+                .sorted(Comparator.comparing(FileEntity::getName))
                 .collect(Collectors.toList());
     }
 
