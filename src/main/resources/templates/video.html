@@ -67,7 +67,9 @@
     const path = links[links.length - 1].link;
 
     $$(function () {
-        window.scrollTo(0, 0);
+        setTimeout(function () {
+            window.scrollTo(0, 0);
+        }, 1000);
     });
     // overrideNative=true为MSE
     videojs('video-id', {
