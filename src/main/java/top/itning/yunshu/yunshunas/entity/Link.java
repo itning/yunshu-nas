@@ -24,7 +24,6 @@ public class Link {
         } else {
             SPLIT_REGEX = "/";
         }
-        SPLIT_REGEX = "/";
     }
 
     public static List<Link> build(String location) throws UnsupportedEncodingException {

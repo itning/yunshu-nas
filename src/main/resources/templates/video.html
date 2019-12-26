@@ -26,9 +26,9 @@
                                              th:text="${link.name}"></a><span>&#92;</span></span>
         </div>
     </div>
-    <video id="video-id" class="video-js vjs-default-skin vjs-big-play-centered vjs-fluid" controls preload="auto">
+    <video-js id="video-id" class="video-js vjs-default-skin vjs-big-play-centered vjs-fluid" controls preload="auto">
         <source th:src="${'/hls/'+name+'.m3u8'}" type="application/x-mpegURL">
-    </video>
+    </video-js>
     <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme-accent mdui-btn-dense mdui-m-t-1 mdui-m-b-1"
             onclick="del()">删除
     </button>
@@ -60,6 +60,7 @@
 <script th:src="@{/mdui/js/mdui.min.js}"></script>
 <script th:inline="javascript">
     'use strict';
+    window.HELP_IMPROVE_VIDEOJS = false;
     const $$ = mdui.JQ;
     const links = [[${links}]];
     const name = [[${name}]];
@@ -68,14 +69,18 @@
     $$(function () {
         window.scrollTo(0, 0);
     });
-
-    videojs('video-id', {playbackRates: [0.5, 1, 1.5, 2, 2.5, 3]}).ready(function () {
-        this.hotkeys({
-            volumeStep: 0.1,
-            seekStep: 5,
-            enableModifiersForNumbers: false
+    // overrideNative=true为MSE
+    videojs('video-id', {
+        playbackRates: [0.5, 1, 1.5, 2, 2.5, 3],
+        html5: {hls: {overrideNative: !videojs.browser.IS_SAFARI}}
+    })
+        .ready(function () {
+            this.hotkeys({
+                volumeStep: 0.1,
+                seekStep: 5,
+                enableModifiersForNumbers: false
+            });
         });
-    });
 
     //player.playbackRate(speed);
 

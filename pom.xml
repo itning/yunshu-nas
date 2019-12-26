@@ -5,12 +5,12 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.1.9.RELEASE</version>
+        <version>2.2.2.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>top.itning.yunshu</groupId>
     <artifactId>yunshu-nas</artifactId>
-    <version>1.0.0.RELEASE</version>
+    <version>1.1.0.RELEASE</version>
     <name>yunshu-nas</name>
     <description>Demo project for Spring Boot</description>
 
@@ -86,6 +86,11 @@
     </dependencies>
 
     <repositories>
+        <repository>
+            <id>nexus-aliyun</id>
+            <name>Nexus aliyun</name>
+            <url>http://maven.aliyun.com/nexus/content/groups/public</url>
+        </repository>
         <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
