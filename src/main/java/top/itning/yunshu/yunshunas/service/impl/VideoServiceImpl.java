@@ -56,6 +56,7 @@ public class VideoServiceImpl implements VideoService {
                 fileEntity.setName(f.getName());
                 fileEntity.setSize(FileUtils.byteCountToDisplaySize(f.length()));
                 fileEntity.setFile(f.isFile());
+                fileEntity.setCanPlay(isVideoFile(f.getName()));
                 fileEntity.setLocation(f.getPath());
                 fileEntities.add(fileEntity);
             }
@@ -64,8 +65,15 @@ public class VideoServiceImpl implements VideoService {
         }
         return fileEntities
                 .parallelStream()
-                .filter(fileEntity -> !fileEntity.isFile() || isVideoFile(fileEntity.getName()))
-                .sorted(Comparator.comparing(FileEntity::getName))
+                .sorted((o1, o2) -> {
+                    if (o1.isFile() && !o2.isFile()) {
+                        return 1;
+                    } else if (!o1.isFile() && o2.isFile()) {
+                        return -1;
+                    } else {
+                        return o1.getName().compareTo(o2.getName());
+                    }
+                })
                 .collect(Collectors.toList());
     }
 

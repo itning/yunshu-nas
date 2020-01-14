@@ -48,9 +48,11 @@
             </thead>
             <tbody>
             <tr th:each="file: ${files}" onclick="go(this)" th:data-dir="${!file.file}"
+                th:data-canplay="${file.canPlay}"
                 th:data-location="${file.location}">
-                <td><i th:if="${file.isFile()}" class="mdui-icon material-icons">insert_drive_file</i>
-                    <i th:if="${!file.isFile()}" class="mdui-icon material-icons">folder</i>
+                <td><i th:if="${file.isFile()&&!file.canPlay}" class="mdui-icon material-icons">insert_drive_file</i>
+                    <i th:if="${file.isFile()&&file.canPlay}" class="mdui-icon material-icons">music_video</i>
+                    <i th:if="${!file.isFile() }" class="mdui-icon material-icons">folder</i>
                     <span th:if="${file.name==''}" th:text="${file.location}"></span>
                     <span th:if="${file.name!=''}" th:text="${file.name}"></span>
                 </td>
@@ -128,7 +130,7 @@
     function go(location) {
         if (location.dataset.dir === 'true') {
             window.location.href = "/?location=" + encodeURIComponent(location.dataset.location)
-        } else {
+        } else if (location.dataset.canplay === 'true') {
             window.location.href = "/video?location=" + encodeURIComponent(location.dataset.location)
         }
     }

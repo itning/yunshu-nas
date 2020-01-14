@@ -18,6 +18,10 @@ public class FileEntity {
      */
     private boolean file;
     /**
+     * 能够在线播放
+     */
+    private boolean canPlay;
+    /**
      * 地址
      */
     private String location;
@@ -44,6 +48,14 @@ public class FileEntity {
 
     public void setFile(boolean file) {
         this.file = file;
+    }
+
+    public boolean isCanPlay() {
+        return canPlay;
+    }
+
+    public void setCanPlay(boolean canPlay) {
+        this.canPlay = canPlay;
     }
 
     public String getLocation() {
