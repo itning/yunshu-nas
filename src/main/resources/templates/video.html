@@ -33,6 +33,9 @@
             onclick="del()">删除
     </button>
     <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme-accent mdui-btn-dense mdui-m-t-1 mdui-m-b-1"
+            onclick="delTranscoding()">删除转码
+    </button>
+    <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme-accent mdui-btn-dense mdui-m-t-1 mdui-m-b-1"
             onclick="copyVideoPath()">复制视频地址
     </button>
     <div class="mdui-table-fluid">
@@ -92,6 +95,24 @@
             $$.ajax({
                 method: 'POST',
                 url: './del' + document.location.search,
+                success: function (data) {
+                    window.location.href = '/?location=' + path;
+                },
+                error: function (xhr, textStatus) {
+                    // xhr 为 XMLHttpRequest 对象
+                    // textStatus 为包含错误代码的字符串
+                    window.alert(textStatus)
+                }
+            });
+        }
+    }
+
+    function delTranscoding() {
+        const r = window.confirm("确认删除转码？");
+        if (r === true) {
+            $$.ajax({
+                method: 'POST',
+                url: './delTranscoding' + document.location.search,
                 success: function (data) {
                     window.location.href = '/?location=' + path;
                 },

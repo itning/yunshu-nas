@@ -56,4 +56,11 @@ public class FileController {
             throw new RuntimeException("文件删除失败");
         }
     }
+
+    @PostMapping("/delTranscoding")
+    @ResponseBody
+    public void delTranscodingFile(@RequestParam String location) throws IOException {
+        String writeDir = iVideoRepository.getWriteDir(location);
+        FileUtils.deleteDirectory(new File(writeDir));
+    }
 }
