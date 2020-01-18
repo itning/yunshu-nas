@@ -62,7 +62,7 @@ public class VideoController {
         if (logger.isDebugEnabled()) {
             logger.debug("request {}-{}.ts", name, index);
         }
-        videoService.getTsFile(String.format("%s-%s", name, index), response.getOutputStream());
+        videoService.getTsFile(name + "-" + index, response.getOutputStream());
     }
 
 
