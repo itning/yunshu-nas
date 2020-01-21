@@ -48,6 +48,10 @@ public class Video2M3u8Helper {
      * 进度百分比格式化
      */
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("0.00%");
+    /**
+     * 视频分割时间
+     */
+    private static final String SPLIT_TIME_SECOND = "10";
 
 
     private final String ffmpegLocation;
@@ -114,7 +118,7 @@ public class Video2M3u8Helper {
      * @return 转码完成的文件路径
      * @throws IOException IOException
      */
-    private String copy(String fromFile, String toPath, boolean copyVideo, boolean copyAudio) throws IOException {
+    private String videoStandardization(String fromFile, String toPath, boolean copyVideo, boolean copyAudio) throws IOException {
         if (logger.isDebugEnabled()) {
             logger.debug("start copy {} {} {} {}", fromFile, toPath, copyAudio, copyAudio);
         }
@@ -168,7 +172,7 @@ public class Video2M3u8Helper {
             if (logger.isDebugEnabled()) {
                 logger.debug("video: {} audio: {}", compliance.getT1(), compliance.getT2());
             }
-            String copy = copy(fromFile, toPath, compliance.getT1(), compliance.getT2());
+            String copy = videoStandardization(fromFile, toPath, compliance.getT1(), compliance.getT2());
             // 构建命令
             List<String> command = new ArrayList<>(16);
             command.add(ffmpegLocation);
@@ -185,7 +189,7 @@ public class Video2M3u8Helper {
             command.add("-segment_list");
             command.add(toPath + File.separator + fileName + ".m3u8");
             command.add("-segment_time");
-            command.add("10");
+            command.add(SPLIT_TIME_SECOND);
             command.add(toPath + File.separator + fileName + "-%03d.ts");
 
             process(command, line -> {
