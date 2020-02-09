@@ -68,6 +68,17 @@ public class Video2M3u8Helper {
      */
     public interface Progress {
         /**
+         * 视频准备开始转码时回调
+         *
+         * @param fromFile 源文件
+         * @param toPath   目标路径
+         * @param fileName 文件名（不要扩展名）
+         */
+        default void onStart(String fromFile, String toPath, String fileName) {
+
+        }
+
+        /**
          * 日志
          *
          * @param line 每条日志
@@ -120,7 +131,7 @@ public class Video2M3u8Helper {
      */
     private String videoStandardization(String fromFile, String toPath, boolean copyVideo, boolean copyAudio) throws IOException {
         if (logger.isDebugEnabled()) {
-            logger.debug("start copy {} {} {} {}", fromFile, toPath, copyAudio, copyAudio);
+            logger.debug("3/4. start copy {} {} {} {}", fromFile, toPath, copyAudio, copyAudio);
         }
         final long videoFrames = getVideoFrames(fromFile);
         String randomFileName = DigestUtils.md5DigestAsHex(fromFile.getBytes()) + ".mp4";
@@ -149,7 +160,7 @@ public class Video2M3u8Helper {
             }
         });
         if (logger.isDebugEnabled()) {
-            logger.debug("end copy {} {} {} {}", fromFile, toPath, copyAudio, copyAudio);
+            logger.debug("4/4. end copy {} {} {} {}", fromFile, toPath, copyAudio, copyAudio);
         }
         return command.get(command.size() - 1);
     }
@@ -168,6 +179,9 @@ public class Video2M3u8Helper {
         }
         this.progress = progress;
         try {
+            if (progress != null) {
+                progress.onStart(fromFile, toPath, fileName);
+            }
             Tuple2<Boolean, Boolean> compliance = checkComplianceWithSpecificationsForHls(fromFile);
             if (logger.isDebugEnabled()) {
                 logger.debug("video: {} audio: {}", compliance.getT1(), compliance.getT2());
@@ -237,7 +251,7 @@ public class Video2M3u8Helper {
      */
     private Tuple2<Boolean, Boolean> checkComplianceWithSpecificationsForHls(String wantCheckVideoFile) throws IOException {
         if (logger.isDebugEnabled()) {
-            logger.debug("start checkComplianceWithSpecificationsForHls {}", wantCheckVideoFile);
+            logger.debug("1/4. start checkComplianceWithSpecificationsForHls {}", wantCheckVideoFile);
         }
         List<String> command = new ArrayList<>(3);
         command.add(ffmpegLocation);
@@ -249,7 +263,7 @@ public class Video2M3u8Helper {
         boolean video = s.contains(VIDEO_H_264);
         boolean audio = s.contains(AUDIO_AAC);
         if (logger.isDebugEnabled()) {
-            logger.debug("end checkComplianceWithSpecificationsForHls {}", wantCheckVideoFile);
+            logger.debug("2/4. end checkComplianceWithSpecificationsForHls {}", wantCheckVideoFile);
         }
         //音视频都是HLS规范
         if (video && audio) {

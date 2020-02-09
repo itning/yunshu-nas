@@ -30,7 +30,7 @@
         <source th:src="${'/hls/'+name+'.m3u8'}" type="application/x-mpegURL">
     </video-js>
     <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme-accent mdui-btn-dense mdui-m-t-1 mdui-m-b-1"
-            onclick="del()">删除
+            onclick="del()">删除转码及视频
     </button>
     <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme-accent mdui-btn-dense mdui-m-t-1 mdui-m-b-1"
             onclick="delTranscoding()">删除转码
@@ -38,6 +38,10 @@
     <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme-accent mdui-btn-dense mdui-m-t-1 mdui-m-b-1"
             onclick="copyVideoPath()">复制视频地址
     </button>
+    <label class="mdui-switch">MSE资源（解决某些浏览器倍速失效）
+        <input type="checkbox" id="mse_checkbox"/>
+        <i class="mdui-switch-icon"></i>
+    </label>
     <div class="mdui-table-fluid">
         <table class="mdui-table mdui-table-hoverable">
             <thead>
@@ -66,30 +70,45 @@
 <script th:inline="javascript">
     'use strict';
     window.HELP_IMPROVE_VIDEOJS = false;
+    const IS_MSE_RESOURCE = "IS_MSE_RESOURCE";
     const $$ = mdui.JQ;
     const links = [[${links}]];
     const name = [[${name}]];
     const path = links[links.length - 1].link;
 
     $$(function () {
+        if (!localStorage.getItem(IS_MSE_RESOURCE)) {
+            localStorage.setItem(IS_MSE_RESOURCE, "true");
+        }
+        const checkBox = document.getElementById("mse_checkbox");
+        localStorage.getItem(IS_MSE_RESOURCE) === "true" ? checkBox.checked = true : checkBox.checked = false;
+        checkBox.addEventListener("change", function (e) {
+            if (e.target.checked) {
+                localStorage.setItem(IS_MSE_RESOURCE, "true");
+            } else {
+                localStorage.setItem(IS_MSE_RESOURCE, "false");
+            }
+            window.location.reload();
+        });
         setTimeout(function () {
             window.scrollTo(0, 0);
         }, 1000);
-    });
-    // overrideNative=true为MSE
-    videojs('video-id', {
-        playbackRates: [0.5, 1, 1.5, 2, 2.5, 3],
-        html5: {hls: {overrideNative: !videojs.browser.IS_SAFARI}}
-    })
-        .ready(function () {
-            this.hotkeys({
-                volumeStep: 0.1,
-                seekStep: 5,
-                enableModifiersForNumbers: false
-            });
-        });
 
-    //player.playbackRate(speed);
+        // overrideNative=true为MSE
+        videojs('video-id', {
+            playbackRates: [0.5, 1, 1.5, 2, 2.5, 3],
+            html5: {hls: {overrideNative: localStorage.getItem(IS_MSE_RESOURCE) === "true"}}
+        })
+            .ready(function () {
+                this.hotkeys({
+                    volumeStep: 0.1,
+                    seekStep: 5,
+                    enableModifiersForNumbers: false
+                });
+            });
+
+        //player.playbackRate(speed);
+    });
 
     function del() {
         const r = window.confirm("确认删除？");
