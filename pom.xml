@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.3.0.RELEASE</version>
+        <version>2.3.1.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>top.itning.yunshu</groupId>
@@ -22,12 +22,12 @@
     </licenses>
 
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>11</java.version>
         <itning.utils.version>1.0.1-RELEASE</itning.utils.version>
         <typebuilder.version>1.0</typebuilder.version>
         <commons-io.version>2.6</commons-io.version>
         <guava.version>29.0-jre</guava.version>
-        <java-webSocket.version>1.5.0</java-webSocket.version>
+        <java-webSocket.version>1.5.1</java-webSocket.version>
     </properties>
 
     <dependencies>
