@@ -32,7 +32,7 @@ public class BeansConfig {
     }
 
     @Bean
-    MultipartConfigElement multipartConfigElement() {
+    public MultipartConfigElement multipartConfigElement() {
         MultipartConfigFactory factory = new MultipartConfigFactory();
         factory.setLocation(System.getProperty("java.io.tmpdir"));
         return factory.createMultipartConfig();

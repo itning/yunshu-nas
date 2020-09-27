@@ -7,7 +7,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.DigestUtils;
-import top.itning.utils.tuple.Tuple2;
+import top.itning.yunshu.yunshunas.util.Tuple2;
 
 import java.io.File;
 import java.io.IOException;
@@ -236,9 +236,8 @@ public class Video2M3u8Helper {
      * @param fromFile 源文件
      * @param toPath   目标路径
      * @param fileName 文件名（不要扩展名）
-     * @throws IOException IOException
      */
-    public void videoConvert(String fromFile, String toPath, String fileName) throws IOException {
+    public void videoConvert(String fromFile, String toPath, String fileName) {
         videoConvert(fromFile, toPath, fileName, null);
     }
 
