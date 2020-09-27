@@ -1,5 +1,7 @@
 package top.itning.yunshu.yunshunas.entity;
 
+import lombok.Data;
+
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -10,6 +12,7 @@ import java.util.List;
  * @author itning
  * @date 2019/7/16 23:46
  */
+@Data
 public class Link {
     private static final String WINDOWS_SYSTEM = "win";
 
@@ -53,29 +56,5 @@ public class Link {
             linkList.add(link);
         }
         return linkList;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getLink() {
-        return link;
-    }
-
-    public void setLink(String link) {
-        this.link = link;
-    }
-
-    @Override
-    public String toString() {
-        return "Link{" +
-                "name='" + name + '\'' +
-                ", link='" + link + '\'' +
-                '}';
     }
 }

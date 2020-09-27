@@ -1,9 +1,12 @@
 package top.itning.yunshu.yunshunas.entity;
 
+import lombok.Data;
+
 /**
  * @author itning
  * @date 2019/7/15 11:51
  */
+@Data
 public class FileEntity {
     /**
      * 名
@@ -25,44 +28,4 @@ public class FileEntity {
      * 地址
      */
     private String location;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getSize() {
-        return size;
-    }
-
-    public void setSize(String size) {
-        this.size = size;
-    }
-
-    public boolean isFile() {
-        return file;
-    }
-
-    public void setFile(boolean file) {
-        this.file = file;
-    }
-
-    public boolean isCanPlay() {
-        return canPlay;
-    }
-
-    public void setCanPlay(boolean canPlay) {
-        this.canPlay = canPlay;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
 }
