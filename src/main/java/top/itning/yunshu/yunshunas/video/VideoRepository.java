@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.DigestUtils;
-import top.itning.yunshu.yunshunas.entity.NasProperties;
+import top.itning.yunshu.yunshunas.config.NasProperties;
 import top.itning.yunshu.yunshunas.repository.IVideoRepository;
 
 import javax.annotation.Nonnull;
@@ -30,7 +30,7 @@ public class VideoRepository implements IVideoRepository {
                 .softValues()
                 .initialCapacity(100)
                 .maximumSize(100)
-                .build(new CacheLoader<String, String>() {
+                .build(new CacheLoader<>() {
                     @Override
                     public String load(@Nonnull String key) {
                         return DigestUtils.md5DigestAsHex(key.getBytes());

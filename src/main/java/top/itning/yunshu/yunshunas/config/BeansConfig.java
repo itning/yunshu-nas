@@ -4,7 +4,6 @@ import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
-import top.itning.yunshu.yunshunas.entity.NasProperties;
 import top.itning.yunshu.yunshunas.video.Video2M3u8Helper;
 
 import javax.servlet.MultipartConfigElement;

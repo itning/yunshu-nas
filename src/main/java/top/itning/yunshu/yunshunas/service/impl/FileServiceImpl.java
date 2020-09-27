@@ -3,7 +3,7 @@ package top.itning.yunshu.yunshunas.service.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import top.itning.yunshu.yunshunas.config.MusicConfigProperties;
+import top.itning.yunshu.yunshunas.config.NasProperties;
 import top.itning.yunshu.yunshunas.constant.MusicType;
 import top.itning.yunshu.yunshunas.repository.MusicRepository;
 import top.itning.yunshu.yunshunas.service.FileService;
@@ -21,12 +21,12 @@ import java.nio.file.Paths;
 @Service
 public class FileServiceImpl implements FileService {
     private final MusicRepository musicRepository;
-    private final MusicConfigProperties musicConfigProperties;
+    private final NasProperties nasProperties;
 
     @Autowired
-    public FileServiceImpl(MusicRepository musicRepository, MusicConfigProperties musicConfigProperties) {
+    public FileServiceImpl(MusicRepository musicRepository, NasProperties nasProperties) {
         this.musicRepository = musicRepository;
-        this.musicConfigProperties = musicConfigProperties;
+        this.nasProperties = nasProperties;
     }
 
     @Override
@@ -35,7 +35,7 @@ public class FileServiceImpl implements FileService {
                 .flatMap(music -> MusicType.getMediaType(music.getType()))
                 .orElse(MusicType.MP3.getMediaType());
         log.debug("Media Type: {}", mediaType);
-        MultipartFileSender.fromPath(Paths.get(musicConfigProperties.getFilePath(), id))
+        MultipartFileSender.fromPath(Paths.get(nasProperties.getMusicFileDir(), id))
                 .setContentType(mediaType)
                 .with(request)
                 .with(response)
