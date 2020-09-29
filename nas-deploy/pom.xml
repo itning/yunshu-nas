@@ -21,4 +21,148 @@
             <artifactId>nas-music</artifactId>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <!--分离打包jar-->
+            <!--<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    &lt;!&ndash;不打包资源文件&ndash;&gt;
+                    <excludes>
+                        <exclude>*.**</exclude>
+                        <exclude>*/*.xml</exclude>
+                    </excludes>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            &lt;!&ndash;MANIFEST.MF 中 Class-Path 加入前缀&ndash;&gt;
+                            <classpathPrefix>lib/</classpathPrefix>
+                            &lt;!&ndash;jar包不包含唯一版本标识&ndash;&gt;
+                            <useUniqueVersions>false</useUniqueVersions>
+                            &lt;!&ndash;指定入口类&ndash;&gt;
+                            <mainClass>top.sl.tmpp.core.TMPPApplication</mainClass>
+                        </manifest>
+                        <manifestEntries>
+                            &lt;!&ndash;MANIFEST.MF 中 Class-Path 加入资源文件目录&ndash;&gt;
+                            <Class-Path>./resources/</Class-Path>
+                        </manifestEntries>
+                    </archive>
+                    <outputDirectory>${project.build.directory}</outputDirectory>
+                </configuration>
+            </plugin>
+            &lt;!&ndash;拷贝依赖 copy-dependencies&ndash;&gt;
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>
+                                ${project.build.directory}/lib/
+                            </outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            &lt;!&ndash;拷贝资源文件 copy-resources&ndash;&gt;
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/resources</directory>
+                                </resource>
+                            </resources>
+                            <outputDirectory>${project.build.directory}/resources</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            &lt;!&ndash;spring boot repackage，依赖 maven-jar-plugin 打包的jar包 重新打包成 spring boot 的jar包&ndash;&gt;
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    &lt;!&ndash;重写包含依赖，包含不存在的依赖，jar里没有pom里的依赖&ndash;&gt;
+                    <includes>
+                        <include>
+                            <groupId>null</groupId>
+                            <artifactId>null</artifactId>
+                        </include>
+                    </includes>
+                    <layout>ZIP</layout>
+                    &lt;!&ndash;使用外部配置文件，jar包里没有资源文件&ndash;&gt;
+                    <addResources>true</addResources>
+                    <outputDirectory>${project.build.directory}</outputDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                        <configuration>
+                            &lt;!&ndash;配置jar包特殊标识 配置后，保留原文件，生成新文件 *-run.jar &ndash;&gt;
+                            &lt;!&ndash;配置jar包特殊标识 不配置，原文件命名为 *.jar.original，生成新文件 *.jar &ndash;&gt;
+                            &lt;!&ndash;<classifier>run</classifier>&ndash;&gt;
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>-->
+            <!--docker镜像打包插件-->
+            <!--  <plugin>
+                  <groupId>com.google.cloud.tools</groupId>
+                  <artifactId>jib-maven-plugin</artifactId>
+                  <version>1.2.0</version>
+                  <configuration>
+                      <from>
+                          &lt;!&ndash;base image&ndash;&gt;
+                          <image>rggb8uln.mirror.aliyuncs.com/library/openjdk:alpine</image>
+                      </from>
+                      <to>
+                          <image>registry.cn-beijing.aliyuncs.com/itning/tmpp_server</image>
+                          <auth>
+                              <username>${env.DOCKER_USERNAME}</username>
+                              <password>${env.DOCKER_PASSWORD}</password>
+                          </auth>
+                          <tags>
+                              <tag>${project.version}</tag>
+                              <tag>latest</tag>
+                          </tags>
+                      </to>
+                      <container>
+                          <jvmFlags>
+                              <jvmFlag>-XX:+UseG1GC</jvmFlag>
+                              <jvmFlag>-XX:+UseTLAB</jvmFlag>
+                          </jvmFlags>
+                      </container>
+                  </configuration>
+                  <executions>
+                      <execution>
+                          <phase>package</phase>
+                          <goals>
+                              <goal>build</goal>
+                          </goals>
+                      </execution>
+                  </executions>
+              </plugin>-->
+        </plugins>
+    </build>
 </project>
