@@ -25,7 +25,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Slf4j
 class MusicTest {
     @Autowired
@@ -41,16 +41,16 @@ class MusicTest {
                     //noinspection OptionalGetWithoutIsPresent
                     MusicType musicType = MusicType.getMusicTypeFromFilePath(f.getPath()).get();
                     String name = f.getName();
-                    System.out.println(name);
+                    System.out.println("准备添加：" + name);
 
                     int i = name.indexOf("-");
                     int end = name.indexOf("." + musicType.name().toLowerCase());
                     // 歌曲名-歌手名
-                    //String mName = name.substring(0, i).trim();
-                    //String mSinger = name.substring(i + 1, end).trim();
+                    String mName = name.substring(0, i).trim();
+                    String mSinger = name.substring(i + 1, end).trim();
                     // 歌手-歌曲名
-                    String mName = name.substring(i + 1, end).trim();
-                    String mSinger = name.substring(0, i).trim();
+                    //String mName = name.substring(i + 1, end).trim();
+                    //String mSinger = name.substring(0, i).trim();
 
                     Music music = new Music();
                     String id = UUID.randomUUID().toString().replace("-", "");
@@ -85,7 +85,7 @@ class MusicTest {
                         e.printStackTrace();
                     }
                 });
-        System.out.println(atomicInteger.get());
+        System.out.println("总计添加：" + atomicInteger.get());
     }
 
     @Test
