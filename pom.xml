@@ -12,7 +12,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.3.4.RELEASE</version>
+        <version>2.4.0</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>top.itning.yunshu-nas</groupId>
@@ -31,7 +31,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>14</java.version>
+        <java.version>11</java.version>
         <skipTests>true</skipTests>
         <commons-io.version>2.6</commons-io.version>
         <guava.version>29.0-jre</guava.version>
