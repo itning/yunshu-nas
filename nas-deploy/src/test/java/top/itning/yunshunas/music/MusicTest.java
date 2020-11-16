@@ -91,7 +91,7 @@ class MusicTest {
 
     @Test
     void addLyric() {
-        File file = new File("F:\\Music");
+        File file = new File("F:\\Music_1\\VipSongsDownload");
         Arrays.stream(Objects.requireNonNull(file.
                 listFiles((dir, name) -> name.endsWith(".lrc"))))
                 .map(f -> {
@@ -124,7 +124,7 @@ class MusicTest {
                     try {
                         String str = FileUtils.readFileToString(item.getT2(), "gb2312");
                         String encode = new String(str.getBytes(), StandardCharsets.UTF_8);
-                        System.out.println(encode);
+                        //System.out.println(encode);
                         Files.writeString(Paths.get("F:\\lyric_yunshu\\" + item.getT1().getLyricId()), encode);
                         /*int copy = FileCopyUtils.copy(item.getT2(), new File("F:\\lyric_yunshu\\" + item.getT1().getLyricId()));
                         if (copy <= 0) {

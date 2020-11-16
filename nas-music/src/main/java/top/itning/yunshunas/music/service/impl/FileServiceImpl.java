@@ -48,6 +48,11 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public String getLyric(String id) throws IOException {
-        return FileUtils.readFileToString(new File(nasProperties.getLyricFileDir() + File.separator + id), StandardCharsets.UTF_8);
+        File file = new File(nasProperties.getLyricFileDir() + File.separator + id);
+        if (file.exists()) {
+            return FileUtils.readFileToString(new File(nasProperties.getLyricFileDir() + File.separator + id), StandardCharsets.UTF_8);
+        } else {
+            return "";
+        }
     }
 }
