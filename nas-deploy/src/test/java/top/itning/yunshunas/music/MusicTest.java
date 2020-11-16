@@ -1,6 +1,7 @@
 package top.itning.yunshunas.music;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -86,6 +87,53 @@ class MusicTest {
                     }
                 });
         System.out.println("总计添加：" + atomicInteger.get());
+    }
+
+    @Test
+    void addLyric() {
+        File file = new File("F:\\Music");
+        Arrays.stream(Objects.requireNonNull(file.
+                listFiles((dir, name) -> name.endsWith(".lrc"))))
+                .map(f -> {
+                    String name = f.getName();
+
+                    int i = name.indexOf("-");
+                    int end = name.indexOf(".lrc");
+                    // 歌曲名-歌手名
+                    String mName = name.substring(0, i).trim();
+                    String mSinger = name.substring(i + 1, end).trim();
+                    // 歌手-歌曲名
+                    //String mName = name.substring(i + 1, end).trim();
+                    //String mSinger = name.substring(0, i).trim();
+
+                    Music music = new Music();
+                    music.setName(mName);
+                    music.setSinger(mSinger);
+                    return new Tuple2<>(music, f);
+                })
+                .peek(item -> {
+                    List<Music> list = musicRepository.findAllByNameLikeAndSingerLike(item.getT1().getName(), item.getT1().getSinger());
+                    if (list.size() != 1) {
+                        log.error("list {} file {}", list.toString(), item.getT2().toString());
+                        return;
+                    }
+                    item.getT1().setLyricId(list.get(0).getLyricId());
+                })
+                .filter(item -> null != item.getT1().getLyricId())
+                .forEach(item -> {
+                    try {
+                        String str = FileUtils.readFileToString(item.getT2(), "gb2312");
+                        String encode = new String(str.getBytes(), StandardCharsets.UTF_8);
+                        System.out.println(encode);
+                        Files.writeString(Paths.get("F:\\lyric_yunshu\\" + item.getT1().getLyricId()), encode);
+                        /*int copy = FileCopyUtils.copy(item.getT2(), new File("F:\\lyric_yunshu\\" + item.getT1().getLyricId()));
+                        if (copy <= 0) {
+                            log.warn("File Copy 0 File: {} Id {}", item.getT2(), item.getT1().toString());
+                        }*/
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
     }
 
     @Test

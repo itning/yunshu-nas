@@ -29,4 +29,8 @@ public class NasProperties {
      * 音乐文件目录
      */
     private String musicFileDir;
+    /**
+     * 歌词文件目录
+     */
+    private String lyricFileDir;
 }

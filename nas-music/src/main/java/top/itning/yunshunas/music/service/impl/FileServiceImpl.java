@@ -1,6 +1,7 @@
 package top.itning.yunshunas.music.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import top.itning.yunshunas.common.config.NasProperties;
@@ -11,6 +12,9 @@ import top.itning.yunshunas.music.service.FileService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 
 /**
@@ -40,5 +44,10 @@ public class FileServiceImpl implements FileService {
                 .with(request)
                 .with(response)
                 .serveResource();
+    }
+
+    @Override
+    public String getLyric(String id) throws IOException {
+        return FileUtils.readFileToString(new File(nasProperties.getLyricFileDir() + File.separator + id), StandardCharsets.UTF_8);
     }
 }

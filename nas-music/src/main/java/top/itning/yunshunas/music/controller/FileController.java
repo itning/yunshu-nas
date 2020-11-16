@@ -2,19 +2,19 @@ package top.itning.yunshunas.music.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import top.itning.yunshunas.music.service.FileService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
 
 /**
  * @author itning
  * @date 2019/7/14 18:48
  */
+@CrossOrigin
 @Controller("musicFileController")
 @RequestMapping("/file")
 public class FileController {
@@ -31,5 +31,11 @@ public class FileController {
                          HttpServletRequest request,
                          HttpServletResponse response) throws Exception {
         fileService.getOneMusic(id, range, request, response);
+    }
+
+    @ResponseBody
+    @GetMapping("/lyric")
+    public String getLyric(@NotNull(message = "ID不存在") String id) throws IOException {
+        return fileService.getLyric(id);
     }
 }
