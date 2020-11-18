@@ -1,6 +1,7 @@
 package top.itning.yunshunas.music.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import top.itning.yunshunas.music.service.FileService;
@@ -34,7 +35,7 @@ public class FileController {
     }
 
     @ResponseBody
-    @GetMapping("/lyric")
+    @GetMapping(value = "/lyric", produces = MediaType.TEXT_PLAIN_VALUE)
     public String getLyric(@NotNull(message = "ID不存在") String id) throws IOException {
         return fileService.getLyric(id);
     }
