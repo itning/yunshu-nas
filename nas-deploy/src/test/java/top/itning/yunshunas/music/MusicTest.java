@@ -91,7 +91,7 @@ class MusicTest {
 
     @Test
     void addLyric() {
-        File file = new File("F:\\Music_1\\VipSongsDownload");
+        File file = new File("F:\\Music");
         Arrays.stream(Objects.requireNonNull(file.
                 listFiles((dir, name) -> name.endsWith(".lrc"))))
                 .map(f -> {
