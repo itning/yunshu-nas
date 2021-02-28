@@ -11,6 +11,7 @@
 
 <div align="center">
 
+[![Java CI with Maven](https://github.com/itning/yunshu-nas/actions/workflows/maven.yml/badge.svg)](https://github.com/itning/yunshu-nas/actions/workflows/maven.yml)
 [![GitHub issues](https://img.shields.io/github/issues/itning/yunshu-nas.svg)](https://github.com/itning/yunshu-nas/issues)
 [![GitHub license](https://img.shields.io/github/license/itning/yunshu-nas.svg)](https://github.com/itning/yunshu-nas/blob/master/LICENSE)
 [![GitHub last commit](https://img.shields.io/github/last-commit/itning/yunshu-nas.svg)](https://github.com/itning/yunshu-nas/commits)
