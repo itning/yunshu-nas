@@ -11,6 +11,10 @@
 
     <artifactId>nas-deploy</artifactId>
 
+    <properties>
+        <jarFileName>${project.version}</jarFileName>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>top.itning.yunshu-nas</groupId>
@@ -23,6 +27,7 @@
     </dependencies>
 
     <build>
+        <finalName>${jarFileName}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
