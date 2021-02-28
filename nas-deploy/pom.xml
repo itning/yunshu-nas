@@ -27,7 +27,7 @@
     </dependencies>
 
     <build>
-        <finalName>${jarFileName}</finalName>
+        <finalName>yunshu-nas-${jarFileName}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
