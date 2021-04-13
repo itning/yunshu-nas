@@ -62,3 +62,7 @@ nohup aria2c --rpc-listen-port 6800 --enable-rpc --rpc-listen-all >aria2c.log 2>
 ![](https://raw.githubusercontent.com/itning/yunshu-nas/master/pic/c.png)
 
 ![](https://raw.githubusercontent.com/itning/yunshu-nas/master/pic/d.png)
+
+# 感谢
+
+![](https://raw.githubusercontent.com/itning/yunshu-nas/master/pic/jetbrains.png)
