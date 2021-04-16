@@ -17,7 +17,7 @@
 [![GitHub last commit](https://img.shields.io/github/last-commit/itning/yunshu-nas.svg)](https://github.com/itning/yunshu-nas/commits)
 [![GitHub release](https://img.shields.io/github/release/itning/yunshu-nas.svg)](https://github.com/itning/yunshu-nas/releases)
 [![GitHub repo size in bytes](https://img.shields.io/github/repo-size/itning/yunshu-nas.svg)](https://github.com/itning/yunshu-nas)
-[![HitCount](http://hits.dwyl.io/itning/yunshu-nas.svg)](http://hits.dwyl.io/itning/yunshu-nas)
+[![HitCount](http://hits.dwyl.com/itning/yunshu-nas.svg)](http://hits.dwyl.com/itning/yunshu-nas)
 [![language](https://img.shields.io/badge/language-JAVA-green.svg)](https://github.com/itning/yunshu-nas)
 
 </div>
