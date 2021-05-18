@@ -24,6 +24,9 @@ public class Aria2cProcess {
     private static final Logger logger = LoggerFactory.getLogger(Aria2cProcess.class);
 
     public Aria2cProcess(NasProperties nasProperties) {
+        if (StringUtils.isBlank(nasProperties.getAria2cFile())) {
+            return;
+        }
         ThreadPoolExecutor synchronousBlockingSingleService = new ThreadPoolExecutor(1,
                 1,
                 0L,
