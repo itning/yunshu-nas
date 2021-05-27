@@ -35,7 +35,7 @@ class MusicTest {
     @Test
     void addMusicFilesToTheDatabaseAndCopyFiles() {
         AtomicInteger atomicInteger = new AtomicInteger();
-        File file = new File("F:\\Music");
+        File file = new File("C:\\Users\\ning\\Music");
         Arrays.stream(Objects.requireNonNull(file.
                 listFiles((dir, name) -> MusicType.getMusicTypeFromFilePath(name).isPresent())))
                 .map(f -> {
@@ -70,14 +70,14 @@ class MusicTest {
                         log.error("已存在 {}", musicList);
                         return false;
                     } else {
-                        log.info("添加 {}-{}", musics.getT1().getName(), musics.getT1().getSinger());
+                        log.info("添加 {}-{}-{}", musics.getT1().getName(), musics.getT1().getSinger(), musics.getT1().getMusicId());
                         return true;
                     }
                 })
                 .peek(item -> musicRepository.save(item.getT1()))
                 .forEach(item -> {
                     try {
-                        int copy = FileCopyUtils.copy(item.getT2(), new File("F:\\music_yunshu\\" + item.getT1().getMusicId()));
+                        int copy = FileCopyUtils.copy(item.getT2(), new File("E:\\music_yunshu\\" + item.getT1().getMusicId()));
                         if (copy <= 0) {
                             log.warn("File Copy 0 File: {} Id {}", item.getT2(), item.getT1().getMusicId());
                         }
