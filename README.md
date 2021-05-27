@@ -24,7 +24,26 @@
 
 ---
 
+# Docker
+
+```shell script
+docker run -d -p 8888:8888 -e MYSQL_URL=mysql8 -e MYSQL_PORT=3306 -e MYSQL_USERNAME=root -e MYSQL_PASSWORD=root --name yunshu-nas yunshu-nas:1.0.0
+```
+
+| 环境变量           | 用途                        | 默认值             |
+| ------------------ | --------------------------- | ------------------ |
+| MYSQL_URL          | MySQL的地址（不包含端口号） | localhost          |
+| MYSQL_PORT         | MySQL的端口号               | 3306               |
+| MYSQL_USERNAME     | MySQL用户名                 | root               |
+| MYSQL_PASSWORD     | MySQL密码                   | root               |
+| NAS_FFMPEG_BIN_DIR | ffmpeg bin 目录位置         | /home/ffmpeg/bin   |
+| NAS_OUT_DIR        | 转码目录位置                | /home/tmp          |
+| NAS_ARIA2C_FILE    | aria2c.exe 文件位置         | 空                 |
+| NAS_MUSIC_DIR      | 音乐文件目录                | /home/music_yunshu |
+| NAS_LYRIC_DIR      | 歌词文件目录                | /home/lyric_yunshu |
+
 # 启动脚本（aria2c 可以不用）
+
 ```shell script
 nohup java -jar yunshu-nas-0.0.1-SNAPSHOT.jar --nas.ffmpeg-bin-dir=/home/shw/ffmpeg-4.2.1-amd64-static --nas.out-dir=/home/shw/a --nas.aria2c-file=/usr/local/bin/aria2c >log.log 2>&1 &
 nohup aria2c --rpc-listen-port 6800 --enable-rpc --rpc-listen-all >aria2c.log 2>&1 &
