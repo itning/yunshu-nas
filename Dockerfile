@@ -6,4 +6,4 @@ ADD nas-deploy/target/yunshu-nas-*.RELEASE.jar /home/yunshu-nas.jar
 # 端口暴露
 EXPOSE 8888
 
-CMD ["java","-jar","/home/yunshu-nas.jar"]
+ENTRYPOINT ["java","-jar","/home/yunshu-nas.jar"]
