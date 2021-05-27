@@ -26,8 +26,10 @@
 
 # Docker
 
+镜像仓库地址：[DockerHub-itning](https://hub.docker.com/r/itning/yunshu-nas/tags?page=1&ordering=last_updated)
+
 ```shell script
-docker run -d -p 8888:8888 -e MYSQL_URL=mysql8 -e MYSQL_PORT=3306 -e MYSQL_USERNAME=root -e MYSQL_PASSWORD=root --name yunshu-nas yunshu-nas:1.0.0
+docker run -d -p 8888:8888 -e MYSQL_URL=mysql8 -e MYSQL_PORT=3306 -e MYSQL_USERNAME=root -e MYSQL_PASSWORD=root --name yunshu-nas itning/yunshu-nas:1.0.0
 ```
 
 | 环境变量           | 用途                        | 默认值             |
