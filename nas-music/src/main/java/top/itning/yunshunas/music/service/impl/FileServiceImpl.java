@@ -42,9 +42,8 @@ public class FileServiceImpl implements FileService {
         String mediaType = musicRepository.findByMusicId(id)
                 .flatMap(music -> MusicType.getMediaType(music.getType()))
                 .orElse(MusicType.MP3.getMediaType());
-        mediaType = MusicType.FLAC.getMediaType();
         log.debug("Media Type: {}", mediaType);
-        MultipartFileSender.fromPath(Paths.get("D:\\a\\a.flac"))
+        MultipartFileSender.fromPath(Paths.get(nasProperties.getMusicFileDir(), id))
                 .setContentType(mediaType)
                 .with(request)
                 .with(response)
@@ -53,7 +52,7 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public String getLyric(String id) throws IOException {
-        File file = new File("D:\\a\\a.lrc");
+        File file = new File(nasProperties.getLyricFileDir() + File.separator + id);
         if (file.exists()) {
             return FileUtils.readFileToString(new File(nasProperties.getLyricFileDir() + File.separator + id), StandardCharsets.UTF_8);
         } else {

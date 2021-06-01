@@ -1,7 +1,6 @@
 package top.itning.yunshunas.music.dto;
 
 import lombok.Data;
-import org.jaudiotagger.tag.datatype.Artwork;
 
 import java.util.List;
 
@@ -11,12 +10,26 @@ import java.util.List;
  */
 @Data
 public class MusicMetaInfo {
-    private String name;
-    private String singer;
+    /**
+     * 标题
+     */
+    private String title;
+    /**
+     * 艺术家
+     */
+    private List<String> artists;
+    /**
+     * 专辑
+     */
+    private String album;
+    /**
+     * 封面图
+     */
     private List<CoverPicture> coverPictures;
 
     @Data
     public static class CoverPicture {
+        private String base64;
         private byte[] binaryData;
         private String mimeType = "";
         private String description = "";

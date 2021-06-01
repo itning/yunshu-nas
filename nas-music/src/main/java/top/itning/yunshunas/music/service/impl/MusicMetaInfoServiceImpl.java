@@ -2,25 +2,20 @@ package top.itning.yunshunas.music.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jaudiotagger.audio.AudioFile;
-import org.jaudiotagger.audio.asf.AsfFileReader;
 import org.jaudiotagger.audio.flac.FlacFileReader;
 import org.jaudiotagger.audio.generic.AudioFileReader;
 import org.jaudiotagger.audio.mp3.MP3FileReader;
-import org.jaudiotagger.audio.mp4.Mp4FileReader;
-import org.jaudiotagger.audio.ogg.OggFileReader;
-import org.jaudiotagger.audio.real.RealFileReader;
 import org.jaudiotagger.audio.wav.WavFileReader;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagField;
-import org.jaudiotagger.tag.datatype.Artwork;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Base64Utils;
 import top.itning.yunshunas.music.constant.MusicType;
 import top.itning.yunshunas.music.dto.MusicMetaInfo;
 import top.itning.yunshunas.music.service.MusicMetaInfoService;
 
 import java.io.File;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -58,15 +53,22 @@ public class MusicMetaInfoServiceImpl implements MusicMetaInfoService {
         }
 
         MusicMetaInfo musicMetaInfo = new MusicMetaInfo();
-        String name = tag.getFirst(FieldKey.TITLE);
-        String singer = tag.getFirst(FieldKey.ARTIST);
-        musicMetaInfo.setName(name);
-        musicMetaInfo.setSinger(singer);
+        String title = tag.getFirst(FieldKey.TITLE);
+        List<TagField> artists = tag.getFields(FieldKey.ARTIST);
+        if (null != artists) {
+            musicMetaInfo.setArtists(artists.stream().map(TagField::toString).collect(Collectors.toList()));
+        }
+        String album = tag.getFirst(FieldKey.ALBUM);
+        musicMetaInfo.setTitle(title);
+        musicMetaInfo.setAlbum(album);
+
         List<MusicMetaInfo.CoverPicture> coverPictures = tag.getArtworkList()
                 .stream()
                 .map(item -> {
                     MusicMetaInfo.CoverPicture coverPicture = new MusicMetaInfo.CoverPicture();
-                    coverPicture.setBinaryData(item.getBinaryData());
+                    byte[] encoded = Base64Utils.encode(item.getBinaryData());
+                    coverPicture.setBinaryData(null);
+                    coverPicture.setBase64(new String(encoded));
                     coverPicture.setMimeType(item.getMimeType());
                     coverPicture.setDescription(item.getDescription());
                     coverPicture.setLinked(item.isLinked());
