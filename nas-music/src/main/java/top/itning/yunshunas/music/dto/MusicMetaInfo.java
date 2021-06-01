@@ -13,5 +13,15 @@ import java.util.List;
 public class MusicMetaInfo {
     private String name;
     private String singer;
-    private List<Artwork> coverPictures;
+    private List<CoverPicture> coverPictures;
+
+    @Data
+    public static class CoverPicture {
+        private byte[] binaryData;
+        private String mimeType = "";
+        private String description = "";
+        private boolean isLinked = false;
+        private String imageUrl = "";
+        private int pictureType = -1;
+    }
 }

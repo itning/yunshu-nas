@@ -18,6 +18,7 @@ import top.itning.yunshunas.music.service.MusicMetaInfoService;
 import java.io.File;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author itning
@@ -27,7 +28,7 @@ import java.util.List;
 public class MusicMetaInfoServiceImpl implements MusicMetaInfoService {
 
     @Override
-    public MusicMetaInfo metaInfo(File musicFile, MusicType musicType) throws Exception{
+    public MusicMetaInfo metaInfo(File musicFile, MusicType musicType) throws Exception {
         AudioFileReader fileReader;
         switch (musicType) {
             case FLAC:
@@ -46,17 +47,25 @@ public class MusicMetaInfoServiceImpl implements MusicMetaInfoService {
         AudioFile read = fileReader.read(musicFile);
         Tag tag = read.getTag();
         String name = tag.getFirst(FieldKey.TITLE);
-        Iterator<TagField> fields = tag.getFields();
-        while (fields.hasNext()) {
-            TagField next = fields.next();
-            System.out.println(next.getId() + "::" + next);
-        }
+        String singer = tag.getFirst(FieldKey.ARTIST);
 
-        List<Artwork> artworkList = tag.getArtworkList();
+        List<MusicMetaInfo.CoverPicture> coverPictures = tag.getArtworkList()
+                .stream()
+                .map(item -> {
+                    MusicMetaInfo.CoverPicture coverPicture = new MusicMetaInfo.CoverPicture();
+                    coverPicture.setBinaryData(item.getBinaryData());
+                    coverPicture.setMimeType(item.getMimeType());
+                    coverPicture.setDescription(item.getDescription());
+                    coverPicture.setLinked(item.isLinked());
+                    coverPicture.setImageUrl(item.getImageUrl());
+                    coverPicture.setPictureType(item.getPictureType());
+                    return coverPicture;
+                })
+                .collect(Collectors.toList());
         MusicMetaInfo musicMetaInfo = new MusicMetaInfo();
         musicMetaInfo.setName(name);
-        musicMetaInfo.setSinger("");
-        musicMetaInfo.setCoverPictures(artworkList);
+        musicMetaInfo.setSinger(singer);
+        musicMetaInfo.setCoverPictures(coverPictures);
 
         return musicMetaInfo;
     }
