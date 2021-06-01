@@ -1,9 +1,13 @@
 package top.itning.yunshunas.music.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jaudiotagger.audio.AudioFile;
+import org.jaudiotagger.audio.asf.AsfFileReader;
 import org.jaudiotagger.audio.flac.FlacFileReader;
 import org.jaudiotagger.audio.generic.AudioFileReader;
 import org.jaudiotagger.audio.mp3.MP3FileReader;
+import org.jaudiotagger.audio.mp4.Mp4FileReader;
+import org.jaudiotagger.audio.ogg.OggFileReader;
 import org.jaudiotagger.audio.real.RealFileReader;
 import org.jaudiotagger.audio.wav.WavFileReader;
 import org.jaudiotagger.tag.FieldKey;
@@ -24,6 +28,7 @@ import java.util.stream.Collectors;
  * @author itning
  * @since 2021/6/1 16:38
  */
+@Slf4j
 @Service
 public class MusicMetaInfoServiceImpl implements MusicMetaInfoService {
 
@@ -42,13 +47,21 @@ public class MusicMetaInfoServiceImpl implements MusicMetaInfoService {
                 break;
             case AAC:
             default:
-                fileReader = new RealFileReader();
+                log.warn("不支持的音乐类型：{}", musicType);
+                return null;
         }
         AudioFile read = fileReader.read(musicFile);
         Tag tag = read.getTag();
+
+        if (null == tag) {
+            return null;
+        }
+
+        MusicMetaInfo musicMetaInfo = new MusicMetaInfo();
         String name = tag.getFirst(FieldKey.TITLE);
         String singer = tag.getFirst(FieldKey.ARTIST);
-
+        musicMetaInfo.setName(name);
+        musicMetaInfo.setSinger(singer);
         List<MusicMetaInfo.CoverPicture> coverPictures = tag.getArtworkList()
                 .stream()
                 .map(item -> {
@@ -62,11 +75,7 @@ public class MusicMetaInfoServiceImpl implements MusicMetaInfoService {
                     return coverPicture;
                 })
                 .collect(Collectors.toList());
-        MusicMetaInfo musicMetaInfo = new MusicMetaInfo();
-        musicMetaInfo.setName(name);
-        musicMetaInfo.setSinger(singer);
         musicMetaInfo.setCoverPictures(coverPictures);
-
         return musicMetaInfo;
     }
 
