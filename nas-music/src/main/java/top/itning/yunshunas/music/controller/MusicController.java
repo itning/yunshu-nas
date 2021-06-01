@@ -10,9 +10,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import top.itning.yunshunas.music.dto.RestModel;
+import top.itning.yunshunas.music.service.FileService;
 import top.itning.yunshunas.music.service.MusicService;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author itning
@@ -23,10 +25,12 @@ import javax.validation.constraints.NotEmpty;
 @RequestMapping("/music")
 public class MusicController {
     private final MusicService musicService;
+    private final FileService fileService;
 
     @Autowired
-    public MusicController(MusicService musicService) {
+    public MusicController(MusicService musicService, FileService fileService) {
         this.musicService = musicService;
+        this.fileService = fileService;
     }
 
     @GetMapping
@@ -50,5 +54,10 @@ public class MusicController {
     public ResponseEntity<?> searchSinger(@PageableDefault(size = 20, sort = "name", direction = Sort.Direction.ASC) Pageable page,
                                           @NotEmpty(message = "关键字不能为空") String keyword) {
         return RestModel.ok(musicService.fuzzySearchSinger(keyword, page));
+    }
+
+    @GetMapping("/metaInfo")
+    public ResponseEntity<?> metaInfo(@NotNull(message = "ID不存在") String id) {
+        return RestModel.ok(fileService.getMusicMetaInfo(id));
     }
 }

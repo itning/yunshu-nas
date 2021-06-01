@@ -1,5 +1,7 @@
 package top.itning.yunshunas.music.service;
 
+import top.itning.yunshunas.music.dto.MusicMetaInfo;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -28,4 +30,12 @@ public interface FileService {
      * @throws IOException 失败
      */
     String getLyric(String id) throws IOException;
+
+    /**
+     * 获取音乐元信息
+     *
+     * @param id 音乐ID
+     * @return 音乐元信息
+     */
+    MusicMetaInfo getMusicMetaInfo(String id);
 }

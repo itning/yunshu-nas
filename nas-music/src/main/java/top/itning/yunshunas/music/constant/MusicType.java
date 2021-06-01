@@ -35,9 +35,13 @@ public enum MusicType {
     private final String mediaType;
 
     public static Optional<String> getMediaType(int type) {
+        return getMediaTypeEnum(type).map(MusicType::getMediaType);
+    }
+
+    public static Optional<MusicType> getMediaTypeEnum(int type) {
         for (MusicType musicType : MusicType.values()) {
             if (musicType.getType() == type) {
-                return Optional.of(musicType.getMediaType());
+                return Optional.of(musicType);
             }
         }
         return Optional.empty();
