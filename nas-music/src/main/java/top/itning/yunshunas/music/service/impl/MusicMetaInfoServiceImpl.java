@@ -9,6 +9,7 @@ import org.jaudiotagger.audio.wav.WavFileReader;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagField;
+import org.jaudiotagger.tag.TagTextField;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Base64Utils;
 import top.itning.yunshunas.music.constant.MusicType;
@@ -56,7 +57,16 @@ public class MusicMetaInfoServiceImpl implements MusicMetaInfoService {
         String title = tag.getFirst(FieldKey.TITLE);
         List<TagField> artists = tag.getFields(FieldKey.ARTIST);
         if (null != artists) {
-            musicMetaInfo.setArtists(artists.stream().map(TagField::toString).collect(Collectors.toList()));
+            musicMetaInfo.setArtists(
+                    artists.stream()
+                            .map(it -> {
+                                if (it instanceof TagTextField) {
+                                    return ((TagTextField) it).getContent();
+                                }
+                                return it.toString();
+                            })
+                            .collect(Collectors.toList())
+            );
         }
         String album = tag.getFirst(FieldKey.ALBUM);
         musicMetaInfo.setTitle(title);
