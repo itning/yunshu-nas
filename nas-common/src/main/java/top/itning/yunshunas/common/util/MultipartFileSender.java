@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.springframework.http.HttpHeaders.*;
+
 /**
  * https://stackoverflow.com/questions/28427339/how-to-implement-http-byte-range-requests-in-spring-mvc
  *
@@ -220,6 +222,12 @@ public final class MultipartFileSender {
         response.setHeader("ETag", fileName);
         response.setDateHeader("Last-Modified", lastModified);
         response.setDateHeader("Expires", System.currentTimeMillis() + DEFAULT_EXPIRE_TIME);
+        String origin = request.getHeader(ORIGIN);
+        response.setHeader(ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
+        response.setHeader(ACCESS_CONTROL_ALLOW_ORIGIN, origin);
+        response.setHeader(ACCESS_CONTROL_ALLOW_METHODS, "POST,GET,OPTIONS,DELETE,PUT,PATCH");
+        response.setHeader(ACCESS_CONTROL_ALLOW_HEADERS, request.getHeader(ACCESS_CONTROL_REQUEST_HEADERS));
+        response.setIntHeader(ACCESS_CONTROL_MAX_AGE, 2592000);
 
         // Send requested file (part(s)) to client ------------------------------------------------
 
