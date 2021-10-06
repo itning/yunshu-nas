@@ -39,4 +39,12 @@ public class FileController {
     public String getLyric(@NotNull(message = "ID不存在") String id) throws IOException {
         return fileService.getLyric(id);
     }
+
+    @GetMapping("/cover")
+    public void metaInfo(@RequestHeader(required = false) String range,
+                         @NotNull(message = "ID不存在") String id,
+                         HttpServletRequest request,
+                         HttpServletResponse response) throws Exception {
+        fileService.getMusicCover(id, range, request, response);
+    }
 }

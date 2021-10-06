@@ -38,4 +38,15 @@ public interface FileService {
      * @return 音乐元信息
      */
     MusicMetaInfo getMusicMetaInfo(String id);
+
+    /**
+     * 获取第一张封面，如果有的话
+     *
+     * @param id       音乐ID
+     * @param range    请求头Range
+     * @param request  HttpServletRequest
+     * @param response HttpServletResponse
+     * @throws Exception 失败
+     */
+    void getMusicCover(String id, String range, HttpServletRequest request, HttpServletResponse response) throws Exception;
 }

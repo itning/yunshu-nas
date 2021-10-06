@@ -5,10 +5,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import top.itning.yunshunas.music.dto.MusicMetaInfo;
 import top.itning.yunshunas.music.dto.RestModel;
 import top.itning.yunshunas.music.service.FileService;
 import top.itning.yunshunas.music.service.MusicService;
@@ -58,6 +60,10 @@ public class MusicController {
 
     @GetMapping("/metaInfo")
     public ResponseEntity<?> metaInfo(@NotNull(message = "ID不存在") String id) {
-        return RestModel.ok(fileService.getMusicMetaInfo(id));
+        MusicMetaInfo metaInfo = fileService.getMusicMetaInfo(id);
+        if (null != metaInfo && !CollectionUtils.isEmpty(metaInfo.getCoverPictures())) {
+            metaInfo.getCoverPictures().forEach(item -> item.setBinaryData(null));
+        }
+        return RestModel.ok(metaInfo);
     }
 }

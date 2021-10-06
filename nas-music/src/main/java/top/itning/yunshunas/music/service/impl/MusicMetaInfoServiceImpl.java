@@ -77,7 +77,7 @@ public class MusicMetaInfoServiceImpl implements MusicMetaInfoService {
                 .map(item -> {
                     MusicMetaInfo.CoverPicture coverPicture = new MusicMetaInfo.CoverPicture();
                     byte[] encoded = Base64Utils.encode(item.getBinaryData());
-                    coverPicture.setBinaryData(null);
+                    coverPicture.setBinaryData(item.getBinaryData());
                     coverPicture.setBase64(new String(encoded));
                     coverPicture.setMimeType(item.getMimeType());
                     coverPicture.setDescription(item.getDescription());
