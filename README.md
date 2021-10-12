@@ -60,7 +60,7 @@ nohup aria2c --rpc-listen-port 6800 --enable-rpc --rpc-listen-all >aria2c.log 2>
 # 实现功能
 - [X] 点播视频文件
 
-- [X] 点播音频文件 [Angular版本](https://github.com/itning/YunShuMusicClient) [Electron版本](https://github.com/itning/YunShuMusicClientElectron)
+- [X] 点播音频文件 [Angular版本](https://github.com/itning/YunShuMusicClient) [Electron版本](https://github.com/itning/YunShuMusicClientElectron) [移动端版本](https://github.com/itning/yunshu_music)
 
 - [ ] 文件分布式存储
 
