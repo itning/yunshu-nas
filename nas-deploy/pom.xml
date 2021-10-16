@@ -24,6 +24,10 @@
             <groupId>top.itning.yunshu-nas</groupId>
             <artifactId>nas-music</artifactId>
         </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
