@@ -21,6 +21,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -35,9 +37,9 @@ class MusicTest {
     @Test
     void addMusicFilesToTheDatabaseAndCopyFiles() {
         AtomicInteger atomicInteger = new AtomicInteger();
-        File file = new File("C:\\Users\\ning\\Music");
+        File file = new File("C:\\Users\\wangn\\Music");
         Arrays.stream(Objects.requireNonNull(file.
-                listFiles((dir, name) -> MusicType.getMusicTypeFromFilePath(name).isPresent())))
+                        listFiles((dir, name) -> MusicType.getMusicTypeFromFilePath(name).isPresent())))
                 .map(f -> {
                     //noinspection OptionalGetWithoutIsPresent
                     MusicType musicType = MusicType.getMusicTypeFromFilePath(f.getPath()).get();
@@ -47,11 +49,11 @@ class MusicTest {
                     int i = name.indexOf("-");
                     int end = name.indexOf("." + musicType.name().toLowerCase());
                     // 歌曲名-歌手名
-                    String mName = name.substring(0, i).trim();
-                    String mSinger = name.substring(i + 1, end).trim();
+                    //String mName = name.substring(0, i).trim();
+                    //String mSinger = name.substring(i + 1, end).trim();
                     // 歌手-歌曲名
-                    //String mName = name.substring(i + 1, end).trim();
-                    //String mSinger = name.substring(0, i).trim();
+                    String mName = name.substring(i + 1, end).trim();
+                    String mSinger = name.substring(0, i).trim();
 
                     Music music = new Music();
                     String id = UUID.randomUUID().toString().replace("-", "");
@@ -93,7 +95,7 @@ class MusicTest {
     void addLyric() {
         File file = new File("F:\\Music");
         Arrays.stream(Objects.requireNonNull(file.
-                listFiles((dir, name) -> name.endsWith(".lrc"))))
+                        listFiles((dir, name) -> name.endsWith(".lrc"))))
                 .map(f -> {
                     String name = f.getName();
 
@@ -229,5 +231,81 @@ class MusicTest {
         File file = new File("F:\\music_yunshu\\" + musicId);
         boolean delete = file.delete();
         System.out.println(delete);
+    }
+
+    @Test
+    void testNoHaveLyric() throws Exception {
+//        File musicDir = new File("F:\\f\\music_yunshu");
+//        File lyricDir = new File("F:\\f\\lyric_yunshu");
+//        Set<String> music = Arrays.stream(musicDir.listFiles()).map(File::getName).collect(Collectors.toSet());
+//        Set<String> lyric = Arrays.stream(lyricDir.listFiles()).map(File::getName).collect(Collectors.toSet());
+//        music.removeAll(lyric);
+//        System.out.println(music.size());
+//        List<Test2.Need> needs = music.stream()
+//                .map(id -> musicRepository.findByMusicId(id))
+//                .filter(Optional::isPresent)
+//                .map(Optional::get)
+//                .map(musicItem -> new Test2.Need(musicItem.getMusicId(), musicItem.getName(), musicItem.getSinger()))
+//                .collect(Collectors.toList());
+//        needs.forEach(System.out::println);
+//        // Test2.start(needs);
+    }
+
+    @Test
+    void testJsoup() {
+        System.out.println(UUID.randomUUID().toString().replaceAll("-", ""));
+    }
+
+    @Test
+    void moveMusicAndLrc() throws IOException {
+        List<Music> musics = musicRepository.findAll();
+        File musicDir = new File("H:\\music_yunshu");
+        File lyricDir = new File("H:\\lyric_yunshu");
+        for (Music music : musics) {
+            String musicId = music.getMusicId();
+            String lyricId = music.getLyricId();
+            String musicExtensionName = MusicType.getMediaTypeEnum(music.getType()).map(it -> {
+                switch (it) {
+                    case AAC:
+                        return "aac";
+                    case MP3:
+                        return "mp3";
+                    case WAV:
+                        return "wav";
+                    case FLAC:
+                        return "flac";
+                    default:
+                        return "";
+                }
+            }).orElse("");
+            if ("".equals(musicExtensionName)) {
+                log.error("音乐：{} {} {} 扩展名匹配失败", music.getMusicId(), music.getName(), music.getLyricId());
+                continue;
+            }
+            try {
+                Files.copy(Paths.get(musicDir + File.separator + musicId), Path.of("E:\\music_yunshuV2", music.getName() + "-" + music.getSinger() + "." + musicExtensionName));
+            } catch (NoSuchFileException e) {
+                log.error("没找到文件", e);
+            }
+            try {
+                Files.copy(Paths.get(lyricDir + File.separator + lyricId), Path.of("E:\\music_yunshuV2", music.getName() + "-" + music.getSinger() + ".lrc"));
+            } catch (NoSuchFileException e) {
+                log.error("没找到文件", e);
+            }
+        }
+    }
+
+    @Test
+    void getCha() throws IOException {
+        File musicDir = new File("E:\\music_yunshuNo");
+        File lyricDir = new File("H:\\lyric_yunshu");
+        for (File file : musicDir.listFiles()) {
+            File lyricFile = new File(lyricDir + File.separator + file.getName());
+            if (lyricFile.exists()) {
+                Files.copy(Paths.get(lyricFile.toURI()), Path.of("E:\\music_yunshuNo", file.getName() + ".lrc"));
+            } else {
+                log.error("歌词不存在:{}", file.getName());
+            }
+        }
     }
 }
