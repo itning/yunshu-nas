@@ -17,7 +17,7 @@
 [![GitHub last commit](https://img.shields.io/github/last-commit/itning/yunshu-nas.svg)](https://github.com/itning/yunshu-nas/commits)
 [![GitHub release](https://img.shields.io/github/release/itning/yunshu-nas.svg)](https://github.com/itning/yunshu-nas/releases)
 [![GitHub repo size in bytes](https://img.shields.io/github/repo-size/itning/yunshu-nas.svg)](https://github.com/itning/yunshu-nas)
-![HitCount](https://hitcount.itning.top/?u=itning&r=yunshu-nas)
+[![Hits](https://hitcount.itning.top?u=itning&r=yunshu-nas)](https://github.com/itning/hit-count)
 [![language](https://img.shields.io/badge/language-JAVA-green.svg)](https://github.com/itning/yunshu-nas)
 
 </div>
@@ -60,7 +60,7 @@ nohup aria2c --rpc-listen-port 6800 --enable-rpc --rpc-listen-all >aria2c.log 2>
 # 实现功能
 - [X] 点播视频文件
 
-- [X] 点播音频文件 [Angular版本](https://github.com/itning/YunShuMusicClient) [Electron版本](https://github.com/itning/YunShuMusicClientElectron)
+- [X] 点播音频文件 [Angular版本](https://github.com/itning/YunShuMusicClient) [Electron版本](https://github.com/itning/YunShuMusicClientElectron) [移动端版本](https://github.com/itning/yunshu_music)
 
 - [ ] 文件分布式存储
 
