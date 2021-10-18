@@ -44,10 +44,15 @@
     'use strict';
     let $$ = mdui.JQ;
     let autoScroll = true;
+    let websocket;
 
     //判断当前浏览器是否支持WebSocket
     if ('WebSocket' in window) {
-        var websocket = new WebSocket("ws://" + window.location.host + "/log");
+        if (location.protocol === 'http:') {
+            websocket = new WebSocket("ws://" + window.location.host + "/log");
+        } else {
+            websocket = new WebSocket("wss://" + window.location.host + "/log");
+        }
         console.log("link success")
     } else {
         alert('Not support websocket')
