@@ -67,21 +67,21 @@ class MusicTest {
                 .collect(Collectors.toList())
                 .parallelStream()
                 .filter(musics -> {
-                    List<Music> musicList = fingAllByNameAndSinger(musics.getT1().getName(), musics.getT1().getSinger());
+                    List<Music> musicList = fingAllByNameAndSinger(musics.t1().getName(), musics.t1().getSinger());
                     if (!musicList.isEmpty()) {
                         log.error("已存在 {}", musicList);
                         return false;
                     } else {
-                        log.info("添加 {}-{}-{}", musics.getT1().getName(), musics.getT1().getSinger(), musics.getT1().getMusicId());
+                        log.info("添加 {}-{}-{}", musics.t1().getName(), musics.t1().getSinger(), musics.t1().getMusicId());
                         return true;
                     }
                 })
-                .peek(item -> musicRepository.save(item.getT1()))
+                .peek(item -> musicRepository.save(item.t1()))
                 .forEach(item -> {
                     try {
-                        int copy = FileCopyUtils.copy(item.getT2(), new File("E:\\music_yunshu\\" + item.getT1().getMusicId()));
+                        int copy = FileCopyUtils.copy(item.t2(), new File("E:\\music_yunshu\\" + item.t1().getMusicId()));
                         if (copy <= 0) {
-                            log.warn("File Copy 0 File: {} Id {}", item.getT2(), item.getT1().getMusicId());
+                            log.warn("File Copy 0 File: {} Id {}", item.t2(), item.t1().getMusicId());
                         }
                         atomicInteger.incrementAndGet();
                     } catch (Exception e) {
@@ -114,20 +114,20 @@ class MusicTest {
                     return new Tuple2<>(music, f);
                 })
                 .peek(item -> {
-                    List<Music> list = musicRepository.findAllByNameLikeAndSingerLike(item.getT1().getName(), item.getT1().getSinger());
+                    List<Music> list = musicRepository.findAllByNameLikeAndSingerLike(item.t1().getName(), item.t1().getSinger());
                     if (list.size() != 1) {
-                        log.error("list {} file {}", list.toString(), item.getT2().toString());
+                        log.error("list {} file {}", list.toString(), item.t2().toString());
                         return;
                     }
-                    item.getT1().setLyricId(list.get(0).getLyricId());
+                    item.t1().setLyricId(list.get(0).getLyricId());
                 })
-                .filter(item -> null != item.getT1().getLyricId())
+                .filter(item -> null != item.t1().getLyricId())
                 .forEach(item -> {
                     try {
-                        String str = FileUtils.readFileToString(item.getT2(), "gb2312");
+                        String str = FileUtils.readFileToString(item.t2(), "gb2312");
                         String encode = new String(str.getBytes(), StandardCharsets.UTF_8);
                         //System.out.println(encode);
-                        Files.writeString(Paths.get("F:\\lyric_yunshu\\" + item.getT1().getLyricId()), encode);
+                        Files.writeString(Paths.get("F:\\lyric_yunshu\\" + item.t1().getLyricId()), encode);
                         /*int copy = FileCopyUtils.copy(item.getT2(), new File("F:\\lyric_yunshu\\" + item.getT1().getLyricId()));
                         if (copy <= 0) {
                             log.warn("File Copy 0 File: {} Id {}", item.getT2(), item.getT1().toString());

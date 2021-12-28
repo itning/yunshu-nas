@@ -184,9 +184,9 @@ public class Video2M3u8Helper {
             }
             Tuple2<Boolean, Boolean> compliance = checkComplianceWithSpecificationsForHls(fromFile);
             if (logger.isDebugEnabled()) {
-                logger.debug("video: {} audio: {}", compliance.getT1(), compliance.getT2());
+                logger.debug("video: {} audio: {}", compliance.t1(), compliance.t2());
             }
-            String copy = videoStandardization(fromFile, toPath, compliance.getT1(), compliance.getT2());
+            String copy = videoStandardization(fromFile, toPath, compliance.t1(), compliance.t2());
             // 构建命令
             List<String> command = new ArrayList<>(16);
             command.add(ffmpegLocation);
