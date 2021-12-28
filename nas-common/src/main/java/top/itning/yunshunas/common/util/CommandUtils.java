@@ -23,9 +23,12 @@ public class CommandUtils {
         ProcessBuilder builder = new ProcessBuilder(command);
         builder.redirectErrorStream(true);
         Process process = builder.start();
-        try (InputStream inputStream = process.getInputStream();
-             InputStreamReader isr = new InputStreamReader(inputStream);
-             BufferedReader br = new BufferedReader(isr)) {
+
+        InputStream inputStream = process.getInputStream();
+        InputStreamReader isr = new InputStreamReader(inputStream);
+        BufferedReader br = new BufferedReader(isr);
+
+        try (inputStream; isr; br) {
             String line;
             while ((line = br.readLine()) != null) {
                 commandInfo.accept(line);
