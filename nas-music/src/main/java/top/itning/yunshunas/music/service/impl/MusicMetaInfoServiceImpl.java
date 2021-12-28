@@ -32,19 +32,13 @@ public class MusicMetaInfoServiceImpl implements MusicMetaInfoService {
     public MusicMetaInfo metaInfo(File musicFile, MusicType musicType) throws Exception {
         AudioFileReader fileReader;
         switch (musicType) {
-            case FLAC:
-                fileReader = new FlacFileReader();
-                break;
-            case MP3:
-                fileReader = new MP3FileReader();
-                break;
-            case WAV:
-                fileReader = new WavFileReader();
-                break;
-            case AAC:
-            default:
+            case FLAC -> fileReader = new FlacFileReader();
+            case MP3 -> fileReader = new MP3FileReader();
+            case WAV -> fileReader = new WavFileReader();
+            default -> {
                 log.warn("不支持的音乐类型：{}", musicType);
                 return null;
+            }
         }
         AudioFile read = fileReader.read(musicFile);
         Tag tag = read.getTag();
