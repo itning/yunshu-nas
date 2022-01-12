@@ -91,14 +91,14 @@ public class FileServiceImpl implements FileService {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
-        response.setHeader("Content-Type", coverPicture.getMimeType() == null ? "image/png" : coverPicture.getMimeType());
+        response.setHeader(CONTENT_TYPE, coverPicture.getMimeType() == null ? "image/png" : coverPicture.getMimeType());
         String origin = request.getHeader(ORIGIN);
         response.setHeader(ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
         response.setHeader(ACCESS_CONTROL_ALLOW_ORIGIN, origin);
         response.setHeader(ACCESS_CONTROL_ALLOW_METHODS, "POST,GET,OPTIONS,DELETE,PUT,PATCH");
         response.setHeader(ACCESS_CONTROL_ALLOW_HEADERS, request.getHeader(ACCESS_CONTROL_REQUEST_HEADERS));
         response.setIntHeader(ACCESS_CONTROL_MAX_AGE, 2592000);
-        response.setHeader("Content-Length", String.valueOf(binaryData.length));
+        response.setIntHeader(CONTENT_LENGTH, binaryData.length);
         response.setStatus(HttpStatus.OK.value());
         try (ServletOutputStream output = response.getOutputStream()) {
             output.write(binaryData);
