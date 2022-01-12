@@ -1,6 +1,6 @@
 <configuration scan="false" scanPeriod="60 seconds" debug="true">
     <!--定义日志文件的存储地址 勿在 LogBack 的配置中使用相对路径-->
-    <property name="LOG_HOME" value="/var/log/yunshu_nas.log"/>
+    <property name="LOG_HOME" value="/var/log"/>
     <!-- 彩色日志依赖的渲染类 -->
     <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
     <conversionRule conversionWord="wex"
@@ -27,9 +27,28 @@
     </appender>
     <!--输出到文件-->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_HOME}</file>
+        <file>${LOG_HOME}/yunshu_nas.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>logback.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!--只保留最近30天的日志-->
+            <maxHistory>30</maxHistory>
+            <!--日志文件的上限大小-->
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %contextName [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>${LOG_HOME}/error.log</File>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>error.%d{yyyy-MM-dd}.log</fileNamePattern>
             <!--只保留最近30天的日志-->
             <maxHistory>30</maxHistory>
             <!--日志文件的上限大小-->
@@ -44,6 +63,7 @@
     　　　
     <root level="INFO">　　　　　
         <appender-ref ref="CONSOLE"/>　
+        <appender-ref ref="ERROR"/>
         <appender-ref ref="WEB_SOCKET"/>
 <!--        <appender-ref ref="FILE"/>-->
     </root>
