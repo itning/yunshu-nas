@@ -35,6 +35,11 @@ import java.net.URI;
  */
 @Slf4j
 public class TencentCosDataSource implements MusicDataSource, LyricDataSource, CoverDataSource {
+
+    private static final String MUSIC_DIR_NAME = "music";
+    private static final String LYRIC_DIR_NAME = "lyric";
+    private static final String COVER_DIR_NAME = "cover";
+
     private final NasProperties nasProperties;
     private final COSClient cosClient;
     private TransferManager transferManager;
@@ -56,23 +61,11 @@ public class TencentCosDataSource implements MusicDataSource, LyricDataSource, C
 
     @PostConstruct
     public void init() {
-        if (StringUtils.isBlank(nasProperties.getTencentCosMusicBucketName())) {
-            throw new IllegalArgumentException("Music BucketName未配置");
+        if (StringUtils.isBlank(nasProperties.getTencentCosBucketName())) {
+            throw new IllegalArgumentException("BucketName未配置");
         }
-        if (!cosClient.doesBucketExist(nasProperties.getTencentCosMusicBucketName())) {
-            throw new IllegalArgumentException("Music BucketName不存在");
-        }
-        if (StringUtils.isBlank(nasProperties.getTencentCosLyricBucketName())) {
-            throw new IllegalArgumentException("Lyric BucketName未配置");
-        }
-        if (!cosClient.doesBucketExist(nasProperties.getTencentCosLyricBucketName())) {
-            throw new IllegalArgumentException("Lyric BucketName不存在");
-        }
-        if (StringUtils.isBlank(nasProperties.getTencentCosCoverBucketName())) {
-            throw new IllegalArgumentException("Cover BucketName未配置");
-        }
-        if (!cosClient.doesBucketExist(nasProperties.getTencentCosCoverBucketName())) {
-            throw new IllegalArgumentException("Cover BucketName不存在");
+        if (!cosClient.doesBucketExist(nasProperties.getTencentCosBucketName())) {
+            throw new IllegalArgumentException("BucketName不存在");
         }
 
         // 传入一个 threadpool, 若不传入线程池，默认 TransferManager 中会生成一个单线程的线程池。
@@ -89,7 +82,7 @@ public class TencentCosDataSource implements MusicDataSource, LyricDataSource, C
 
     @Override
     public void addMusic(File newMusicFile, MusicType musicType, String musicId) throws Exception {
-        PutObjectRequest putObjectRequest = new PutObjectRequest(nasProperties.getTencentCosMusicBucketName(), musicId, newMusicFile);
+        PutObjectRequest putObjectRequest = new PutObjectRequest(nasProperties.getTencentCosBucketName(), MUSIC_DIR_NAME + "/" + musicId, newMusicFile);
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentType(musicType.getMediaType());
         putObjectRequest.setMetadata(objectMetadata);
@@ -101,7 +94,7 @@ public class TencentCosDataSource implements MusicDataSource, LyricDataSource, C
     @Override
     public boolean deleteMusic(String musicId) {
         try {
-            cosClient.deleteObject(nasProperties.getTencentCosMusicBucketName(), musicId);
+            cosClient.deleteObject(nasProperties.getTencentCosBucketName(), MUSIC_DIR_NAME + "/" + musicId);
             return true;
         } catch (CosClientException e) {
             log.warn("腾讯云COS音乐数据源删除异常", e);
@@ -114,7 +107,10 @@ public class TencentCosDataSource implements MusicDataSource, LyricDataSource, C
 
     @Override
     public URI getMusic(String musicId) {
-        return URI.create("https://" + nasProperties.getTencentCosMusicBucketName() + ".cos." + nasProperties.getTencentCosRegionName() + ".myqcloud.com/" + musicId);
+        if (StringUtils.isNotBlank(nasProperties.getTencentCosCdnUrl())) {
+            return URI.create(nasProperties.getTencentCosCdnUrl() + "/" + MUSIC_DIR_NAME + "/" + musicId);
+        }
+        return URI.create("https://" + nasProperties.getTencentCosBucketName() + ".cos." + nasProperties.getTencentCosRegionName() + ".myqcloud.com/" + MUSIC_DIR_NAME + "/" + musicId);
     }
 
     @Override
@@ -122,7 +118,7 @@ public class TencentCosDataSource implements MusicDataSource, LyricDataSource, C
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentType("text/plain; charset=utf-8");
         objectMetadata.setContentLength(length);
-        PutObjectRequest putObjectRequest = new PutObjectRequest(nasProperties.getTencentCosLyricBucketName(), lyricId, lyricInputStream, objectMetadata);
+        PutObjectRequest putObjectRequest = new PutObjectRequest(nasProperties.getTencentCosBucketName(), LYRIC_DIR_NAME + "/" + lyricId, lyricInputStream, objectMetadata);
         Upload upload = transferManager.upload(putObjectRequest);
         UploadResult uploadResult = upload.waitForUploadResult();
         log.info("腾讯云COS歌词数据源上传结果：{}", uploadResult.getKey());
@@ -131,7 +127,7 @@ public class TencentCosDataSource implements MusicDataSource, LyricDataSource, C
     @Override
     public boolean deleteLyric(String lyricId) {
         try {
-            cosClient.deleteObject(nasProperties.getTencentCosLyricBucketName(), lyricId);
+            cosClient.deleteObject(nasProperties.getTencentCosBucketName(), LYRIC_DIR_NAME + "/" + lyricId);
             return true;
         } catch (CosClientException e) {
             log.warn("腾讯云COS歌词数据源删除异常", e);
@@ -144,7 +140,10 @@ public class TencentCosDataSource implements MusicDataSource, LyricDataSource, C
 
     @Override
     public URI getLyric(String lyricId) {
-        return URI.create("https://" + nasProperties.getTencentCosLyricBucketName() + ".cos." + nasProperties.getTencentCosRegionName() + ".myqcloud.com/" + lyricId);
+        if (StringUtils.isNotBlank(nasProperties.getTencentCosCdnUrl())) {
+            return URI.create(nasProperties.getTencentCosCdnUrl() + "/" + LYRIC_DIR_NAME + "/" + lyricId);
+        }
+        return URI.create("https://" + nasProperties.getTencentCosBucketName() + ".cos." + nasProperties.getTencentCosRegionName() + ".myqcloud.com/" + LYRIC_DIR_NAME + "/" + lyricId);
     }
 
     @Override
@@ -153,7 +152,7 @@ public class TencentCosDataSource implements MusicDataSource, LyricDataSource, C
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentType(mimeType);
         objectMetadata.setContentLength(binaryData.length);
-        PutObjectRequest putObjectRequest = new PutObjectRequest(nasProperties.getTencentCosCoverBucketName(), musicId, byteArrayInputStream, objectMetadata);
+        PutObjectRequest putObjectRequest = new PutObjectRequest(nasProperties.getTencentCosBucketName(), COVER_DIR_NAME + "/" + musicId, byteArrayInputStream, objectMetadata);
         Upload upload = transferManager.upload(putObjectRequest);
         UploadResult uploadResult = upload.waitForUploadResult();
         log.info("腾讯云COS封面数据源上传结果：{}", uploadResult.getKey());
@@ -161,13 +160,16 @@ public class TencentCosDataSource implements MusicDataSource, LyricDataSource, C
 
     @Override
     public URI getCover(String musicId) {
-        return URI.create("https://" + nasProperties.getTencentCosCoverBucketName() + ".cos." + nasProperties.getTencentCosRegionName() + ".myqcloud.com/" + musicId);
+        if (StringUtils.isNotBlank(nasProperties.getTencentCosCdnUrl())) {
+            return URI.create(nasProperties.getTencentCosCdnUrl() + "/" + COVER_DIR_NAME + "/" + musicId);
+        }
+        return URI.create("https://" + nasProperties.getTencentCosBucketName() + ".cos." + nasProperties.getTencentCosRegionName() + ".myqcloud.com/" + COVER_DIR_NAME + "/" + musicId);
     }
 
     @Override
     public boolean deleteCover(String musicId) {
         try {
-            cosClient.deleteObject(nasProperties.getTencentCosCoverBucketName(), musicId);
+            cosClient.deleteObject(nasProperties.getTencentCosBucketName(), COVER_DIR_NAME + "/" + musicId);
             return true;
         } catch (CosClientException e) {
             log.warn("腾讯云COS封面数据源删除异常", e);

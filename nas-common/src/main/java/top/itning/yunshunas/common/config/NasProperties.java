@@ -77,19 +77,14 @@ public class NasProperties {
     private String tencentCosRegionName;
 
     /**
-     * 腾讯COS 音乐 BucketName
+     * 腾讯COS BucketName
      */
-    private String tencentCosMusicBucketName;
+    private String tencentCosBucketName;
 
     /**
-     * 腾讯COS 歌词 BucketName
+     * 腾讯云内容分发网络（CDN）域名
      */
-    private String tencentCosLyricBucketName;
-
-    /**
-     * 腾讯COS 封面 BucketName
-     */
-    private String tencentCosCoverBucketName;
+    private String tencentCosCdnUrl;
 
     /**
      * 文件数据源URL前缀
