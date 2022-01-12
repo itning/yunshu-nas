@@ -55,4 +55,34 @@ public class NasProperties {
      * 基础认证忽略路径
      */
     private List<String> ignorePath;
+
+    /**
+     * 使用腾讯云COS数据源
+     */
+    private boolean enableTencentCosDataSource;
+
+    /**
+     * SECRETID和SECRETKEY请登录访问管理控制台 https://console.cloud.tencent.com/cam/capi 进行查看和管理
+     */
+    private String tencentCosSecretId;
+
+    /**
+     * SECRETID和SECRETKEY请登录访问管理控制台 https://console.cloud.tencent.com/cam/capi 进行查看和管理
+     */
+    private String tencentCosSecretKey;
+
+    /**
+     * 设置 bucket 的地域, COS 地域的简称请参照 https://cloud.tencent.com/document/product/436/6224
+     */
+    private String tencentCosRegionName;
+
+    /**
+     * 腾讯COS 音乐 BucketName
+     */
+    private String tencentCosMusicBucketName;
+
+    /**
+     * 腾讯COS 歌词 BucketName
+     */
+    private String tencentCosLyricBucketName;
 }

@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
-import top.itning.yunshunas.common.config.NasProperties;
 import top.itning.yunshunas.music.constant.MusicType;
+import top.itning.yunshunas.music.datasource.LyricDataSource;
 import top.itning.yunshunas.music.datasource.MusicDataSource;
 import top.itning.yunshunas.music.dto.MusicMetaInfo;
 import top.itning.yunshunas.music.entity.Music;
@@ -27,15 +27,18 @@ import java.util.UUID;
 public class UploadServiceImpl implements UploadService {
     private final MusicMetaInfoService musicMetaInfoService;
     private final MusicRepository musicRepository;
-    private final NasProperties nasProperties;
     private final MusicDataSource musicDataSource;
+    private final LyricDataSource lyricDataSource;
 
     @Autowired
-    public UploadServiceImpl(MusicMetaInfoService musicMetaInfoService, MusicRepository musicRepository, NasProperties nasProperties, MusicDataSource musicDataSource) {
+    public UploadServiceImpl(MusicMetaInfoService musicMetaInfoService,
+                             MusicRepository musicRepository,
+                             MusicDataSource musicDataSource,
+                             LyricDataSource lyricDataSource) {
         this.musicMetaInfoService = musicMetaInfoService;
         this.musicRepository = musicRepository;
-        this.nasProperties = nasProperties;
         this.musicDataSource = musicDataSource;
+        this.lyricDataSource = lyricDataSource;
     }
 
     @Override
@@ -61,7 +64,7 @@ public class UploadServiceImpl implements UploadService {
         if (CollectionUtils.isEmpty(musicMetaInfo.getCoverPictures())) {
             log.warn("{} 封面信息为空", file.getOriginalFilename());
         }
-        musicDataSource.add(musicTempFile, musicId);
+        musicDataSource.addMusic(musicTempFile, musicType, musicId);
         Music music = new Music();
         music.setMusicId(musicId);
         music.setName(musicMetaInfo.getTitle());
@@ -73,7 +76,7 @@ public class UploadServiceImpl implements UploadService {
             musicRepository.save(music);
             musicRepository.flush();
         } catch (Exception e) {
-            log.error("写入数据库异常，移除已经拷贝的文件：{}", musicDataSource.delete(musicId));
+            log.error("写入数据库异常，移除已经拷贝的文件：{}", musicDataSource.deleteMusic(musicId));
         }
         log.info("上传音乐文件完成，音乐ID：{}", musicId);
     }
@@ -82,10 +85,6 @@ public class UploadServiceImpl implements UploadService {
     public void uploadLyric(String musicId, MultipartFile file) throws Exception {
         Music music = musicRepository.findByMusicId(musicId).orElseThrow(() -> new IllegalArgumentException("音乐没找到：" + musicId));
         String lyricId = music.getLyricId();
-        File lyricFile = new File(nasProperties.getLyricFileDir() + File.separator + lyricId);
-        if (lyricFile.exists()) {
-            throw new IllegalArgumentException("歌词已经存在了");
-        }
-        file.transferTo(new File(nasProperties.getLyricFileDir() + File.separator + lyricId));
+        lyricDataSource.addLyric(file.getInputStream(), lyricId);
     }
 }

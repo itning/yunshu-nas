@@ -1,5 +1,7 @@
 package top.itning.yunshunas.music.datasource;
 
+import top.itning.yunshunas.music.constant.MusicType;
+
 import java.io.File;
 import java.net.URI;
 
@@ -14,10 +16,11 @@ public interface MusicDataSource {
      * 新增音乐
      *
      * @param newMusicFile 音乐文件
+     * @param musicType    音乐类型
      * @param musicId      音乐ID
      * @throws Exception 新增异常
      */
-    void add(File newMusicFile, String musicId) throws Exception;
+    void addMusic(File newMusicFile, MusicType musicType, String musicId) throws Exception;
 
     /**
      * 删除音乐
@@ -25,7 +28,7 @@ public interface MusicDataSource {
      * @param musicId 音乐ID
      * @return 删除是否成功
      */
-    boolean delete(String musicId);
+    boolean deleteMusic(String musicId);
 
     /**
      * 获取音乐
@@ -33,5 +36,5 @@ public interface MusicDataSource {
      * @param musicId 音乐ID
      * @return 音乐URI
      */
-    URI get(String musicId);
+    URI getMusic(String musicId);
 }
