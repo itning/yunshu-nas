@@ -5,6 +5,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import top.itning.yunshunas.music.converter.MusicConverter;
+import top.itning.yunshunas.music.datasource.CoverDataSource;
+import top.itning.yunshunas.music.datasource.LyricDataSource;
+import top.itning.yunshunas.music.datasource.MusicDataSource;
 import top.itning.yunshunas.music.dto.MusicDTO;
 import top.itning.yunshunas.music.repository.MusicRepository;
 import top.itning.yunshunas.music.service.MusicService;
@@ -19,15 +22,27 @@ import javax.transaction.Transactional;
 @Service
 public class MusicServiceImpl implements MusicService {
     private final MusicRepository musicRepository;
+    private final MusicDataSource musicDataSource;
+    private final LyricDataSource lyricDataSource;
+    private final CoverDataSource coverDataSource;
 
     @Autowired
-    public MusicServiceImpl(MusicRepository musicRepository) {
+    public MusicServiceImpl(MusicRepository musicRepository, MusicDataSource musicDataSource, LyricDataSource lyricDataSource, CoverDataSource coverDataSource) {
         this.musicRepository = musicRepository;
+        this.musicDataSource = musicDataSource;
+        this.lyricDataSource = lyricDataSource;
+        this.coverDataSource = coverDataSource;
     }
 
     @Override
     public Page<MusicDTO> findAll(Pageable pageable) {
-        return musicRepository.findAll(pageable).map(MusicConverter.INSTANCE::entity2dto);
+        return musicRepository.findAll(pageable).map(item -> {
+            MusicDTO musicDTO = MusicConverter.INSTANCE.entity2dto(item);
+            musicDTO.setMusicUri(musicDataSource.getMusic(musicDTO.getMusicId()));
+            musicDTO.setLyricUri(lyricDataSource.getLyric(musicDTO.getLyricId()));
+            musicDTO.setCoverUri(coverDataSource.getCover(musicDTO.getMusicId()));
+            return musicDTO;
+        });
     }
 
     @Override

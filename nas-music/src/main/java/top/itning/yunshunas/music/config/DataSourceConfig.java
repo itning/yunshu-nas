@@ -3,10 +3,11 @@ package top.itning.yunshunas.music.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import top.itning.yunshunas.common.config.NasProperties;
+import top.itning.yunshunas.music.datasource.CoverDataSource;
 import top.itning.yunshunas.music.datasource.LyricDataSource;
-import top.itning.yunshunas.music.datasource.impl.FileMusicAndLyricDataSource;
+import top.itning.yunshunas.music.datasource.impl.FileDataSource;
 import top.itning.yunshunas.music.datasource.MusicDataSource;
-import top.itning.yunshunas.music.datasource.impl.TencentCosMusicAndLyricDataSource;
+import top.itning.yunshunas.music.datasource.impl.TencentCosDataSource;
 
 /**
  * 数据源配置
@@ -20,16 +21,24 @@ public class DataSourceConfig {
     @Bean
     public MusicDataSource musicDataSource(NasProperties nasProperties) {
         if (nasProperties.isEnableTencentCosDataSource()) {
-            return new TencentCosMusicAndLyricDataSource(nasProperties);
+            return new TencentCosDataSource(nasProperties);
         }
-        return new FileMusicAndLyricDataSource(nasProperties);
+        return new FileDataSource(nasProperties);
     }
 
     @Bean
     public LyricDataSource lyricDataSource(NasProperties nasProperties) {
         if (nasProperties.isEnableTencentCosDataSource()) {
-            return new TencentCosMusicAndLyricDataSource(nasProperties);
+            return new TencentCosDataSource(nasProperties);
         }
-        return new FileMusicAndLyricDataSource(nasProperties);
+        return new FileDataSource(nasProperties);
+    }
+
+    @Bean
+    public CoverDataSource coverDataSource(NasProperties nasProperties) {
+        if (nasProperties.isEnableTencentCosDataSource()) {
+            return new TencentCosDataSource(nasProperties);
+        }
+        return new FileDataSource(nasProperties);
     }
 }

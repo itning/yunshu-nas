@@ -1,11 +1,15 @@
 package top.itning.yunshunas.music.datasource.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import top.itning.yunshunas.common.config.NasProperties;
 import top.itning.yunshunas.music.constant.MusicType;
+import top.itning.yunshunas.music.datasource.CoverDataSource;
 import top.itning.yunshunas.music.datasource.LyricDataSource;
 import top.itning.yunshunas.music.datasource.MusicDataSource;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -22,11 +26,22 @@ import java.nio.file.Paths;
  * @since 2022/1/12 11:16
  */
 @Slf4j
-public class FileMusicAndLyricDataSource implements MusicDataSource, LyricDataSource {
+public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDataSource {
+
+    @Value("${server.port}")
+    private String port;
+
     private final NasProperties nasProperties;
 
-    public FileMusicAndLyricDataSource(NasProperties nasProperties) {
+    public FileDataSource(NasProperties nasProperties) {
         this.nasProperties = nasProperties;
+    }
+
+    @PostConstruct
+    public void init() {
+        if (StringUtils.isBlank(nasProperties.getFileDataSourceUrlPrefix())) {
+            nasProperties.setFileDataSourceUrlPrefix("http://127.0.0.1:" + port);
+        }
     }
 
     @Override
@@ -54,11 +69,11 @@ public class FileMusicAndLyricDataSource implements MusicDataSource, LyricDataSo
 
     @Override
     public URI getMusic(String musicId) {
-        return URI.create("https://127.0.0.1/file?id=" + musicId);
+        return URI.create(nasProperties.getFileDataSourceUrlPrefix() + "/file?id=" + musicId);
     }
 
     @Override
-    public void addLyric(InputStream lyricInputStream, String lyricId) throws Exception {
+    public void addLyric(InputStream lyricInputStream, long length, String lyricId) throws Exception {
         File lyricFile = new File(nasProperties.getLyricFileDir() + File.separator + lyricId);
         if (lyricFile.exists()) {
             throw new IllegalArgumentException("歌词已经存在了");
@@ -77,6 +92,21 @@ public class FileMusicAndLyricDataSource implements MusicDataSource, LyricDataSo
 
     @Override
     public URI getLyric(String lyricId) {
-        return URI.create("https://127.0.0.1/file/lyric?id=" + lyricId);
+        return URI.create(nasProperties.getFileDataSourceUrlPrefix() + "/file/lyric?id=" + lyricId);
+    }
+
+    @Override
+    public void addCover(String musicId, String mimeType, byte[] binaryData) throws Exception {
+        // do nothing
+    }
+
+    @Override
+    public URI getCover(String musicId) {
+        return URI.create(nasProperties.getFileDataSourceUrlPrefix() + "/file/cover?id=" + musicId);
+    }
+
+    @Override
+    public boolean deleteCover(String musicId) {
+        return true;
     }
 }

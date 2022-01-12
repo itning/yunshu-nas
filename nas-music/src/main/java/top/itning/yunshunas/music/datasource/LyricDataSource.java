@@ -15,10 +15,11 @@ public interface LyricDataSource {
      * 添加歌词
      *
      * @param lyricInputStream 歌词内容
+     * @param length           文件大小
      * @param lyricId          歌词ID
      * @throws Exception 添加异常
      */
-    void addLyric(InputStream lyricInputStream, String lyricId) throws Exception;
+    void addLyric(InputStream lyricInputStream, long length, String lyricId) throws Exception;
 
     /**
      * 删除歌词

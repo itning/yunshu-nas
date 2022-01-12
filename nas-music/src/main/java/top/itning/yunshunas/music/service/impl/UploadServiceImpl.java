@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 import top.itning.yunshunas.music.constant.MusicType;
+import top.itning.yunshunas.music.datasource.CoverDataSource;
 import top.itning.yunshunas.music.datasource.LyricDataSource;
 import top.itning.yunshunas.music.datasource.MusicDataSource;
 import top.itning.yunshunas.music.dto.MusicMetaInfo;
@@ -29,16 +30,15 @@ public class UploadServiceImpl implements UploadService {
     private final MusicRepository musicRepository;
     private final MusicDataSource musicDataSource;
     private final LyricDataSource lyricDataSource;
+    private final CoverDataSource coverDataSource;
 
     @Autowired
-    public UploadServiceImpl(MusicMetaInfoService musicMetaInfoService,
-                             MusicRepository musicRepository,
-                             MusicDataSource musicDataSource,
-                             LyricDataSource lyricDataSource) {
+    public UploadServiceImpl(MusicMetaInfoService musicMetaInfoService, MusicRepository musicRepository, MusicDataSource musicDataSource, LyricDataSource lyricDataSource, CoverDataSource coverDataSource) {
         this.musicMetaInfoService = musicMetaInfoService;
         this.musicRepository = musicRepository;
         this.musicDataSource = musicDataSource;
         this.lyricDataSource = lyricDataSource;
+        this.coverDataSource = coverDataSource;
     }
 
     @Override
@@ -63,8 +63,22 @@ public class UploadServiceImpl implements UploadService {
         }
         if (CollectionUtils.isEmpty(musicMetaInfo.getCoverPictures())) {
             log.warn("{} 封面信息为空", file.getOriginalFilename());
+        } else {
+            MusicMetaInfo.CoverPicture coverPicture = musicMetaInfo.getCoverPictures().get(0);
+            if (coverPicture.getBinaryData() != null && coverPicture.getBinaryData().length > 0) {
+                String mimeType = coverPicture.getMimeType();
+                if (StringUtils.isBlank(mimeType)) {
+                    mimeType = "image/png";
+                }
+                coverDataSource.addCover(musicId, mimeType, coverPicture.getBinaryData());
+            }
         }
-        musicDataSource.addMusic(musicTempFile, musicType, musicId);
+        try {
+            musicDataSource.addMusic(musicTempFile, musicType, musicId);
+        } catch (Exception e) {
+            coverDataSource.deleteCover(musicId);
+            throw e;
+        }
         Music music = new Music();
         music.setMusicId(musicId);
         music.setName(musicMetaInfo.getTitle());
@@ -85,6 +99,6 @@ public class UploadServiceImpl implements UploadService {
     public void uploadLyric(String musicId, MultipartFile file) throws Exception {
         Music music = musicRepository.findByMusicId(musicId).orElseThrow(() -> new IllegalArgumentException("音乐没找到：" + musicId));
         String lyricId = music.getLyricId();
-        lyricDataSource.addLyric(file.getInputStream(), lyricId);
+        lyricDataSource.addLyric(file.getInputStream(), file.getSize(), lyricId);
     }
 }

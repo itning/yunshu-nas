@@ -85,4 +85,14 @@ public class NasProperties {
      * 腾讯COS 歌词 BucketName
      */
     private String tencentCosLyricBucketName;
+
+    /**
+     * 腾讯COS 封面 BucketName
+     */
+    private String tencentCosCoverBucketName;
+
+    /**
+     * 文件数据源URL前缀
+     */
+    private String fileDataSourceUrlPrefix;
 }
