@@ -47,17 +47,32 @@ public class MusicManageController {
         return "music_list";
     }
 
+    /**
+     * 音乐上传页面
+     *
+     * @return music_upload.html
+     */
     @GetMapping("/musicUpload")
     public String musicUpload() {
         return "music_upload";
     }
 
+    /**
+     * 音乐上传
+     *
+     * @return music_upload.html
+     */
     @PostMapping("/musicUpload")
     public String doMusicUpload(@RequestParam("file") MultipartFile file) throws Exception {
         uploadService.uploadMusic(file);
         return "music_upload";
     }
 
+    /**
+     * 歌词上传
+     *
+     * @return music_upload.html
+     */
     @PostMapping("/lyricUpload")
     public String doLyricUpload(@RequestParam("musicId") String musicId, @RequestParam("file") MultipartFile file) throws Exception {
         uploadService.uploadLyric(musicId, file);
