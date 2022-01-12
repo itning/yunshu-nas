@@ -48,18 +48,36 @@ public class MusicServiceImpl implements MusicService {
     @Override
     public Page<MusicDTO> fuzzySearch(String keyword, Pageable pageable) {
         keyword = "%" + keyword + "%";
-        return musicRepository.findAllByNameLikeOrSingerLike(keyword, keyword, pageable).map(MusicConverter.INSTANCE::entity2dto);
+        return musicRepository.findAllByNameLikeOrSingerLike(keyword, keyword, pageable).map(item -> {
+            MusicDTO musicDTO = MusicConverter.INSTANCE.entity2dto(item);
+            musicDTO.setMusicUri(musicDataSource.getMusic(musicDTO.getMusicId()));
+            musicDTO.setLyricUri(lyricDataSource.getLyric(musicDTO.getLyricId()));
+            musicDTO.setCoverUri(coverDataSource.getCover(musicDTO.getMusicId()));
+            return musicDTO;
+        });
     }
 
     @Override
     public Page<MusicDTO> fuzzySearchName(String keyword, Pageable pageable) {
         keyword = "%" + keyword + "%";
-        return musicRepository.findAllByNameLike(keyword, pageable).map(MusicConverter.INSTANCE::entity2dto);
+        return musicRepository.findAllByNameLike(keyword, pageable).map(item -> {
+            MusicDTO musicDTO = MusicConverter.INSTANCE.entity2dto(item);
+            musicDTO.setMusicUri(musicDataSource.getMusic(musicDTO.getMusicId()));
+            musicDTO.setLyricUri(lyricDataSource.getLyric(musicDTO.getLyricId()));
+            musicDTO.setCoverUri(coverDataSource.getCover(musicDTO.getMusicId()));
+            return musicDTO;
+        });
     }
 
     @Override
     public Page<MusicDTO> fuzzySearchSinger(String keyword, Pageable pageable) {
         keyword = "%" + keyword + "%";
-        return musicRepository.findAllBySingerLike(keyword, pageable).map(MusicConverter.INSTANCE::entity2dto);
+        return musicRepository.findAllBySingerLike(keyword, pageable).map(item -> {
+            MusicDTO musicDTO = MusicConverter.INSTANCE.entity2dto(item);
+            musicDTO.setMusicUri(musicDataSource.getMusic(musicDTO.getMusicId()));
+            musicDTO.setLyricUri(lyricDataSource.getLyric(musicDTO.getLyricId()));
+            musicDTO.setCoverUri(coverDataSource.getCover(musicDTO.getMusicId()));
+            return musicDTO;
+        });
     }
 }
