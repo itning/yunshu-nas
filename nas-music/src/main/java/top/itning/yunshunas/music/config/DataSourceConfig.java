@@ -21,44 +21,43 @@ import top.itning.yunshunas.music.datasource.impl.TencentCosDataSource;
 @Configuration
 public class DataSourceConfig {
 
-    @Bean
-    public MusicDataSource musicDataSource(NasProperties nasProperties) {
-        MusicDataSource musicDataSource;
+    private final MusicDataSource musicDataSource;
+    private final LyricDataSource lyricDataSource;
+    private final CoverDataSource coverDataSource;
+
+    public DataSourceConfig(NasProperties nasProperties) {
         if (nasProperties.isEnableMixedDataSource()) {
-            musicDataSource = new MixedDataSource(nasProperties);
+            MixedDataSource mixedDataSource = new MixedDataSource(nasProperties);
+            musicDataSource = mixedDataSource;
+            lyricDataSource = mixedDataSource;
+            coverDataSource = mixedDataSource;
         } else if (nasProperties.isEnableTencentCosDataSource()) {
-            musicDataSource = new TencentCosDataSource(nasProperties);
+            TencentCosDataSource tencentCosDataSource = new TencentCosDataSource(nasProperties);
+            musicDataSource = tencentCosDataSource;
+            lyricDataSource = tencentCosDataSource;
+            coverDataSource = tencentCosDataSource;
         } else {
-            musicDataSource = new FileDataSource(nasProperties);
+            FileDataSource fileDataSource = new FileDataSource(nasProperties);
+            musicDataSource = fileDataSource;
+            lyricDataSource = fileDataSource;
+            coverDataSource = fileDataSource;
         }
+    }
+
+    @Bean
+    public MusicDataSource musicDataSource() {
         log.info("MusicDataSource实现：{}", musicDataSource.getClass().getName());
         return musicDataSource;
     }
 
     @Bean
-    public LyricDataSource lyricDataSource(NasProperties nasProperties) {
-        LyricDataSource lyricDataSource;
-        if (nasProperties.isEnableMixedDataSource()) {
-            lyricDataSource = new MixedDataSource(nasProperties);
-        } else if (nasProperties.isEnableTencentCosDataSource()) {
-            lyricDataSource = new TencentCosDataSource(nasProperties);
-        } else {
-            lyricDataSource = new FileDataSource(nasProperties);
-        }
+    public LyricDataSource lyricDataSource() {
         log.info("LyricDataSource实现：{}", lyricDataSource.getClass().getName());
         return lyricDataSource;
     }
 
     @Bean
-    public CoverDataSource coverDataSource(NasProperties nasProperties) {
-        CoverDataSource coverDataSource;
-        if (nasProperties.isEnableMixedDataSource()) {
-            coverDataSource = new MixedDataSource(nasProperties);
-        } else if (nasProperties.isEnableTencentCosDataSource()) {
-            coverDataSource = new TencentCosDataSource(nasProperties);
-        } else {
-            coverDataSource = new FileDataSource(nasProperties);
-        }
+    public CoverDataSource coverDataSource() {
         log.info("CoverDataSource实现：{}", coverDataSource.getClass().getName());
         return coverDataSource;
     }
