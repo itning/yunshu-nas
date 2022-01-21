@@ -6,6 +6,7 @@ import top.itning.yunshunas.music.datasource.CoverDataSource;
 import top.itning.yunshunas.music.datasource.LyricDataSource;
 import top.itning.yunshunas.music.datasource.MusicDataSource;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
@@ -28,6 +29,13 @@ public class MixedDataSource implements MusicDataSource, LyricDataSource, CoverD
     public MixedDataSource(NasProperties nasProperties) {
         this.fileDataSource = new FileDataSource(nasProperties);
         this.tencentCosDataSource = new TencentCosDataSource(nasProperties);
+
+    }
+
+    @PostConstruct
+    public void init() {
+        this.fileDataSource.init();
+        this.tencentCosDataSource.init();
     }
 
     @Override
