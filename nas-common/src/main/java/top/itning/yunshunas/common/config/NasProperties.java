@@ -90,4 +90,10 @@ public class NasProperties {
      * 文件数据源URL前缀
      */
     private String fileDataSourceUrlPrefix;
+
+    /**
+     * 使用混合数据源：音乐数据写文件，歌词和封面写文件和腾讯云
+     * 歌词和封面从腾讯云获取，音乐文件从文件获取
+     */
+    private boolean enableMixedDataSource;
 }
