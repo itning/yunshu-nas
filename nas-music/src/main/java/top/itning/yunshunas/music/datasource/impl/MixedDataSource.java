@@ -29,7 +29,6 @@ public class MixedDataSource implements MusicDataSource, LyricDataSource, CoverD
     public MixedDataSource(NasProperties nasProperties) {
         this.fileDataSource = new FileDataSource(nasProperties);
         this.tencentCosDataSource = new TencentCosDataSource(nasProperties);
-
     }
 
     @PostConstruct
