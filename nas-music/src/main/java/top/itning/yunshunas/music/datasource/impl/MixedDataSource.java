@@ -7,6 +7,7 @@ import top.itning.yunshunas.music.datasource.LyricDataSource;
 import top.itning.yunshunas.music.datasource.MusicDataSource;
 
 import javax.annotation.PostConstruct;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
@@ -63,8 +64,9 @@ public class MixedDataSource implements MusicDataSource, LyricDataSource, CoverD
     @Override
     public void addLyric(InputStream lyricInputStream, long length, String lyricId) throws Exception {
         try {
-            fileDataSource.addLyric(lyricInputStream, length, lyricId);
-            tencentCosDataSource.addLyric(lyricInputStream, length, lyricId);
+            byte[] allBytes = lyricInputStream.readAllBytes();
+            fileDataSource.addLyric(new ByteArrayInputStream(allBytes), length, lyricId);
+            tencentCosDataSource.addLyric(new ByteArrayInputStream(allBytes), length, lyricId);
         } catch (Exception e) {
             this.deleteLyric(lyricId);
             throw e;
