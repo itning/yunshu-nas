@@ -17,7 +17,7 @@ public enum MusicType {
     /**
      * FLAC
      */
-    FLAC(1, "audio/x-flac"),
+    FLAC(1, "audio/flac"),
     /**
      * MP3
      */
