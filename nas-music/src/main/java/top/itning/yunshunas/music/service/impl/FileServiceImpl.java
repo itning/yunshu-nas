@@ -52,6 +52,7 @@ public class FileServiceImpl implements FileService {
                 .setContentType(mediaType)
                 .with(request)
                 .with(response)
+                .no304CodeReturn()
                 .serveResource();
     }
 
