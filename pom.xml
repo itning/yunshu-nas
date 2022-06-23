@@ -17,7 +17,7 @@
     </parent>
     <groupId>top.itning.yunshu-nas</groupId>
     <artifactId>nas-parent</artifactId>
-    <version>1.5.0.RELEASE</version>
+    <version>1.5.1.RELEASE</version>
     <name>yunshu-nas</name>
     <description>Yun Shu Nas Project</description>
     <url>https://github.com/itning/yunshu-nas</url>
@@ -34,9 +34,12 @@
         <java.version>17</java.version>
         <skipTests>true</skipTests>
         <commons-io.version>2.11.0</commons-io.version>
+        <commons-codec.version>1.15</commons-codec.version>
         <guava.version>31.1-jre</guava.version>
         <java-webSocket.version>1.5.3</java-webSocket.version>
         <mapstruct.version>1.5.2.Final</mapstruct.version>
+        <jaudiotagger.version>2.0.3</jaudiotagger.version>
+        <qcloud.cos_api.version>5.6.93</qcloud.cos_api.version>
     </properties>
 
     <dependencies>
@@ -180,19 +183,19 @@
             <dependency>
                 <groupId>org</groupId>
                 <artifactId>jaudiotagger</artifactId>
-                <version>2.0.3</version>
+                <version>${jaudiotagger.version}</version>
             </dependency>
             <!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
             <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
-                <version>1.15</version>
+                <version>${commons-codec.version}</version>
             </dependency>
             <!-- https://mvnrepository.com/artifact/com.qcloud/cos_api -->
             <dependency>
                 <groupId>com.qcloud</groupId>
                 <artifactId>cos_api</artifactId>
-                <version>5.6.93</version>
+                <version>${qcloud.cos_api.version}</version>
             </dependency>
 
         </dependencies>
