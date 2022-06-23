@@ -17,7 +17,7 @@ import static top.itning.yunshunas.common.util.CommandUtils.process;
 
 /**
  * @author itning
- * @date 2019/7/17 20:52
+ * @since 2019/7/17 20:52
  */
 @Component
 public class Aria2cProcess {

@@ -7,7 +7,7 @@ import java.net.URI;
 
 /**
  * @author itning
- * @date 2020/9/5 11:08
+ * @since 2020/9/5 11:08
  */
 @Data
 public class MusicDTO implements Serializable {

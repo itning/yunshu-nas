@@ -9,7 +9,7 @@ import java.util.Arrays;
 
 /**
  * @author itning
- * @date 2020/9/5 20:00
+ * @since 2020/9/5 20:00
  */
 @Configuration
 public class CustomWebMvcConfig implements WebMvcConfigurer {

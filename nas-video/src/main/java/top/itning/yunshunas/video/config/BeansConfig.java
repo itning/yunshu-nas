@@ -11,7 +11,7 @@ import javax.servlet.MultipartConfigElement;
 
 /**
  * @author itning
- * @date 2019/7/14 15:35
+ * @since 2019/7/14 15:35
  */
 @Configuration
 public class BeansConfig {

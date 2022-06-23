@@ -4,7 +4,7 @@ import lombok.Data;
 
 /**
  * @author itning
- * @date 2019/7/15 11:51
+ * @since 2019/7/15 11:51
  */
 @Data
 public class FileEntity {

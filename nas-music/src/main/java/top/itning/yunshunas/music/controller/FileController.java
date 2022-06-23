@@ -15,7 +15,7 @@ import java.io.IOException;
  * 音乐文件相关接口
  *
  * @author itning
- * @date 2019/7/14 18:48
+ * @since 2019/7/14 18:48
  */
 @CrossOrigin
 @Controller("musicFileController")

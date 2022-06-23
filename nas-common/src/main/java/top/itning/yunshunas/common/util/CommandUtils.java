@@ -9,7 +9,7 @@ import java.util.function.Consumer;
 
 /**
  * @author itning
- * @date 2019/7/17 20:56
+ * @since 2019/7/17 20:56
  */
 public class CommandUtils {
     /**

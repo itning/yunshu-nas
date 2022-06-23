@@ -20,7 +20,7 @@ import java.util.List;
 
 /**
  * @author itning
- * @date 2019/7/14 18:48
+ * @since 2019/7/14 18:48
  */
 @Controller("videoFileController")
 public class FileController {

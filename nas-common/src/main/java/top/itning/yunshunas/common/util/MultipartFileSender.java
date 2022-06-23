@@ -28,7 +28,7 @@ import static org.springframework.http.HttpHeaders.*;
  * https://stackoverflow.com/questions/28427339/how-to-implement-http-byte-range-requests-in-spring-mvc
  *
  * @author itning
- * @date 2020/9/13 0:44
+ * @since 2020/9/13 0:44
  */
 @SuppressWarnings("all")
 public final class MultipartFileSender {

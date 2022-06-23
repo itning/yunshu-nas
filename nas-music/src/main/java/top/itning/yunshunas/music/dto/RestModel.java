@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 /**
  * @author itning
- * @date 2020/9/5 12:39
+ * @since 2020/9/5 12:39
  */
 public class RestModel<T> implements Serializable {
     private int code;

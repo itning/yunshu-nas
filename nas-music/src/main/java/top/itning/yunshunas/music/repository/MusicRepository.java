@@ -10,7 +10,7 @@ import java.util.Optional;
 
 /**
  * @author itning
- * @date 2020/9/5 11:15
+ * @since 2020/9/5 11:15
  */
 public interface MusicRepository extends JpaRepository<Music, Long> {
     Page<Music> findAllByNameLikeOrSingerLike(String name, String singer, Pageable pageable);

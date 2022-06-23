@@ -23,7 +23,7 @@ import static top.itning.yunshunas.common.util.CommandUtils.process;
  * ffmpeg 4.1.3 版本测试通过
  *
  * @author itning
- * @date 2019/7/13 23:12
+ * @since 2019/7/13 23:12
  */
 public class Video2M3u8Helper {
     private static final Logger logger = LoggerFactory.getLogger(Video2M3u8Helper.class);

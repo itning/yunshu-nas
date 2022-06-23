@@ -9,7 +9,7 @@ import top.itning.yunshunas.music.entity.Music;
 
 /**
  * @author itning
- * @date 2020/9/5 11:32
+ * @since 2020/9/5 11:32
  */
 @Mapper
 public interface MusicConverter {

@@ -7,7 +7,7 @@ import top.itning.yunshunas.music.dto.MusicDTO;
 
 /**
  * @author itning
- * @date 2020/9/5 11:25
+ * @since 2020/9/5 11:25
  */
 public interface MusicService {
     /**

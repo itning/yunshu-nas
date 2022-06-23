@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @author itning
- * @date 2019/7/14 16:41
+ * @since 2019/7/14 16:41
  */
 @Component
 public class VideoTransformHandler {

@@ -2,7 +2,7 @@ package top.itning.yunshunas.video.repository;
 
 /**
  * @author itning
- * @date 2019/7/15 11:25
+ * @since 2019/7/15 11:25
  */
 public interface IVideoRepository {
     /**
