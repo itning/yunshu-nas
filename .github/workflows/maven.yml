@@ -7,8 +7,7 @@ on:
   push:
     # Sequence of patterns matched against refs/tags
     tags:
-      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
-
+      - '*'
 jobs:
   build:
 
@@ -33,7 +32,7 @@ jobs:
         body: |
             - This Release Build By Github Action.
             - [Click Me To See Change Log File.](https://github.com/${{ github.repository }}/blob/master/CHANGELOG.md)
-        draft: false
+        draft: true
         prerelease: false
     - name: Upload Release Asset
       id: upload-release-asset
