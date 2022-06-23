@@ -41,6 +41,7 @@ public final class MultipartFileSender {
     private HttpServletRequest request;
     private HttpServletResponse response;
     private String contentType;
+    private boolean enable304StatusReturn = true;
 
     public MultipartFileSender() {
     }
@@ -78,6 +79,11 @@ public final class MultipartFileSender {
         return this;
     }
 
+    public MultipartFileSender no304CodeReturn() {
+        enable304StatusReturn = false;
+        return this;
+    }
+
     public void serveResource() throws Exception {
         if (response == null || request == null) {
             return;
@@ -105,37 +111,39 @@ public final class MultipartFileSender {
 
         // Validate request headers for caching ---------------------------------------------------
 
-        // If-None-Match header should contain "*" or ETag. If so, then return 304.
-        String ifNoneMatch = request.getHeader("If-None-Match");
-        if (ifNoneMatch != null && HttpUtils.matches(ifNoneMatch, fileName)) {
-            response.setHeader("ETag", fileName); // Required in 304.
-            response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
-            return;
-        }
+        if (enable304StatusReturn) {
+            // If-None-Match header should contain "*" or ETag. If so, then return 304.
+            String ifNoneMatch = request.getHeader("If-None-Match");
+            if (ifNoneMatch != null && HttpUtils.matches(ifNoneMatch, fileName)) {
+                response.setHeader("ETag", fileName); // Required in 304.
+                response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
+                return;
+            }
 
-        // If-Modified-Since header should be greater than LastModified. If so, then return 304.
-        // This header is ignored if any If-None-Match header is specified.
-        long ifModifiedSince = request.getDateHeader("If-Modified-Since");
-        if (ifNoneMatch == null && ifModifiedSince != -1 && ifModifiedSince + 1000 > lastModified) {
-            response.setHeader("ETag", fileName); // Required in 304.
-            response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
-            return;
-        }
+            // If-Modified-Since header should be greater than LastModified. If so, then return 304.
+            // This header is ignored if any If-None-Match header is specified.
+            long ifModifiedSince = request.getDateHeader("If-Modified-Since");
+            if (ifNoneMatch == null && ifModifiedSince != -1 && ifModifiedSince + 1000 > lastModified) {
+                response.setHeader("ETag", fileName); // Required in 304.
+                response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
+                return;
+            }
 
-        // Validate request headers for resume ----------------------------------------------------
+            // Validate request headers for resume ----------------------------------------------------
 
-        // If-Match header should contain "*" or ETag. If not, then return 412.
-        String ifMatch = request.getHeader("If-Match");
-        if (ifMatch != null && !HttpUtils.matches(ifMatch, fileName)) {
-            response.sendError(HttpServletResponse.SC_PRECONDITION_FAILED);
-            return;
-        }
+            // If-Match header should contain "*" or ETag. If not, then return 412.
+            String ifMatch = request.getHeader("If-Match");
+            if (ifMatch != null && !HttpUtils.matches(ifMatch, fileName)) {
+                response.sendError(HttpServletResponse.SC_PRECONDITION_FAILED);
+                return;
+            }
 
-        // If-Unmodified-Since header should be greater than LastModified. If not, then return 412.
-        long ifUnmodifiedSince = request.getDateHeader("If-Unmodified-Since");
-        if (ifUnmodifiedSince != -1 && ifUnmodifiedSince + 1000 <= lastModified) {
-            response.sendError(HttpServletResponse.SC_PRECONDITION_FAILED);
-            return;
+            // If-Unmodified-Since header should be greater than LastModified. If not, then return 412.
+            long ifUnmodifiedSince = request.getDateHeader("If-Unmodified-Since");
+            if (ifUnmodifiedSince != -1 && ifUnmodifiedSince + 1000 <= lastModified) {
+                response.sendError(HttpServletResponse.SC_PRECONDITION_FAILED);
+                return;
+            }
         }
 
         // Validate and process range -------------------------------------------------------------
