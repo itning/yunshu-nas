@@ -28,3 +28,4 @@ build/
 
 ### VS Code ###
 .vscode/
+rebel.xml
