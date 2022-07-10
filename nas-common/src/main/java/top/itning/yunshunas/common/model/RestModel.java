@@ -1,4 +1,4 @@
-package top.itning.yunshunas.music.dto;
+package top.itning.yunshunas.common.model;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

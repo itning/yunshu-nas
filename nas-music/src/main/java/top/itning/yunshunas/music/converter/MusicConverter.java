@@ -4,6 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 import top.itning.yunshunas.music.dto.MusicDTO;
+import top.itning.yunshunas.music.dto.MusicManageDTO;
 import top.itning.yunshunas.music.entity.Music;
 
 
@@ -24,4 +25,13 @@ public interface MusicConverter {
      */
     @Mappings({})
     MusicDTO entity2dto(Music music);
+
+    /**
+     * Music转MusicManageDTO
+     *
+     * @param music MusicDTO
+     * @return DTO
+     */
+    @Mappings({})
+    MusicManageDTO music2ManageDto(Music music);
 }
