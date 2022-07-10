@@ -8,10 +8,16 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
+ * 命令行工具类
+ *
  * @author itning
  * @since 2019/7/17 20:56
  */
 public class CommandUtils {
+    private CommandUtils() {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * 执行命令
      *

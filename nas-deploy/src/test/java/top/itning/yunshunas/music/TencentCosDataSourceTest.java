@@ -16,22 +16,22 @@ import java.util.UUID;
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Slf4j
-public class TencentCosDataSourceTest {
+class TencentCosDataSourceTest {
     @Autowired
     private MusicDataSource musicDataSource;
 
     @Test
-    public void testAdd() throws Exception {
+    void testAdd() throws Exception {
         musicDataSource.addMusic(new File("C:\\Users\\wangn\\Music\\陈奕迅 - 孤勇者hires.flac"), MusicType.FLAC, UUID.randomUUID().toString().replaceAll("-", ""));
     }
 
     @Test
-    public void testDelete(){
+    void testDelete() {
         musicDataSource.deleteMusic("03b6bdca3b4444f7a17068949a9733bd");
     }
 
     @Test
-    public void testGet() {
+    void testGet() {
         System.out.println(musicDataSource.getMusic("03b6bdca3b4444f7a17068949a9733bd"));
     }
 }

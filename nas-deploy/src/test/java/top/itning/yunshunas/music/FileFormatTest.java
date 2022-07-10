@@ -17,7 +17,7 @@ import java.util.UUID;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Slf4j
-public class FileFormat {
+class FileFormatTest {
     @Autowired
     private MusicMetaInfoService musicMetaInfoService;
     @Autowired
@@ -89,6 +89,7 @@ public class FileFormat {
         }
 
     }
+
     @Test
     void test3() throws Exception {
         File file = new File("C:\\Users\\wangn\\Desktop\\a");

@@ -18,7 +18,6 @@ import top.itning.yunshunas.music.service.MusicMetaInfoService;
 
 import java.io.File;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author itning
@@ -54,12 +53,12 @@ public class MusicMetaInfoServiceImpl implements MusicMetaInfoService {
             musicMetaInfo.setArtists(
                     artists.stream()
                             .map(it -> {
-                                if (it instanceof TagTextField) {
-                                    return ((TagTextField) it).getContent();
+                                if (it instanceof TagTextField tagTextField) {
+                                    return tagTextField.getContent();
                                 }
                                 return it.toString();
                             })
-                            .collect(Collectors.toList())
+                            .toList()
             );
         }
         String album = tag.getFirst(FieldKey.ALBUM);
@@ -80,7 +79,7 @@ public class MusicMetaInfoServiceImpl implements MusicMetaInfoService {
                     coverPicture.setPictureType(item.getPictureType());
                     return coverPicture;
                 })
-                .collect(Collectors.toList());
+                .toList();
         musicMetaInfo.setCoverPictures(coverPictures);
         return musicMetaInfo;
     }

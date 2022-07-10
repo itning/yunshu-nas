@@ -10,13 +10,11 @@ import top.itning.yunshunas.music.datasource.LyricDataSource;
 import top.itning.yunshunas.music.datasource.MusicDataSource;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URI;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
@@ -54,7 +52,7 @@ public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDa
             log.info("拷贝文件从{}到{}", newMusicFile.getPath(), dest.getPath());
             destChannel.transferFrom(sourceChannel, 0, sourceChannel.size());
         } finally {
-            log.info("拷贝完成，删除临时文件，结果：{}", newMusicFile.delete());
+            log.info("拷贝完成，删除临时文件，结果：{}", deleteFile(newMusicFile.toPath()));
         }
     }
 
@@ -64,7 +62,7 @@ public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDa
         if (!dest.exists() || !dest.isFile()) {
             return false;
         }
-        return dest.delete();
+        return deleteFile(dest.toPath());
     }
 
     @Override
@@ -87,7 +85,7 @@ public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDa
         if (!lyricFile.exists() || !lyricFile.isFile()) {
             return false;
         }
-        return lyricFile.delete();
+        return deleteFile(lyricFile.toPath());
     }
 
     @Override
@@ -108,5 +106,16 @@ public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDa
     @Override
     public boolean deleteCover(String musicId) {
         return true;
+    }
+
+    private boolean deleteFile(Path path) {
+        boolean success = false;
+        try {
+            Files.delete(path);
+            success = true;
+        } catch (Exception e) {
+            log.error("删除文件失败，文件路径：{}", path, e);
+        }
+        return success;
     }
 }
