@@ -32,14 +32,14 @@ import static org.springframework.http.HttpHeaders.*;
 @Service
 public class FileServiceImpl implements FileService {
     private final MusicRepository musicRepository;
-    private final NasProperties nasProperties;
     private final MusicMetaInfoService musicMetaInfoService;
+    private final NasProperties.FileDataSourceConfig fileDataSourceConfig;
 
     @Autowired
     public FileServiceImpl(MusicRepository musicRepository, NasProperties nasProperties, MusicMetaInfoService musicMetaInfoService) {
         this.musicRepository = musicRepository;
-        this.nasProperties = nasProperties;
         this.musicMetaInfoService = musicMetaInfoService;
+        this.fileDataSourceConfig = nasProperties.getFileDataSource();
     }
 
     @Override
@@ -48,7 +48,7 @@ public class FileServiceImpl implements FileService {
                 .flatMap(music -> MusicType.getMediaType(music.getType()))
                 .orElse(MusicType.MP3.getMediaType());
         log.debug("Media Type: {}", mediaType);
-        MultipartFileSender.fromPath(Paths.get(nasProperties.getMusicFileDir(), id))
+        MultipartFileSender.fromPath(Paths.get(fileDataSourceConfig.getMusicFileDir(), id))
                 .setContentType(mediaType)
                 .with(request)
                 .with(response)
@@ -58,9 +58,9 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public String getLyric(String id) throws IOException {
-        File file = new File(nasProperties.getLyricFileDir() + File.separator + id);
+        File file = new File(fileDataSourceConfig.getLyricFileDir() + File.separator + id);
         if (file.exists()) {
-            return FileUtils.readFileToString(new File(nasProperties.getLyricFileDir() + File.separator + id), StandardCharsets.UTF_8);
+            return FileUtils.readFileToString(new File(fileDataSourceConfig.getLyricFileDir() + File.separator + id), StandardCharsets.UTF_8);
         } else {
             return "";
         }
@@ -72,7 +72,7 @@ public class FileServiceImpl implements FileService {
                 .flatMap(music -> MusicType.getMediaTypeEnum(music.getType()))
                 .orElse(MusicType.MP3);
         try {
-            return musicMetaInfoService.metaInfo(new File(nasProperties.getMusicFileDir() + File.separator + id), musicType);
+            return musicMetaInfoService.metaInfo(new File(fileDataSourceConfig.getMusicFileDir() + File.separator + id), musicType);
         } catch (Exception e) {
             log.error("获取音乐信息失败", e);
         }

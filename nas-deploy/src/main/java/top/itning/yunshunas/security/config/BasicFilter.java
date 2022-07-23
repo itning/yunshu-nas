@@ -26,9 +26,11 @@ import java.nio.charset.StandardCharsets;
 public class BasicFilter extends OncePerRequestFilter {
     private final NasProperties nasProperties;
     private static final AntPathMatcher ANT_PATH_MATCHER = new AntPathMatcher();
+    private final NasProperties.BasicAuthConfig basicAuthConfig;
 
     public BasicFilter(NasProperties nasProperties) {
         this.nasProperties = nasProperties;
+        this.basicAuthConfig = nasProperties.getBasicAuth();
     }
 
     @Override
@@ -37,7 +39,7 @@ public class BasicFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        if (nasProperties.getIgnorePath().stream().anyMatch(path -> ANT_PATH_MATCHER.match(path, request.getRequestURI()))) {
+        if (basicAuthConfig.getIgnorePath().stream().anyMatch(path -> ANT_PATH_MATCHER.match(path, request.getRequestURI()))) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -48,7 +50,7 @@ public class BasicFilter extends OncePerRequestFilter {
                 byte[] decodeBase64 = Base64.decodeBase64(authString);
                 String[] usernameAndPassword = new String(decodeBase64, StandardCharsets.UTF_8).split(":");
                 if (usernameAndPassword.length == 2) {
-                    if (nasProperties.getBasicAuthUsername().equals(usernameAndPassword[0]) && nasProperties.getBasicAuthPassword().equals(usernameAndPassword[1])) {
+                    if (basicAuthConfig.getUsername().equals(usernameAndPassword[0]) && basicAuthConfig.getPassword().equals(usernameAndPassword[1])) {
                         filterChain.doFilter(request, response);
                         return;
                     } else {

@@ -2,15 +2,16 @@ package top.itning.yunshunas.music.datasource.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
 import top.itning.yunshunas.common.config.NasProperties;
 import top.itning.yunshunas.music.constant.MusicType;
 import top.itning.yunshunas.music.datasource.CoverDataSource;
 import top.itning.yunshunas.music.datasource.LyricDataSource;
 import top.itning.yunshunas.music.datasource.MusicDataSource;
 
-import javax.annotation.PostConstruct;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.net.URI;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
@@ -26,25 +27,24 @@ import java.nio.file.Paths;
 @Slf4j
 public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDataSource {
 
-    @Value("${server.port}")
-    private String port;
+    protected final NasProperties nasProperties;
+    protected final NasProperties.FileDataSourceConfig fileDataSourceConfig;
 
-    private final NasProperties nasProperties;
-
-    public FileDataSource(NasProperties nasProperties) {
+    public FileDataSource(NasProperties nasProperties, String port) {
         this.nasProperties = nasProperties;
-    }
+        this.fileDataSourceConfig = nasProperties.getFileDataSource();
 
-    @PostConstruct
-    public void init() {
-        if (StringUtils.isBlank(nasProperties.getFileDataSourceUrlPrefix())) {
-            nasProperties.setFileDataSourceUrlPrefix("http://127.0.0.1:" + port);
+        if (StringUtils.isBlank(fileDataSourceConfig.getUrlPrefix())) {
+            fileDataSourceConfig.setUrlPrefix("http://127.0.0.1:" + port);
+        }
+        if (fileDataSourceConfig.getUrlPrefix().endsWith("/")) {
+            fileDataSourceConfig.setUrlPrefix(fileDataSourceConfig.getUrlPrefix().substring(0, fileDataSourceConfig.getUrlPrefix().length() - 1));
         }
     }
 
     @Override
     public void addMusic(File newMusicFile, MusicType musicType, String musicId) throws Exception {
-        File dest = new File(nasProperties.getMusicFileDir() + File.separator + musicId);
+        File dest = new File(fileDataSourceConfig.getMusicFileDir() + File.separator + musicId);
         try (FileInputStream in = new FileInputStream(newMusicFile);
              FileChannel sourceChannel = in.getChannel();
              FileOutputStream out = new FileOutputStream(dest);
@@ -58,7 +58,7 @@ public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDa
 
     @Override
     public boolean deleteMusic(String musicId) {
-        File dest = new File(nasProperties.getMusicFileDir() + File.separator + musicId);
+        File dest = new File(fileDataSourceConfig.getMusicFileDir() + File.separator + musicId);
         if (!dest.exists() || !dest.isFile()) {
             return false;
         }
@@ -67,21 +67,21 @@ public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDa
 
     @Override
     public URI getMusic(String musicId) {
-        return URI.create(nasProperties.getFileDataSourceUrlPrefix() + "/file?id=" + musicId);
+        return URI.create(fileDataSourceConfig.getUrlPrefix() + "/file?id=" + musicId);
     }
 
     @Override
     public void addLyric(InputStream lyricInputStream, long length, String lyricId) throws Exception {
-        File lyricFile = new File(nasProperties.getLyricFileDir() + File.separator + lyricId);
+        File lyricFile = new File(fileDataSourceConfig.getLyricFileDir() + File.separator + lyricId);
         if (lyricFile.exists()) {
             throw new IllegalArgumentException("歌词已经存在了");
         }
-        Files.copy(lyricInputStream, Paths.get(nasProperties.getLyricFileDir(), lyricId));
+        Files.copy(lyricInputStream, Paths.get(fileDataSourceConfig.getLyricFileDir(), lyricId));
     }
 
     @Override
     public boolean deleteLyric(String lyricId) {
-        File lyricFile = new File(nasProperties.getLyricFileDir() + File.separator + lyricId);
+        File lyricFile = new File(fileDataSourceConfig.getLyricFileDir() + File.separator + lyricId);
         if (!lyricFile.exists() || !lyricFile.isFile()) {
             return false;
         }
@@ -90,7 +90,7 @@ public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDa
 
     @Override
     public URI getLyric(String lyricId) {
-        return URI.create(nasProperties.getFileDataSourceUrlPrefix() + "/file/lyric?id=" + lyricId);
+        return URI.create(fileDataSourceConfig.getUrlPrefix() + "/file/lyric?id=" + lyricId);
     }
 
     @Override
@@ -100,7 +100,7 @@ public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDa
 
     @Override
     public URI getCover(String musicId) {
-        return URI.create(nasProperties.getFileDataSourceUrlPrefix() + "/file/cover?id=" + musicId);
+        return URI.create(fileDataSourceConfig.getUrlPrefix() + "/file/cover?id=" + musicId);
     }
 
     @Override
