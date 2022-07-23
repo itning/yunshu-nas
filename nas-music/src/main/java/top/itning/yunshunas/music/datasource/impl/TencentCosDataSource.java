@@ -21,7 +21,6 @@ import top.itning.yunshunas.music.datasource.CoverDataSource;
 import top.itning.yunshunas.music.datasource.LyricDataSource;
 import top.itning.yunshunas.music.datasource.MusicDataSource;
 
-import javax.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
@@ -42,7 +41,7 @@ public class TencentCosDataSource implements MusicDataSource, LyricDataSource, C
 
     private final COSClient cosClient;
     private final NasProperties.TencentCosDataSourceConfig tencentCosDataSourceConfig;
-    private TransferManager transferManager;
+    private final TransferManager transferManager;
 
     public TencentCosDataSource(NasProperties nasProperties) {
         this.tencentCosDataSourceConfig = nasProperties.getTencentCosDataSource();
@@ -57,10 +56,7 @@ public class TencentCosDataSource implements MusicDataSource, LyricDataSource, C
         ClientConfig clientConfig = new ClientConfig(region);
         clientConfig.setHttpProtocol(HttpProtocol.https);
         cosClient = new COSClient(cred, clientConfig);
-    }
 
-    @PostConstruct
-    public void init() {
         if (StringUtils.isBlank(tencentCosDataSourceConfig.getBucketName())) {
             throw new IllegalArgumentException("BucketName未配置");
         }

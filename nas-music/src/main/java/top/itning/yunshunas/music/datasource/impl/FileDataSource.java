@@ -2,15 +2,16 @@ package top.itning.yunshunas.music.datasource.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
 import top.itning.yunshunas.common.config.NasProperties;
 import top.itning.yunshunas.music.constant.MusicType;
 import top.itning.yunshunas.music.datasource.CoverDataSource;
 import top.itning.yunshunas.music.datasource.LyricDataSource;
 import top.itning.yunshunas.music.datasource.MusicDataSource;
 
-import javax.annotation.PostConstruct;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.net.URI;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
@@ -26,19 +27,13 @@ import java.nio.file.Paths;
 @Slf4j
 public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDataSource {
 
-    @Value("${server.port}")
-    private String port;
-
     protected final NasProperties nasProperties;
     protected final NasProperties.FileDataSourceConfig fileDataSourceConfig;
 
-    public FileDataSource(NasProperties nasProperties) {
+    public FileDataSource(NasProperties nasProperties, String port) {
         this.nasProperties = nasProperties;
         this.fileDataSourceConfig = nasProperties.getFileDataSource();
-    }
 
-    @PostConstruct
-    public void init() {
         if (StringUtils.isBlank(fileDataSourceConfig.getUrlPrefix())) {
             fileDataSourceConfig.setUrlPrefix("http://127.0.0.1:" + port);
         }

@@ -5,7 +5,6 @@ import org.apache.commons.lang3.StringUtils;
 import top.itning.yunshunas.common.config.NasProperties;
 import top.itning.yunshunas.music.constant.MusicType;
 
-import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -26,13 +25,10 @@ public class BackupFileDataSource extends FileDataSource {
 
     private final NasProperties.BackupFileDataSourceConfig backupFileDataSourceConfig;
 
-    public BackupFileDataSource(NasProperties nasProperties) {
-        super(nasProperties);
+    public BackupFileDataSource(NasProperties nasProperties, String port) {
+        super(nasProperties, port);
         this.backupFileDataSourceConfig = nasProperties.getBackupFileDataSource();
-    }
 
-    @PostConstruct
-    public void init() {
         if (StringUtils.isAnyBlank(backupFileDataSourceConfig.getMusicFileDir(), backupFileDataSourceConfig.getLyricFileDir())) {
             throw new IllegalArgumentException("Backup MusicFileDir or LyricFileDir is null");
         }
