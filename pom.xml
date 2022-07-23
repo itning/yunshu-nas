@@ -12,12 +12,12 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.1</version>
+        <version>2.7.2</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>top.itning.yunshu-nas</groupId>
     <artifactId>nas-parent</artifactId>
-    <version>1.5.1.RELEASE</version>
+    <version>1.6.0.RELEASE</version>
     <name>yunshu-nas</name>
     <description>Yun Shu Nas Project</description>
     <url>https://github.com/itning/yunshu-nas</url>
@@ -39,7 +39,7 @@
         <java-webSocket.version>1.5.3</java-webSocket.version>
         <mapstruct.version>1.5.2.Final</mapstruct.version>
         <jaudiotagger.version>2.0.3</jaudiotagger.version>
-        <qcloud.cos_api.version>5.6.95</qcloud.cos_api.version>
+        <qcloud.cos_api.version>5.6.98</qcloud.cos_api.version>
     </properties>
 
     <dependencies>

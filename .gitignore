@@ -29,3 +29,5 @@ build/
 ### VS Code ###
 .vscode/
 rebel.xml
+application-prod.properties
+pom.xml.versionsBackup
