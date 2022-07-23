@@ -42,6 +42,9 @@ public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDa
         if (StringUtils.isBlank(fileDataSourceConfig.getUrlPrefix())) {
             fileDataSourceConfig.setUrlPrefix("http://127.0.0.1:" + port);
         }
+        if (fileDataSourceConfig.getUrlPrefix().endsWith("/")) {
+            fileDataSourceConfig.setUrlPrefix(fileDataSourceConfig.getUrlPrefix().substring(0, fileDataSourceConfig.getUrlPrefix().length() - 1));
+        }
     }
 
     @Override
