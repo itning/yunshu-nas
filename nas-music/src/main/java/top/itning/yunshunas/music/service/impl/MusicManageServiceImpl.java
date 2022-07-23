@@ -132,4 +132,34 @@ public class MusicManageServiceImpl implements MusicManageService {
         musicDTO.setCoverUri(coverDataSource.getCover(musicDTO.getMusicId()));
         return musicDTO;
     }
+
+    @Override
+    public MusicDTO addMusic(MusicChangeDTO music) throws Exception {
+        if (Objects.isNull(music)) {
+            throw new IllegalArgumentException("参数不能为空");
+        }
+        MultipartFile musicFile = music.getMusicFile();
+        if (null == musicFile) {
+            throw new IllegalArgumentException("音乐文件不能为空");
+        }
+        MusicDTO musicDTO = uploadService.uploadMusic(musicFile);
+        MultipartFile lyricFile = music.getLyricFile();
+        if (null != lyricFile) {
+            uploadService.uploadLyric(musicDTO.getMusicId(), lyricFile);
+        }
+        return musicDTO;
+    }
+
+    @Override
+    public void deleteMusic(String musicId) {
+        if (StringUtils.isBlank(musicId)) {
+            throw new IllegalArgumentException("音乐ID不能为空");
+        }
+        Music music = musicRepository.findByMusicId(musicId).orElseThrow(() -> new IllegalArgumentException("音乐不存在"));
+        musicDataSource.deleteMusic(musicId);
+        lyricDataSource.deleteLyric(music.getLyricId());
+        coverDataSource.deleteCover(music.getMusicId());
+        musicRepository.delete(music);
+        musicRepository.flush();
+    }
 }

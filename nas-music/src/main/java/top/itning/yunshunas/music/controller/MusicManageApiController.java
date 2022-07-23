@@ -10,6 +10,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import top.itning.yunshunas.common.model.RestModel;
 import top.itning.yunshunas.music.dto.MusicChangeDTO;
+import top.itning.yunshunas.music.dto.MusicDTO;
 import top.itning.yunshunas.music.dto.MusicManageDTO;
 import top.itning.yunshunas.music.service.MusicManageService;
 
@@ -74,8 +75,31 @@ public class MusicManageApiController {
      * @return 修改结果
      */
     @PostMapping("/edit")
-    public ResponseEntity<RestModel<String>> editMusic(@ModelAttribute MusicChangeDTO music) throws Exception {
-        musicManageService.editMusic(music);
+    public ResponseEntity<RestModel<MusicDTO>> editMusic(@ModelAttribute MusicChangeDTO music) throws Exception {
+        return RestModel.ok(musicManageService.editMusic(music));
+    }
+
+    /**
+     * 新增音乐
+     *
+     * @param music 音乐信息
+     * @return 新增结果
+     * @throws Exception 新增异常
+     */
+    @PostMapping("/add")
+    public ResponseEntity<RestModel<MusicDTO>> addMusic(@ModelAttribute MusicChangeDTO music) throws Exception {
+        return RestModel.created(musicManageService.addMusic(music));
+    }
+
+    /**
+     * 删除音乐
+     *
+     * @param id 音乐ID
+     * @return 删除结果
+     */
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<RestModel<String>> deleteMusic(@NotEmpty(message = "音乐ID不能为空") @PathVariable String id) {
+        musicManageService.deleteMusic(id);
         return RestModel.ok("success");
     }
 }

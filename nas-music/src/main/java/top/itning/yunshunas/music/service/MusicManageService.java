@@ -46,4 +46,20 @@ public interface MusicManageService {
      * @throws Exception 上传失败
      */
     MusicDTO editMusic(MusicChangeDTO music) throws Exception;
+
+    /**
+     * 新增音乐
+     *
+     * @param music 音乐信息
+     * @return 新增结果
+     * @throws Exception 新增失败
+     */
+    MusicDTO addMusic(MusicChangeDTO music) throws Exception;
+
+    /**
+     * 删除音乐
+     *
+     * @param musicId 音乐ID
+     */
+    void deleteMusic(String musicId);
 }
