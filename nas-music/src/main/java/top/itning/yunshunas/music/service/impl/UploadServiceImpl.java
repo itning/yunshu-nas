@@ -7,9 +7,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 import top.itning.yunshunas.music.constant.MusicType;
+import top.itning.yunshunas.music.converter.MusicConverter;
 import top.itning.yunshunas.music.datasource.CoverDataSource;
 import top.itning.yunshunas.music.datasource.LyricDataSource;
 import top.itning.yunshunas.music.datasource.MusicDataSource;
+import top.itning.yunshunas.music.dto.MusicDTO;
 import top.itning.yunshunas.music.dto.MusicMetaInfo;
 import top.itning.yunshunas.music.entity.Music;
 import top.itning.yunshunas.music.repository.MusicRepository;
@@ -42,7 +44,7 @@ public class UploadServiceImpl implements UploadService {
     }
 
     @Override
-    public void uploadMusic(MultipartFile file) throws Exception {
+    public MusicDTO uploadMusic(MultipartFile file) throws Exception {
         String musicId = UUID.randomUUID().toString().replaceAll("-", "");
         File musicTempFile = new File(System.getProperty("java.io.tmpdir") + File.separator + musicId);
         file.transferTo(musicTempFile);
@@ -93,6 +95,11 @@ public class UploadServiceImpl implements UploadService {
             log.error("写入数据库异常，移除已经拷贝的文件：{}", musicDataSource.deleteMusic(musicId));
         }
         log.info("上传音乐文件完成，音乐ID：{}", musicId);
+        MusicDTO musicDTO = MusicConverter.INSTANCE.entity2dto(music);
+        musicDTO.setMusicUri(musicDataSource.getMusic(musicDTO.getMusicId()));
+        musicDTO.setLyricUri(lyricDataSource.getLyric(musicDTO.getLyricId()));
+        musicDTO.setCoverUri(coverDataSource.getCover(musicDTO.getMusicId()));
+        return musicDTO;
     }
 
     @Override

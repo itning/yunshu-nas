@@ -1,6 +1,7 @@
 package top.itning.yunshunas.music.service;
 
 import org.springframework.web.multipart.MultipartFile;
+import top.itning.yunshunas.music.dto.MusicDTO;
 
 /**
  * @author itning
@@ -11,9 +12,10 @@ public interface UploadService {
      * 上传音乐
      *
      * @param file 文件
+     * @return 上传的音乐信息
      * @throws Exception 上传出错
      */
-    void uploadMusic(MultipartFile file) throws Exception;
+    MusicDTO uploadMusic(MultipartFile file) throws Exception;
 
     /**
      * 上传歌词
