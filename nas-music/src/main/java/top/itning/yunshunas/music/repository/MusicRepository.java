@@ -23,6 +23,8 @@ public interface MusicRepository extends JpaRepository<Music, Long> {
 
     boolean existsByName(String name);
 
+    boolean existsByMusicId(String musicId);
+
     void deleteByMusicId(String musicId);
 
     List<Music> findAllByNameLikeAndSingerLike(String name, String singer);

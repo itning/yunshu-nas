@@ -2,6 +2,8 @@ package top.itning.yunshunas.music.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import top.itning.yunshunas.music.dto.MusicChangeDTO;
+import top.itning.yunshunas.music.dto.MusicDTO;
 import top.itning.yunshunas.music.dto.MusicManageDTO;
 
 /**
@@ -35,4 +37,13 @@ public interface MusicManageService {
      * @return 音乐
      */
     MusicManageDTO getOneMusic(String musicId);
+
+    /**
+     * 修改音乐
+     *
+     * @param music 修改信息
+     * @return 修改结果
+     * @throws Exception 上传失败
+     */
+    MusicDTO editMusic(MusicChangeDTO music) throws Exception;
 }

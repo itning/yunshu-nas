@@ -103,9 +103,73 @@ public class UploadServiceImpl implements UploadService {
     }
 
     @Override
+    public MusicDTO editMusic(String musicId, MultipartFile file) throws Exception {
+
+        Music music = musicRepository.findByMusicId(musicId).orElseThrow(() -> new IllegalArgumentException("音乐不存在"));
+
+        File musicTempFile = new File(System.getProperty("java.io.tmpdir") + File.separator + musicId);
+        file.transferTo(musicTempFile);
+
+        MusicType musicType = MusicType.getMusicTypeFromFilePath(file.getOriginalFilename()).orElseThrow(() -> new IllegalArgumentException("不支持的文件类型"));
+        MusicMetaInfo musicMetaInfo = musicMetaInfoService.metaInfo(musicTempFile, musicType);
+        if (null == musicMetaInfo) {
+            throw new IllegalArgumentException("音乐标签数据解析失败");
+        }
+        if (StringUtils.isBlank(musicMetaInfo.getTitle())) {
+            throw new IllegalArgumentException("音乐标题为空");
+        }
+        if (CollectionUtils.isEmpty(musicMetaInfo.getArtists())) {
+            throw new IllegalArgumentException("艺术家为空");
+        }
+        if (StringUtils.isBlank(musicMetaInfo.getAlbum())) {
+            log.warn("{} 专辑信息为空", file.getOriginalFilename());
+        }
+        if (CollectionUtils.isEmpty(musicMetaInfo.getCoverPictures())) {
+            log.warn("{} 封面信息为空", file.getOriginalFilename());
+        } else {
+            MusicMetaInfo.CoverPicture coverPicture = musicMetaInfo.getCoverPictures().get(0);
+            if (coverPicture.getBinaryData() != null && coverPicture.getBinaryData().length > 0) {
+                String mimeType = coverPicture.getMimeType();
+                if (StringUtils.isBlank(mimeType)) {
+                    mimeType = "image/png";
+                }
+                coverDataSource.addCover(musicId, mimeType, coverPicture.getBinaryData());
+            }
+        }
+        musicDataSource.deleteMusic(musicId);
+        musicDataSource.addMusic(musicTempFile, musicType, musicId);
+
+        music.setName(musicMetaInfo.getTitle());
+        music.setSinger(musicMetaInfo.getArtists().get(0));
+        music.setType(musicType.getType());
+        music.setGmtModified(null);
+        log.info("写入数据库：{}", music);
+        try {
+            musicRepository.save(music);
+            musicRepository.flush();
+        } catch (Exception e) {
+            log.error("写入数据库异常，移除已经拷贝的文件：{}", musicDataSource.deleteMusic(musicId));
+        }
+        log.info("修改音乐文件完成，音乐ID：{}", musicId);
+        MusicDTO musicDTO = MusicConverter.INSTANCE.entity2dto(music);
+        musicDTO.setMusicUri(musicDataSource.getMusic(musicDTO.getMusicId()));
+        musicDTO.setLyricUri(lyricDataSource.getLyric(musicDTO.getLyricId()));
+        musicDTO.setCoverUri(coverDataSource.getCover(musicDTO.getMusicId()));
+        return musicDTO;
+    }
+
+    @Override
     public void uploadLyric(String musicId, MultipartFile file) throws Exception {
         Music music = musicRepository.findByMusicId(musicId).orElseThrow(() -> new IllegalArgumentException("音乐没找到：" + musicId));
         String lyricId = music.getLyricId();
+        lyricDataSource.addLyric(file.getInputStream(), file.getSize(), lyricId);
+    }
+
+    @Override
+    public void editLyric(String musicId, MultipartFile file) throws Exception {
+        Music music = musicRepository.findByMusicId(musicId).orElseThrow(() -> new IllegalArgumentException("音乐没找到：" + musicId));
+        String lyricId = music.getLyricId();
+        lyricDataSource.deleteLyric(lyricId);
         lyricDataSource.addLyric(file.getInputStream(), file.getSize(), lyricId);
     }
 }

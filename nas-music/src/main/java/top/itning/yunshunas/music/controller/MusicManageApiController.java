@@ -8,8 +8,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import top.itning.yunshunas.common.model.RestModel;
+import top.itning.yunshunas.music.dto.MusicChangeDTO;
 import top.itning.yunshunas.music.dto.MusicManageDTO;
 import top.itning.yunshunas.music.service.MusicManageService;
 
@@ -70,22 +70,12 @@ public class MusicManageApiController {
     /**
      * 修改音乐
      *
-     * @param musicFile 音乐文件
-     * @param lyricFile 歌词文件
-     * @param music     音乐
+     * @param music 音乐信息
      * @return 修改结果
      */
-    @PostMapping(value = "/edit", consumes = {"multipart/form-data"})
-    public ResponseEntity<RestModel<String>> editMusic(@RequestPart(value = "musicFile", required = false) MultipartFile musicFile,
-                                                       @RequestPart(value = "lyricFile", required = false) MultipartFile lyricFile,
-                                                       @RequestPart(value = "music", required = false) MusicManageDTO music) {
-        System.out.println(musicFile.getName());
-        System.out.println(musicFile.getContentType());
-        System.out.println(musicFile.getSize());
-        System.out.println(music);
-        System.out.println(lyricFile.getName());
-        System.out.println(lyricFile.getContentType());
-        System.out.println(lyricFile.getSize());
+    @PostMapping("/edit")
+    public ResponseEntity<RestModel<String>> editMusic(@ModelAttribute MusicChangeDTO music) throws Exception {
+        musicManageService.editMusic(music);
         return RestModel.ok("success");
     }
 }

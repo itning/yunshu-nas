@@ -18,6 +18,16 @@ public interface UploadService {
     MusicDTO uploadMusic(MultipartFile file) throws Exception;
 
     /**
+     * 修改音乐
+     *
+     * @param musicId 音乐ID
+     * @param file    文件
+     * @return 修改的音乐信息
+     * @throws Exception 修改出错
+     */
+    MusicDTO editMusic(String musicId, MultipartFile file) throws Exception;
+
+    /**
      * 上传歌词
      *
      * @param musicId 歌词对应的歌曲ID
@@ -25,4 +35,13 @@ public interface UploadService {
      * @throws Exception 上传出错
      */
     void uploadLyric(String musicId, MultipartFile file) throws Exception;
+
+    /**
+     * 修改歌词
+     *
+     * @param musicId 歌词对应的歌曲ID
+     * @param file    文件
+     * @throws Exception 修改出错
+     */
+    void editLyric(String musicId, MultipartFile file) throws Exception;
 }
