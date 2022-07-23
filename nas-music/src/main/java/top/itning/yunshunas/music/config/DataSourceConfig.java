@@ -7,6 +7,7 @@ import top.itning.yunshunas.common.config.NasProperties;
 import top.itning.yunshunas.music.datasource.CoverDataSource;
 import top.itning.yunshunas.music.datasource.LyricDataSource;
 import top.itning.yunshunas.music.datasource.MusicDataSource;
+import top.itning.yunshunas.music.datasource.impl.BackupFileDataSource;
 import top.itning.yunshunas.music.datasource.impl.FileDataSource;
 import top.itning.yunshunas.music.datasource.impl.MixedDataSource;
 import top.itning.yunshunas.music.datasource.impl.TencentCosDataSource;
@@ -36,6 +37,11 @@ public class DataSourceConfig {
             musicDataSource = tencentCosDataSource;
             lyricDataSource = tencentCosDataSource;
             coverDataSource = tencentCosDataSource;
+        } else if (nasProperties.isEnableBackupFileDataSource()) {
+            BackupFileDataSource backupFileDataSource = new BackupFileDataSource(nasProperties);
+            musicDataSource = backupFileDataSource;
+            lyricDataSource = backupFileDataSource;
+            coverDataSource = backupFileDataSource;
         } else {
             FileDataSource fileDataSource = new FileDataSource(nasProperties);
             musicDataSource = fileDataSource;

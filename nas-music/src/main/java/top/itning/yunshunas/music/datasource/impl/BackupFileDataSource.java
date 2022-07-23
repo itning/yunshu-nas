@@ -34,7 +34,7 @@ public class BackupFileDataSource extends FileDataSource {
     @PostConstruct
     public void init() {
         if (StringUtils.isAnyBlank(backupFileDataSourceConfig.getMusicFileDir(), backupFileDataSourceConfig.getLyricFileDir())) {
-            throw new IllegalArgumentException("Backup MusicFileDir or backupLyricFileDir is null");
+            throw new IllegalArgumentException("Backup MusicFileDir or LyricFileDir is null");
         }
     }
 
