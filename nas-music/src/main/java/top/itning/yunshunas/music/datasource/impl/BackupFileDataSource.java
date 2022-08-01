@@ -37,7 +37,7 @@ public class BackupFileDataSource extends FileDataSource {
     @Override
     public void addMusic(File newMusicFile, MusicType musicType, String musicId) throws Exception {
         super.addMusic(newMusicFile, musicType, musicId);
-        File sourceFile = new File(backupFileDataSourceConfig.getMusicFileDir() + File.separator + musicId);
+        File sourceFile = new File(fileDataSourceConfig.getMusicFileDir() + File.separator + musicId);
         File targetFile = new File(backupFileDataSourceConfig.getMusicFileDir() + File.separator + musicId);
         try (FileInputStream in = new FileInputStream(sourceFile);
              FileChannel sourceChannel = in.getChannel();
@@ -53,6 +53,26 @@ public class BackupFileDataSource extends FileDataSource {
     @Override
     public void addLyric(InputStream lyricInputStream, long length, String lyricId) throws Exception {
         super.addLyric(lyricInputStream, length, lyricId);
-        Files.copy(Paths.get(backupFileDataSourceConfig.getLyricFileDir() + File.separator + lyricId), Paths.get(backupFileDataSourceConfig.getLyricFileDir(), lyricId));
+        Files.copy(Paths.get(fileDataSourceConfig.getLyricFileDir() + File.separator + lyricId), Paths.get(backupFileDataSourceConfig.getLyricFileDir(), lyricId));
+    }
+
+    @Override
+    public boolean deleteMusic(String musicId) {
+        File dest = new File(backupFileDataSourceConfig.getMusicFileDir() + File.separator + musicId);
+        if (!dest.exists() || !dest.isFile()) {
+            return false;
+        }
+        deleteFile(dest.toPath());
+        return super.deleteMusic(musicId);
+    }
+
+    @Override
+    public boolean deleteLyric(String lyricId) {
+        File lyricFile = new File(backupFileDataSourceConfig.getLyricFileDir() + File.separator + lyricId);
+        if (!lyricFile.exists() || !lyricFile.isFile()) {
+            return false;
+        }
+        deleteFile(lyricFile.toPath());
+        return super.deleteLyric(lyricId);
     }
 }

@@ -79,6 +79,7 @@ public class UploadServiceImpl implements UploadService {
             musicDataSource.addMusic(musicTempFile, musicType, musicId);
         } catch (Exception e) {
             coverDataSource.deleteCover(musicId);
+            musicDataSource.deleteMusic(musicId);
             throw e;
         }
         Music music = new Music();
@@ -162,7 +163,12 @@ public class UploadServiceImpl implements UploadService {
     public void uploadLyric(String musicId, MultipartFile file) throws Exception {
         Music music = musicRepository.findByMusicId(musicId).orElseThrow(() -> new IllegalArgumentException("音乐没找到：" + musicId));
         String lyricId = music.getLyricId();
-        lyricDataSource.addLyric(file.getInputStream(), file.getSize(), lyricId);
+        try {
+            lyricDataSource.addLyric(file.getInputStream(), file.getSize(), lyricId);
+        } catch (Exception e) {
+            lyricDataSource.deleteLyric(lyricId);
+            throw e;
+        }
     }
 
     @Override

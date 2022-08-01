@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -108,11 +109,13 @@ public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDa
         return true;
     }
 
-    private boolean deleteFile(Path path) {
+    protected boolean deleteFile(Path path) {
         boolean success = false;
         try {
             Files.delete(path);
             success = true;
+        } catch (NoSuchFileException e) {
+            log.warn("文件不存在，无需删除：{}", path, e);
         } catch (Exception e) {
             log.error("删除文件失败，文件路径：{}", path, e);
         }
