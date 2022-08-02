@@ -3,20 +3,14 @@ package top.itning.yunshunas.video.controller;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import top.itning.yunshunas.video.entity.FileEntity;
-import top.itning.yunshunas.video.entity.Link;
 import top.itning.yunshunas.video.repository.IVideoRepository;
 import top.itning.yunshunas.video.service.VideoService;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.List;
 
 /**
  * @author itning
@@ -33,15 +27,15 @@ public class FileController {
         this.iVideoRepository = iVideoRepository;
     }
 
-    @GetMapping("/")
-    public String index(Model model, String location) throws UnsupportedEncodingException {
-        if (location != null) {
-            model.addAttribute("links", Link.build(location));
-        }
-        List<FileEntity> fileEntityList = videoService.getFileEntities(location);
-        model.addAttribute("files", fileEntityList);
-        return "index";
-    }
+//    @GetMapping("/")
+//    public String index(Model model, String location) throws UnsupportedEncodingException {
+//        if (location != null) {
+//            model.addAttribute("links", Link.build(location));
+//        }
+//        List<FileEntity> fileEntityList = videoService.getFileEntities(location);
+//        model.addAttribute("files", fileEntityList);
+//        return "index";
+//    }
 
     @PostMapping("/del")
     @ResponseBody

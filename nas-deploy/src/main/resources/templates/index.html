@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>云舒NAS</title>
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
+    <script>
+        var global = global || window;
+    </script>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<app-root></app-root>
+<script th:inline="javascript">
+    window.nasUrl = [[${nasUrl}]];
+    window.buildTime = [[${buildProperties.getTime()}]];
+    window.buildVersion = [[${buildProperties.getVersion()}]];
+</script>
+<script th:src="@{/runtime.js}" type="module"></script>
+<script th:src="@{/polyfills.js}" type="module"></script>
+<script th:src="@{/main.js}" type="module"></script>
+</body>
+</html>
