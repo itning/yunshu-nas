@@ -1,0 +1,47 @@
+<div>
+  <nz-input-group class="search_input" [nzSuffix]="suffixIconSearch">
+    <input type="text" nz-input placeholder="搜索歌名或歌手名..." (input)="onSearch($event)"/>
+  </nz-input-group>
+  <ng-template #suffixIconSearch>
+    <i nz-icon nzType="search"></i>
+  </ng-template>
+  <nz-table
+    nzShowSizeChanger
+    nzShowQuickJumper
+    [nzData]="musicData"
+    [nzFrontPagination]="false"
+    [nzLoading]="loading"
+    [nzTotal]="music.totalElements"
+    [nzPageSize]="music.size"
+    [nzPageIndex]="music.number"
+    [nzPageSizeOptions]="[ 100,1000,2000,5000 ]"
+    (nzQueryParams)="onQueryParamsChange($event)"
+  >
+    <thead>
+    <tr>
+      <th nzColumnKey="cover" [nzWidth]="'100px'">封面</th>
+      <th nzColumnKey="name" [nzSortFn]="true">歌名</th>
+      <th nzColumnKey="singer" [nzSortFn]="true">歌手</th>
+      <th nzColumnKey="gmtCreate" [nzSortFn]="true" [nzSortOrder]="'descend'">创建时间</th>
+      <th nzColumnKey="gmtModified" [nzSortFn]="true">修改时间</th>
+      <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let data of musicData">
+      <td><img nz-image width="50px" height="50px" [nzSrc]="data.coverUri" alt="封面"/></td>
+      <td nz-tooltip [nzTooltipTitle]="data.musicId">{{ data.name }}</td>
+      <td>{{ data.singer }}</td>
+      <td>{{ data.gmtCreate | dateReadable}}</td>
+      <td>{{ data.gmtModified | dateReadable}}</td>
+      <td>
+        <a nz-button nzType="link" [href]="data.musicUri" target="_blank">试听</a>
+        <a nz-button nzType="link" [href]="data.lyricUri" target="_blank" nz-tooltip
+           [nzTooltipTitle]="data.lyricId">歌词</a>
+        <a nz-button nzType="link" [routerLink]="'/music/edit/'+data.musicId">修改</a>
+        <a nz-button nzType="link" nz-popconfirm nzPopconfirmTitle="确定删除？" (nzOnConfirm)="delete(data.musicId)">删除</a>
+      </td>
+    </tr>
+    </tbody>
+  </nz-table>
+</div>

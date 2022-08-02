@@ -1,0 +1,47 @@
+<nz-layout class="app-layout">
+  <nz-sider class="menu-sidebar"
+            nzCollapsible
+            nzWidth="256px"
+            [(nzCollapsed)]="isCollapsed"
+            [nzTrigger]="null">
+    <div class="sidebar-logo">
+      <a href="https://github.com/itning/generic-service-client" target="_blank">
+        <img src="assets/logo.jpg" alt="logo">
+        <h1>云舒NAS</h1>
+      </a>
+    </div>
+    <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed">
+      <li nz-submenu nzOpen nzTitle="音乐" nzIcon="customer-service">
+        <ul>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="/music/list">列表</a>
+          </li>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="/music/add">添加</a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </nz-sider>
+  <nz-layout>
+    <nz-header>
+      <div class="app-header">
+        <span class="header-trigger" (click)="isCollapsed = !isCollapsed">
+            <i class="trigger"
+               nz-icon
+               [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"
+            ></i>
+        </span>
+        <div class="header-right">
+          <nz-switch [(ngModel)]="isDarkMode" (click)="toggleTheme()" nzCheckedChildren="黑暗主题"
+                     nzUnCheckedChildren="默认主题"></nz-switch>
+        </div>
+      </div>
+    </nz-header>
+    <nz-content>
+      <div class="inner-content" [class.white-back]="!isDarkMode">
+        <router-outlet></router-outlet>
+      </div>
+    </nz-content>
+  </nz-layout>
+</nz-layout>
