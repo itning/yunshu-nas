@@ -1,7 +1,10 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import DPlayer from 'dplayer';
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {environment} from "../../../../../environments/environment";
+import {Link} from "../../../../http/model/Link";
+import {FileEntity} from "../../../../http/model/FileEntity";
+import {VideoService} from "../../../../service/video.service";
 
 @Component({
   selector: 'app-play',
@@ -10,19 +13,28 @@ import {environment} from "../../../../../environments/environment";
 })
 export class PlayComponent implements OnInit, OnDestroy {
 
-  private dp: DPlayer;
+  @ViewChild('videoPlayerElement', {static: true})
+  private videoPlayerElement: ElementRef;
 
-  constructor(private route: ActivatedRoute,) {
+  private dp: DPlayer;
+  breadcrumb: Link[] = [new Link()];
+
+  constructor(private route: ActivatedRoute,
+              private videoService: VideoService,
+              private router: Router) {
   }
 
   ngOnInit(): void {
     this.route.params.subscribe(path => {
+      const encodeURI = encodeURIComponent(path['path']);
       this.dp = new DPlayer({
-        container: document.getElementById('dplayer'),
+        container: this.videoPlayerElement.nativeElement,
         video: {
-          url: `${environment.backEndUrl}/video/${encodeURIComponent(path['path'])}`,
+          url: `${environment.backEndUrl}/video/${encodeURI}`,
         },
+        autoplay: true
       });
+      this.videoService.links(encodeURI).subscribe(data => this.breadcrumb = data);
     });
   }
 
@@ -30,6 +42,22 @@ export class PlayComponent implements OnInit, OnDestroy {
     if (this.dp) {
       this.dp.destroy();
     }
+  }
+
+  go(item: FileEntity): void {
+    const path = encodeURIComponent(item.location);
+    if (!item.file) {
+      this.router.navigateByUrl(`/video/list/${path}`).catch(console.error);
+    } else if (item.canPlay) {
+      this.router.navigateByUrl(`/video/play/${path}`).catch(console.error);
+    }
+  }
+
+  goFolder(path, last = false): void {
+    if (last) {
+      return;
+    }
+    this.router.navigateByUrl(`/video/list/${path}`).catch(console.error);
   }
 
 }

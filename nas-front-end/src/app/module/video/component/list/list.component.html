@@ -4,7 +4,6 @@
     <nz-breadcrumb-item (click)="goFolder(item.link)" *ngFor="let item of breadcrumb">
       <a>{{item.name}}</a>
     </nz-breadcrumb-item>
-
   </nz-breadcrumb>
   <nz-table [nzData]="data" [nzShowPagination]="false">
     <thead>

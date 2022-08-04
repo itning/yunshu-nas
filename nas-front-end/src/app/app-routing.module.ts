@@ -14,6 +14,7 @@ const routes: Routes = [
     children: [
       {path: '', redirectTo: 'music/list', pathMatch: 'full'},
       {path: 'video/list', component: VideoList},
+      {path: 'video/list/:path', component: VideoList},
       {path: 'video/play/:path', component: PlayComponent},
       {path: 'music/list', component: MusicList},
       {path: 'music/add', component: AddComponent},
