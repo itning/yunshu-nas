@@ -12,7 +12,7 @@ const routes: Routes = [
     path: '',
     component: IndexComponent,
     children: [
-      {path: '', redirectTo: 'music/list', pathMatch: 'full'},
+      {path: '', redirectTo: 'video/list', pathMatch: 'full'},
       {path: 'video/list', component: VideoList},
       {path: 'video/list/:path', component: VideoList},
       {path: 'video/play/:path', component: PlayComponent},
