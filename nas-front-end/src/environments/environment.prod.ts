@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  backEndUrl: 'http://musicdata.nas.io'
+  backEndUrl: (window as any).nasUrl
 };
