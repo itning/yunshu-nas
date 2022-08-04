@@ -8,15 +8,20 @@ import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import top.itning.yunshunas.common.util.MultipartFileSender;
 import top.itning.yunshunas.video.entity.FileEntity;
 import top.itning.yunshunas.video.entity.Link;
 import top.itning.yunshunas.video.service.VideoService;
 import top.itning.yunshunas.video.video.VideoTransformHandler;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 /**
@@ -65,6 +70,24 @@ public class VideoController {
         videoService.getTsFile(name + "-" + index, response.getOutputStream());
     }
 
+    /**
+     * 视频直接返回
+     *
+     * @param path     视频文件路径
+     * @param request  {@link HttpServletRequest}
+     * @param response {@link HttpServletResponse}
+     * @throws Exception 文件发送出错
+     */
+    @GetMapping("/video/{path}")
+    public void videoForPath(@PathVariable String path, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        Path p = Paths.get(path);
+        MultipartFileSender.fromPath(p)
+                .with(request)
+                .with(response)
+                .no304CodeReturn()
+                .setContentType(Files.probeContentType(p))
+                .serveResource();
+    }
 
     /**
      * 转换或查看

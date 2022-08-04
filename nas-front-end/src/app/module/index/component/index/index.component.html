@@ -11,6 +11,13 @@
       </a>
     </div>
     <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed">
+      <li nz-submenu nzOpen nzTitle="视频" nzIcon="video-camera">
+        <ul>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="/video/list">列表</a>
+          </li>
+        </ul>
+      </li>
       <li nz-submenu nzOpen nzTitle="音乐" nzIcon="customer-service">
         <ul>
           <li nz-menu-item nzMatchRouter>

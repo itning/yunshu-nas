@@ -1,9 +1,11 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {IndexComponent} from "./module/index/component/index/index.component";
-import {ListComponent} from "./module/music/component/list/list.component";
+import {ListComponent as MusicList} from "./module/music/component/list/list.component";
+import {ListComponent as VideoList} from "./module/video/component/list/list.component";
 import {AddComponent} from "./module/music/component/add/add.component";
 import {EditComponent} from "./module/music/component/edit/edit.component";
+import {PlayComponent} from "./module/video/component/play/play.component";
 
 const routes: Routes = [
   {
@@ -11,10 +13,12 @@ const routes: Routes = [
     component: IndexComponent,
     children: [
       {path: '', redirectTo: 'music/list', pathMatch: 'full'},
-      {path: 'music/list', component: ListComponent},
+      {path: 'video/list', component: VideoList},
+      {path: 'video/play/:path', component: PlayComponent},
+      {path: 'music/list', component: MusicList},
       {path: 'music/add', component: AddComponent},
       {path: 'music/edit/:id', component: EditComponent},
-      {path: '**', redirectTo: 'music/list', pathMatch: 'full'}
+      {path: '**', redirectTo: 'video/list', pathMatch: 'full'}
     ]
   }
 ];

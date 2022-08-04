@@ -15,6 +15,7 @@ import {IndexModule} from "./module/index/index.module";
 import {ThemeService} from "./theme.service";
 import {httpInterceptorProviders} from "./http";
 import * as dayjs from "dayjs";
+import {VideoModule} from "./module/video/video.module";
 
 registerLocaleData(zh);
 dayjs.locale('zh-cn')
@@ -33,6 +34,7 @@ export const AppInitializerProvider = {
     AppComponent
   ],
   imports: [
+    VideoModule,
     MusicModule,
     IndexModule,
     SharedModule,
