@@ -1,4 +1,4 @@
-package top.itning.yunshunas.deploy.config;
+package top.itning.yunshunas.config.deploy;
 
 import io.undertow.server.DefaultByteBufferPool;
 import io.undertow.websockets.jsr.WebSocketDeploymentInfo;

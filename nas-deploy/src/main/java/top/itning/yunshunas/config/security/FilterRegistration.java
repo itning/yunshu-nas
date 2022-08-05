@@ -1,4 +1,4 @@
-package top.itning.yunshunas.security.config;
+package top.itning.yunshunas.config.security;
 
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;

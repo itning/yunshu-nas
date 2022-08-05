@@ -20,7 +20,7 @@
         </encoder>
     </appender>
     <!-- WEB SOCKET 输出设置 -->
-    <appender name="WEB_SOCKET" class="top.itning.yunshunas.video.config.WebSocketOutputStreamAppender">　　
+    <appender name="WEB_SOCKET" class="top.itning.yunshunas.config.log.WebSocketOutputStreamAppender">　　
         <encoder>　　　　　　　
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>　　　　
         </encoder>　　

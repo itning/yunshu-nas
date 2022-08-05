@@ -1,4 +1,4 @@
-package top.itning.yunshunas.deploy.config;
+package top.itning.yunshunas.config.deploy;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;

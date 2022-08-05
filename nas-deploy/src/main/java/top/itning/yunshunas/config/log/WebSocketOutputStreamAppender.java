@@ -1,7 +1,6 @@
-package top.itning.yunshunas.video.config;
+package top.itning.yunshunas.config.log;
 
 import ch.qos.logback.core.OutputStreamAppender;
-import top.itning.yunshunas.video.socket.LogWebSocket;
 
 
 /**

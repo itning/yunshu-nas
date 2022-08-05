@@ -1,31 +1,18 @@
-package top.itning.yunshunas.video.config;
+package top.itning.yunshunas.config;
 
 import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
-import top.itning.yunshunas.common.config.NasProperties;
-import top.itning.yunshunas.video.video.Video2M3u8Helper;
 
 import javax.servlet.MultipartConfigElement;
 
 /**
  * @author itning
- * @since 2019/7/14 15:35
+ * @since 2022/8/5 20:53
  */
 @Configuration
-public class BeansConfig {
-    private final NasProperties nasProperties;
-
-    public BeansConfig(NasProperties nasProperties) {
-        this.nasProperties = nasProperties;
-    }
-
-    @Bean
-    public Video2M3u8Helper video2M3u8Helper() {
-        return new Video2M3u8Helper(nasProperties.getFfmpegBinDir());
-    }
-
+public class BeanConfig {
     @Bean
     public ServerEndpointExporter serverEndpointExporter() {
         return new ServerEndpointExporter();

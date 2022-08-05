@@ -1,4 +1,4 @@
-package top.itning.yunshunas.video.socket;
+package top.itning.yunshunas.common.socket;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +9,6 @@ import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * 日志输出
@@ -41,9 +40,7 @@ public final class ProgressWebSocket {
      */
     private synchronized static void clearSessionMap() {
         SESSION_MAP.values().stream()
-                .filter(session -> !session.isOpen())
-                //must collect else will throw ConcurrentModificationException
-                .collect(Collectors.toList())
+                .filter(session -> !session.isOpen()).toList()
                 .forEach(session -> SESSION_MAP.remove(session.getId()));
     }
 
