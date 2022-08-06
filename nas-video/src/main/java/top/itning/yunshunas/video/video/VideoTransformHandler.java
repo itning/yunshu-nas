@@ -4,8 +4,8 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import top.itning.yunshunas.common.socket.ProgressWebSocket;
 import top.itning.yunshunas.video.repository.IVideoRepository;
-import top.itning.yunshunas.video.socket.ProgressWebSocket;
 
 import java.io.File;
 import java.util.HashMap;

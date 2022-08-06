@@ -1,0 +1,9 @@
+<div>
+  <nz-breadcrumb>
+    <nz-breadcrumb-item (click)="goFolder('')"><a>Root</a></nz-breadcrumb-item>
+    <nz-breadcrumb-item (click)="goFolder(item.link,last)" *ngFor="let item of breadcrumb; let last = last">
+      <a>{{item.name}}</a>
+    </nz-breadcrumb-item>
+  </nz-breadcrumb>
+  <div #videoPlayerElement></div>
+</div>

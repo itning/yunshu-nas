@@ -1,6 +1,7 @@
 package top.itning.yunshunas.video.service.impl;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import top.itning.yunshunas.video.entity.FileEntity;
 import top.itning.yunshunas.video.repository.IVideoRepository;
@@ -41,7 +42,7 @@ public class VideoServiceImpl implements VideoService {
     @Override
     public List<FileEntity> getFileEntities(String location) {
         File[] files;
-        if (location == null) {
+        if (StringUtils.isBlank(location)) {
             files = File.listRoots();
         } else {
             File file = new File(location);

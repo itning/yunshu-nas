@@ -4,6 +4,7 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.net.URL;
 import java.util.List;
 import java.util.Objects;
 
@@ -55,6 +56,11 @@ public class NasProperties {
      * 歌词和封面从腾讯云获取，音乐文件从文件获取
      */
     private boolean enableMixedDataSource;
+
+    /**
+     * 服务端地址
+     */
+    private URL serverUrl;
 
     /**
      * 开启支持备份的文件数据源
@@ -133,12 +139,12 @@ public class NasProperties {
     @Data
     public static class FileDataSourceConfig {
         /**
-         * 备份音乐文件目录
+         * 音乐文件目录
          */
         private String musicFileDir;
 
         /**
-         * 备份歌词文件目录
+         * 歌词文件目录
          */
         private String lyricFileDir;
 

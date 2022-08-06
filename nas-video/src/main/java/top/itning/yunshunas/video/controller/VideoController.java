@@ -3,21 +3,18 @@ package top.itning.yunshunas.video.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import top.itning.yunshunas.video.entity.FileEntity;
-import top.itning.yunshunas.video.entity.Link;
+import top.itning.yunshunas.common.util.MultipartFileSender;
 import top.itning.yunshunas.video.service.VideoService;
 import top.itning.yunshunas.video.video.VideoTransformHandler;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * @author itning
@@ -65,36 +62,22 @@ public class VideoController {
         videoService.getTsFile(name + "-" + index, response.getOutputStream());
     }
 
-
     /**
-     * 转换或查看
+     * 视频直接返回
      *
-     * @param location 路径
-     * @param model    {@link Model}
-     * @return html
+     * @param path     视频文件路径
+     * @param request  {@link HttpServletRequest}
+     * @param response {@link HttpServletResponse}
+     * @throws Exception 文件发送出错
      */
-    @GetMapping("/video")
-    public String video(@RequestParam String location, Model model) throws UnsupportedEncodingException {
-        boolean put = videoTransformHandler.put(location);
-        if (put) {
-            return "progress";
-        } else {
-            List<Link> linkList = Link.build(location);
-            linkList.remove(linkList.size() - 1);
-            model.addAttribute("links", linkList);
-            String hex = DigestUtils.md5DigestAsHex(location.getBytes());
-            int i = location.lastIndexOf(File.separator);
-            List<FileEntity> fileEntityList = videoService.getFileEntities(location.substring(0, i));
-            model.addAttribute("files", fileEntityList);
-            model.addAttribute("file", location.substring(i + 1));
-            model.addAttribute("name", hex);
-            return "video";
-        }
-    }
-
-    @GetMapping("/video_queue")
-    public String videoQueue(Model model) {
-        model.addAllAttributes(videoTransformHandler.status());
-        return "video_queue";
+    @GetMapping("/video/{path}")
+    public void videoForPath(@PathVariable String path, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        Path p = Paths.get(path);
+        MultipartFileSender.fromPath(p)
+                .with(request)
+                .with(response)
+                .no304CodeReturn()
+                .setContentType(Files.probeContentType(p))
+                .serveResource();
     }
 }
