@@ -6,6 +6,8 @@ import {ListComponent as VideoList} from "./module/video/component/list/list.com
 import {AddComponent} from "./module/music/component/add/add.component";
 import {EditComponent} from "./module/music/component/edit/edit.component";
 import {PlayComponent} from "./module/video/component/play/play.component";
+import {LogComponent} from "./module/index/component/log/log.component";
+import {DownloadComponent} from "./module/video/component/download/download.component";
 
 const routes: Routes = [
   {
@@ -19,6 +21,8 @@ const routes: Routes = [
       {path: 'music/list', component: MusicList},
       {path: 'music/add', component: AddComponent},
       {path: 'music/edit/:id', component: EditComponent},
+      {path: 'log', component: LogComponent},
+      {path: 'download', component: DownloadComponent},
       {path: '**', redirectTo: 'video/list', pathMatch: 'full'}
     ]
   }

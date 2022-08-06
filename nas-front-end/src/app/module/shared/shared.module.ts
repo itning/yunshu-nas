@@ -17,7 +17,9 @@ import {NzToolTipModule} from 'ng-zorro-antd/tooltip';
 import {NzMessageModule} from 'ng-zorro-antd/message';
 import {NzIconModule} from 'ng-zorro-antd/icon';
 import {NzBreadCrumbModule} from 'ng-zorro-antd/breadcrumb';
+import {NzBackTopModule} from 'ng-zorro-antd/back-top';
 import {
+  CodeOutline,
   CustomerServiceOutline,
   FolderOutline,
   MenuFoldOutline,
@@ -30,7 +32,8 @@ const icons = [
   CustomerServiceOutline,
   MenuUnfoldOutline,
   MenuFoldOutline,
-  FolderOutline
+  FolderOutline,
+  CodeOutline
 ];
 
 const modules = [
@@ -50,7 +53,8 @@ const modules = [
   NzTableModule,
   NzToolTipModule,
   NzMessageModule,
-  NzBreadCrumbModule
+  NzBreadCrumbModule,
+  NzBackTopModule
 ];
 
 @NgModule({
