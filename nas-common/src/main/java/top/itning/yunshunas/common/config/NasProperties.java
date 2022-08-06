@@ -139,12 +139,12 @@ public class NasProperties {
     @Data
     public static class FileDataSourceConfig {
         /**
-         * 备份音乐文件目录
+         * 音乐文件目录
          */
         private String musicFileDir;
 
         /**
-         * 备份歌词文件目录
+         * 歌词文件目录
          */
         private String lyricFileDir;
 
