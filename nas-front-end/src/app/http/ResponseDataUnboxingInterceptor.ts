@@ -22,7 +22,7 @@ export class ResponseDataUnboxingInterceptor implements HttpInterceptor {
           // noinspection TypeScriptValidateTypes
           const httpResponse: HttpResponse<RestModel<any>> = (event as HttpResponse<RestModel<any>>);
           // 获取RestModel中data
-          if (HttpStatusCode.Ok !== httpResponse.status) {
+          if (HttpStatusCode.Ok !== httpResponse.status && HttpStatusCode.Created !== httpResponse.status) {
             console.error(`响应出错：${JSON.stringify(httpResponse.body)}`);
             console.error(httpResponse);
             this.message.error(httpResponse.body.msg);
