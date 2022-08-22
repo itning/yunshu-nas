@@ -9,3 +9,10 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "daily"
+    open-pull-requests-limit: 50
+
+  - package-ecosystem: "npm" # See documentation for possible values
+    directory: "/nas-front-end" # Location of package manifests
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 50
