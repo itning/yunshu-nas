@@ -11,4 +11,6 @@ ADD nas-deploy/target/yunshu-nas-*.RELEASE.jar /home/yunshu-nas.jar
 # 端口暴露
 EXPOSE 8888
 
+HEALTHCHECK --interval=30s --timeout=3s --retries=3 --start-period=5s CMD curl --fail --silent localhost:8888/health | grep UP || exit 1
+
 ENTRYPOINT ["java","-jar","/home/yunshu-nas.jar"]
