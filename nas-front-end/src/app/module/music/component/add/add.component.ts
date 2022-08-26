@@ -1,5 +1,5 @@
 import {Component, OnInit, SecurityContext} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
 import {MusicService} from "../../../../service/music.service";
 import {NzMessageService} from "ng-zorro-antd/message";
@@ -13,7 +13,7 @@ import {Router} from "@angular/router";
 })
 export class AddComponent implements OnInit {
 
-  formGroup: FormGroup;
+  formGroup: UntypedFormGroup;
 
   type: number;
 
@@ -26,7 +26,7 @@ export class AddComponent implements OnInit {
   private files: { [key: string]: File } = {};
 
   constructor(private musicService: MusicService,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private message: NzMessageService,
               private sanitizer: DomSanitizer,
               private router: Router) {

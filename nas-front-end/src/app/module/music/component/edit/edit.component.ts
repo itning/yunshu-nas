@@ -3,7 +3,7 @@ import {ActivatedRoute} from "@angular/router";
 import {filter, mergeMap} from "rxjs";
 import {map} from "rxjs/operators";
 import {MusicService} from "../../../../service/music.service";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {Music} from "../../../../http/model/Music";
 import {NzMessageService} from "ng-zorro-antd/message";
 import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
@@ -16,7 +16,7 @@ import * as musicMetadata from 'music-metadata-browser';
 })
 export class EditComponent implements OnInit {
 
-  formGroup: FormGroup;
+  formGroup: UntypedFormGroup;
 
   music: Music;
 
@@ -28,7 +28,7 @@ export class EditComponent implements OnInit {
 
   constructor(private route: ActivatedRoute,
               private musicService: MusicService,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private message: NzMessageService,
               private sanitizer: DomSanitizer) {
   }
