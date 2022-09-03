@@ -7,6 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.util.AntPathMatcher;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import top.itning.yunshunas.common.config.NasProperties;
 
@@ -24,8 +25,11 @@ import java.nio.charset.StandardCharsets;
  */
 @Slf4j
 public class BasicFilter extends OncePerRequestFilter {
-    private final NasProperties nasProperties;
+
     private static final AntPathMatcher ANT_PATH_MATCHER = new AntPathMatcher();
+    private static final String HEALTH_CHECK_PATH = "/health";
+
+    private final NasProperties nasProperties;
     private final NasProperties.BasicAuthConfig basicAuthConfig;
 
     public BasicFilter(NasProperties nasProperties) {
@@ -39,7 +43,11 @@ public class BasicFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        if (basicAuthConfig.getIgnorePath().stream().anyMatch(path -> ANT_PATH_MATCHER.match(path, request.getRequestURI()))) {
+        if (!CollectionUtils.isEmpty(basicAuthConfig.getIgnorePath()) && basicAuthConfig.getIgnorePath().stream().anyMatch(path -> ANT_PATH_MATCHER.match(path, request.getRequestURI()))) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+        if (HEALTH_CHECK_PATH.equals(request.getRequestURI())) {
             filterChain.doFilter(request, response);
             return;
         }
