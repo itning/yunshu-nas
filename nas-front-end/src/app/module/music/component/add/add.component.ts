@@ -66,7 +66,7 @@ export class AddComponent implements OnInit {
         this.musicUri = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(file));
         this.type = this.coverMusicType(file.type);
         musicMetadata.parseBlob(file).then(data => {
-          this.formGroup.patchValue({name: data.common.album});
+          this.formGroup.patchValue({name: data.common.title});
           this.formGroup.patchValue({singer: data.common.artist});
           const picture = data.common.picture;
           if (picture && picture[0]) {
