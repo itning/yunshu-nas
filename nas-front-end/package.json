@@ -24,7 +24,7 @@
     "music-metadata-browser": "^2.2.7",
     "ng-zorro-antd": "^14.1.1",
     "rxjs": "~7.5.7",
-    "tslib": "^2.3.0",
+    "tslib": "^2.4.1",
     "zone.js": "~0.11.8"
   },
   "devDependencies": {
