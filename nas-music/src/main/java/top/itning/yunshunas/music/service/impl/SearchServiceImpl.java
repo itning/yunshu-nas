@@ -4,13 +4,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
+import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.query.StringQuery;
 import org.springframework.stereotype.Service;
 import top.itning.yunshunas.music.entity.Lyric;
 import top.itning.yunshunas.music.repository.LyricElasticsearchRepository;
 import top.itning.yunshunas.music.service.SearchService;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -20,10 +22,12 @@ import java.util.stream.Collectors;
 @Service
 public class SearchServiceImpl implements SearchService {
     private final LyricElasticsearchRepository lyricElasticsearchRepository;
+    private final ElasticsearchRestTemplate elasticsearchRestTemplate;
 
     @Autowired
-    public SearchServiceImpl(LyricElasticsearchRepository lyricElasticsearchRepository) {
+    public SearchServiceImpl(LyricElasticsearchRepository lyricElasticsearchRepository, ElasticsearchRestTemplate elasticsearchRestTemplate) {
         this.lyricElasticsearchRepository = lyricElasticsearchRepository;
+        this.elasticsearchRestTemplate = elasticsearchRestTemplate;
     }
 
     @Override
@@ -59,6 +63,8 @@ public class SearchServiceImpl implements SearchService {
 
     @Override
     public Page<Lyric> searchLyric(String keyword) {
+        SearchHits<Lyric> search1 = elasticsearchRestTemplate.search(StringQuery.builder(keyword).withFields("content").withPageable(Pageable.ofSize(20)).build(), Lyric.class);
+
         Page<Lyric> search = lyricElasticsearchRepository.searchByContent(keyword, Pageable.ofSize(10));
         return search;
     }
