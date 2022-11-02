@@ -1,12 +1,14 @@
 package top.itning.yunshunas.music.service.impl;
 
 import org.apache.commons.lang3.StringUtils;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.data.elasticsearch.core.query.StringQuery;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
 import top.itning.yunshunas.music.entity.Lyric;
 import top.itning.yunshunas.music.repository.LyricElasticsearchRepository;
@@ -62,8 +64,16 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public Page<Lyric> searchLyric(String keyword) {
-        SearchHits<Lyric> search1 = elasticsearchRestTemplate.search(StringQuery.builder(keyword).withFields("content").withPageable(Pageable.ofSize(20)).build(), Lyric.class);
+    public Page<Lyric> searchLyric(String keyword, Pageable pageable) {
+        SearchHits<Lyric> search1 = elasticsearchRestTemplate.search(
+                new NativeSearchQueryBuilder()
+                        .withQuery(QueryBuilders.matchQuery("content", keyword).analyzer("ik_max_word").minimumShouldMatch("100%"))
+                        .withHighlightBuilder(new HighlightBuilder().field("content"))
+                        .build()
+                , Lyric.class
+        );
+
+        System.out.println(search1);
 
         Page<Lyric> search = lyricElasticsearchRepository.searchByContent(keyword, Pageable.ofSize(10));
         return search;
