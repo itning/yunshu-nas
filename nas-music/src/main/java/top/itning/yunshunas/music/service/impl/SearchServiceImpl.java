@@ -42,10 +42,11 @@ public class SearchServiceImpl implements SearchService {
                         if (lastIndex == -1) {
                             return itemLine;
                         }
-                        return itemLine.substring(lastIndex);
+                        return itemLine.substring(lastIndex + 1);
                     }
                     return itemLine;
                 })
+                .filter(StringUtils::isNotBlank)
                 .collect(Collectors.joining("\n"));
 
         Lyric lyric = new Lyric();
