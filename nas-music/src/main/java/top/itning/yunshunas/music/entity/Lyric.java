@@ -17,11 +17,18 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 public class Lyric {
 
     /**
+     * 音乐ID
+     */
+    @Id
+    @Field(type = FieldType.Text)
+    private String musicId;
+
+    /**
      * 歌词ID
      */
     @Id
     @Field(type = FieldType.Text)
-    private String id;
+    private String lyricId;
 
     /**
      * 歌词

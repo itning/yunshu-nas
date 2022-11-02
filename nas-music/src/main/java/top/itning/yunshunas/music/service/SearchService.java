@@ -8,5 +8,6 @@ import top.itning.yunshunas.music.entity.Lyric;
  * @since 2022/11/2 15:39
  */
 public interface SearchService {
+    void addLyric(String musicId, String lyricId, String content);
     Page<Lyric> searchLyric(String keyword);
 }
