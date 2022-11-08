@@ -4,7 +4,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.SearchHits;
@@ -64,18 +63,14 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public Page<Lyric> searchLyric(String keyword, Pageable pageable) {
-        SearchHits<Lyric> search1 = elasticsearchRestTemplate.search(
+    public SearchHits<Lyric> searchLyric(String keyword, Pageable pageable) {
+        return elasticsearchRestTemplate.search(
                 new NativeSearchQueryBuilder()
-                        .withQuery(QueryBuilders.matchQuery("content", keyword).analyzer("ik_max_word").minimumShouldMatch("100%"))
+                        .withQuery(QueryBuilders.matchQuery("content", keyword).analyzer("ik_smart").minimumShouldMatch("100%"))
                         .withHighlightBuilder(new HighlightBuilder().field("content"))
+                        .withPageable(pageable)
                         .build()
                 , Lyric.class
         );
-
-        System.out.println(search1);
-
-        Page<Lyric> search = lyricElasticsearchRepository.searchByContent(keyword, Pageable.ofSize(10));
-        return search;
     }
 }

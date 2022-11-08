@@ -1,7 +1,7 @@
 package top.itning.yunshunas.music.service;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.core.SearchHits;
 import top.itning.yunshunas.music.entity.Lyric;
 
 /**
@@ -18,5 +18,5 @@ public interface SearchService {
     void addLyric(String musicId, String lyricId, String content);
 
 
-    Page<Lyric> searchLyric(String keyword, Pageable pageable);
+    SearchHits<Lyric> searchLyric(String keyword, Pageable pageable);
 }
