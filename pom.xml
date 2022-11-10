@@ -39,7 +39,7 @@
         <java-webSocket.version>1.5.3</java-webSocket.version>
         <mapstruct.version>1.5.3.Final</mapstruct.version>
         <jaudiotagger.version>2.0.3</jaudiotagger.version>
-        <qcloud.cos_api.version>5.6.109</qcloud.cos_api.version>
+        <qcloud.cos_api.version>5.6.110</qcloud.cos_api.version>
     </properties>
 
     <dependencies>
