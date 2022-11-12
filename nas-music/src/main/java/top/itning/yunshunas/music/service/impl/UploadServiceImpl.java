@@ -18,6 +18,7 @@ import top.itning.yunshunas.music.repository.MusicRepository;
 import top.itning.yunshunas.music.service.MusicMetaInfoService;
 import top.itning.yunshunas.music.service.UploadService;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.UUID;
 
@@ -160,11 +161,13 @@ public class UploadServiceImpl implements UploadService {
     }
 
     @Override
-    public void uploadLyric(String musicId, MultipartFile file) throws Exception {
+    public byte[] uploadLyric(String musicId, MultipartFile file) throws Exception {
         Music music = musicRepository.findByMusicId(musicId).orElseThrow(() -> new IllegalArgumentException("音乐没找到：" + musicId));
         String lyricId = music.getLyricId();
         try {
-            lyricDataSource.addLyric(file.getInputStream(), file.getSize(), lyricId);
+            byte[] bytes = file.getBytes();
+            lyricDataSource.addLyric(new ByteArrayInputStream(bytes), file.getSize(), lyricId);
+            return bytes;
         } catch (Exception e) {
             lyricDataSource.deleteLyric(lyricId);
             throw e;
@@ -172,10 +175,12 @@ public class UploadServiceImpl implements UploadService {
     }
 
     @Override
-    public void editLyric(String musicId, MultipartFile file) throws Exception {
+    public byte[] editLyric(String musicId, MultipartFile file) throws Exception {
         Music music = musicRepository.findByMusicId(musicId).orElseThrow(() -> new IllegalArgumentException("音乐没找到：" + musicId));
         String lyricId = music.getLyricId();
         lyricDataSource.deleteLyric(lyricId);
-        lyricDataSource.addLyric(file.getInputStream(), file.getSize(), lyricId);
+        byte[] bytes = file.getBytes();
+        lyricDataSource.addLyric(new ByteArrayInputStream(bytes), file.getSize(), lyricId);
+        return bytes;
     }
 }

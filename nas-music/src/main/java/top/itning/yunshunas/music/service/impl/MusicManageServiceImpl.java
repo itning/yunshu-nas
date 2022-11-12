@@ -17,8 +17,10 @@ import top.itning.yunshunas.music.dto.MusicManageDTO;
 import top.itning.yunshunas.music.entity.Music;
 import top.itning.yunshunas.music.repository.MusicRepository;
 import top.itning.yunshunas.music.service.MusicManageService;
+import top.itning.yunshunas.music.service.SearchService;
 import top.itning.yunshunas.music.service.UploadService;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Objects;
 
@@ -36,14 +38,16 @@ public class MusicManageServiceImpl implements MusicManageService {
     private final LyricDataSource lyricDataSource;
     private final CoverDataSource coverDataSource;
     private final UploadService uploadService;
+    private final SearchService searchService;
 
     @Autowired
-    public MusicManageServiceImpl(MusicRepository musicRepository, MusicDataSource musicDataSource, LyricDataSource lyricDataSource, CoverDataSource coverDataSource, UploadService uploadService) {
+    public MusicManageServiceImpl(MusicRepository musicRepository, MusicDataSource musicDataSource, LyricDataSource lyricDataSource, CoverDataSource coverDataSource, UploadService uploadService, SearchService searchService) {
         this.musicRepository = musicRepository;
         this.musicDataSource = musicDataSource;
         this.lyricDataSource = lyricDataSource;
         this.coverDataSource = coverDataSource;
         this.uploadService = uploadService;
+        this.searchService = searchService;
     }
 
     @Override
@@ -96,13 +100,14 @@ public class MusicManageServiceImpl implements MusicManageService {
             musicDTO = uploadService.editMusic(changeDTO.getMusicId(), musicFile);
         }
 
+        Music music = musicRepository.findByMusicId(changeDTO.getMusicId()).orElseThrow(() -> new IllegalArgumentException("音乐不存在"));
         MultipartFile lyricFile = changeDTO.getLyricFile();
         if (null != lyricFile) {
             log.debug("修改歌词文件 {}", lyricFile.getOriginalFilename());
-            uploadService.editLyric(changeDTO.getMusicId(), lyricFile);
+            byte[] contentBytes = uploadService.editLyric(changeDTO.getMusicId(), lyricFile);
+            searchService.saveOrUpdateLyric(changeDTO.getMusicId(), music.getLyricId(), new String(contentBytes, StandardCharsets.UTF_8));
         }
 
-        Music music = musicRepository.findByMusicId(changeDTO.getMusicId()).orElseThrow(() -> new IllegalArgumentException("音乐不存在"));
         if (StringUtils.isAllBlank(changeDTO.getName(), changeDTO.getSinger())) {
             if (null == musicDTO) {
                 musicDTO = MusicConverter.INSTANCE.entity2dto(music);
@@ -145,7 +150,8 @@ public class MusicManageServiceImpl implements MusicManageService {
         MusicDTO musicDTO = uploadService.uploadMusic(musicFile);
         MultipartFile lyricFile = music.getLyricFile();
         if (null != lyricFile) {
-            uploadService.uploadLyric(musicDTO.getMusicId(), lyricFile);
+            byte[] contentBytes = uploadService.uploadLyric(musicDTO.getMusicId(), lyricFile);
+            searchService.saveOrUpdateLyric(musicDTO.getMusicId(), musicDTO.getLyricId(), new String(contentBytes, StandardCharsets.UTF_8));
         }
         return musicDTO;
     }
@@ -161,5 +167,6 @@ public class MusicManageServiceImpl implements MusicManageService {
         coverDataSource.deleteCover(music.getMusicId());
         musicRepository.delete(music);
         musicRepository.flush();
+        searchService.deleteLyric(music.getLyricId());
     }
 }

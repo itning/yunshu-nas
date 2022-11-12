@@ -42,7 +42,7 @@ public class LyricAddTest {
                 if(StringUtils.isBlank(lyric)){
                     continue;
                 }
-                searchService.addLyric(musicDTO.getMusicId(), musicDTO.getLyricId(), lyric);
+                searchService.saveOrUpdateLyric(musicDTO.getMusicId(), musicDTO.getLyricId(), lyric);
             } catch (IOException e) {
                 log.error("获取歌词出错", e);
             }

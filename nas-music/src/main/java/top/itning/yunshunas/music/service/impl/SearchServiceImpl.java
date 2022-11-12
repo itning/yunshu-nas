@@ -32,7 +32,7 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public void addLyric(String musicId, String lyricId, String content) {
+    public void saveOrUpdateLyric(String musicId, String lyricId, String content) {
         if (StringUtils.isAnyBlank(musicId, lyricId)) {
             throw new IllegalArgumentException("音乐ID或歌词ID为空！");
         }
@@ -60,6 +60,11 @@ public class SearchServiceImpl implements SearchService {
         lyric.setContent(content);
 
         lyricElasticsearchRepository.save(lyric);
+    }
+
+    @Override
+    public void deleteLyric(String lyricId) {
+        lyricElasticsearchRepository.deleteById(lyricId);
     }
 
     @Override
