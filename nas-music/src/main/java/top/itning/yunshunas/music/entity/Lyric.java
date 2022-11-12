@@ -32,6 +32,6 @@ public class Lyric {
     /**
      * 歌词
      */
-    @Field(type = FieldType.Text, analyzer = "ik_max_word")
+    @Field(type = FieldType.Text)
     private String content;
 }

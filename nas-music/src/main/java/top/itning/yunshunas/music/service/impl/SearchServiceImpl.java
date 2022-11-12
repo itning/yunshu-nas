@@ -1,5 +1,6 @@
 package top.itning.yunshunas.music.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
@@ -9,26 +10,50 @@ import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
+import top.itning.yunshunas.music.datasource.CoverDataSource;
+import top.itning.yunshunas.music.datasource.LyricDataSource;
+import top.itning.yunshunas.music.datasource.MusicDataSource;
 import top.itning.yunshunas.music.entity.Lyric;
+import top.itning.yunshunas.music.entity.Music;
+import top.itning.yunshunas.music.entity.SearchResult;
 import top.itning.yunshunas.music.repository.LyricElasticsearchRepository;
+import top.itning.yunshunas.music.repository.MusicRepository;
 import top.itning.yunshunas.music.service.SearchService;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * @author ning.wang
+ * 搜索服务实现
+ *
+ * @author itning
  * @since 2022/11/2 15:39
  */
+@Slf4j
 @Service
 public class SearchServiceImpl implements SearchService {
+    /**
+     * 歌词搜索字段
+     */
+    private static final String SEARCH_FILED_FOR_LYRIC = "content";
+
     private final LyricElasticsearchRepository lyricElasticsearchRepository;
     private final ElasticsearchRestTemplate elasticsearchRestTemplate;
+    private final MusicRepository musicRepository;
+    private final MusicDataSource musicDataSource;
+    private final LyricDataSource lyricDataSource;
+    private final CoverDataSource coverDataSource;
 
     @Autowired
-    public SearchServiceImpl(LyricElasticsearchRepository lyricElasticsearchRepository, ElasticsearchRestTemplate elasticsearchRestTemplate) {
+    public SearchServiceImpl(LyricElasticsearchRepository lyricElasticsearchRepository, ElasticsearchRestTemplate elasticsearchRestTemplate, MusicRepository musicRepository, MusicDataSource musicDataSource, LyricDataSource lyricDataSource, CoverDataSource coverDataSource) {
         this.lyricElasticsearchRepository = lyricElasticsearchRepository;
         this.elasticsearchRestTemplate = elasticsearchRestTemplate;
+        this.musicRepository = musicRepository;
+        this.musicDataSource = musicDataSource;
+        this.lyricDataSource = lyricDataSource;
+        this.coverDataSource = coverDataSource;
     }
 
     @Override
@@ -68,14 +93,37 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public SearchHits<Lyric> searchLyric(String keyword, Pageable pageable) {
-        return elasticsearchRestTemplate.search(
+    public List<SearchResult> searchLyric(String keyword, Pageable pageable) {
+        SearchHits<Lyric> search = elasticsearchRestTemplate.search(
                 new NativeSearchQueryBuilder()
-                        .withQuery(QueryBuilders.matchQuery("content", keyword).analyzer("ik_smart").minimumShouldMatch("100%"))
-                        .withHighlightBuilder(new HighlightBuilder().field("content"))
+                        .withQuery(QueryBuilders.matchPhraseQuery(SEARCH_FILED_FOR_LYRIC, keyword))
+                        .withHighlightBuilder(new HighlightBuilder().field(SEARCH_FILED_FOR_LYRIC))
                         .withPageable(pageable)
                         .build()
                 , Lyric.class
         );
+        if (!search.hasSearchHits()) {
+            return Collections.emptyList();
+        }
+
+        return search.getSearchHits().stream()
+                .map(item -> {
+                    Lyric lyric = item.getContent();
+
+                    Music music = musicRepository.findByMusicId(lyric.getMusicId()).orElseThrow(() -> new IllegalStateException("检索音乐信息失败，返回空"));
+
+                    SearchResult searchResult = new SearchResult();
+                    searchResult.setMusicId(music.getMusicId());
+                    searchResult.setName(music.getName());
+                    searchResult.setSinger(music.getSinger());
+                    searchResult.setLyricId(music.getLyricId());
+                    searchResult.setType(music.getType());
+                    searchResult.setMusicUri(musicDataSource.getMusic(music.getMusicId()));
+                    searchResult.setLyricUri(lyricDataSource.getLyric(music.getLyricId()));
+                    searchResult.setCoverUri(coverDataSource.getCover(music.getMusicId()));
+                    searchResult.setHighlightFields(item.getHighlightField(SEARCH_FILED_FOR_LYRIC));
+                    return searchResult;
+                })
+                .collect(Collectors.toList());
     }
 }

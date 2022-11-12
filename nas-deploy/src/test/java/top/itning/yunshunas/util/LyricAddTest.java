@@ -7,14 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.elasticsearch.core.SearchHits;
 import top.itning.yunshunas.music.dto.MusicDTO;
-import top.itning.yunshunas.music.entity.Lyric;
+import top.itning.yunshunas.music.entity.SearchResult;
 import top.itning.yunshunas.music.service.FileService;
 import top.itning.yunshunas.music.service.MusicService;
 import top.itning.yunshunas.music.service.SearchService;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @author itning
@@ -51,7 +51,7 @@ public class LyricAddTest {
 
     @Test
     public void testSearch(){
-        SearchHits<Lyric> result = searchService.searchLyric("我嫉妒", Pageable.unpaged());
+        List<SearchResult> result = searchService.searchLyric("我嫉妒", Pageable.unpaged());
 
         result.forEach(System.out::println);
     }

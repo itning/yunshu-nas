@@ -1,13 +1,14 @@
 package top.itning.yunshunas.music.service;
 
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.elasticsearch.core.SearchHits;
-import top.itning.yunshunas.music.entity.Lyric;
+import top.itning.yunshunas.music.entity.SearchResult;
+
+import java.util.List;
 
 /**
  * 搜索服务
  *
- * @author ning.wang
+ * @author itning
  * @since 2022/11/2 15:39
  */
 public interface SearchService {
@@ -34,5 +35,5 @@ public interface SearchService {
      * @param pageable 分页信息
      * @return 搜索结果
      */
-    SearchHits<Lyric> searchLyric(String keyword, Pageable pageable);
+    List<SearchResult> searchLyric(String keyword, Pageable pageable);
 }

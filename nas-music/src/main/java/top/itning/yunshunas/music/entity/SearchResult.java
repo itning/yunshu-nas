@@ -1,17 +1,16 @@
-package top.itning.yunshunas.music.dto;
+package top.itning.yunshunas.music.entity;
 
 import lombok.Data;
 
-import java.io.Serializable;
 import java.net.URI;
 import java.util.List;
 
 /**
  * @author itning
- * @since 2022/11/8 22:23
+ * @since 2022/11/12 19:36
  */
 @Data
-public class SearchResultDTO implements Serializable {
+public class SearchResult {
     private String musicId;
 
     private String name;

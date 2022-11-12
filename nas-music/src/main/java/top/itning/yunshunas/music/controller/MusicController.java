@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
@@ -13,15 +12,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import top.itning.yunshunas.common.model.RestModel;
+import top.itning.yunshunas.music.converter.SearchConverter;
 import top.itning.yunshunas.music.dto.MusicDTO;
 import top.itning.yunshunas.music.dto.MusicMetaInfo;
-import top.itning.yunshunas.music.entity.Lyric;
+import top.itning.yunshunas.music.dto.SearchResultDTO;
+import top.itning.yunshunas.music.entity.SearchResult;
 import top.itning.yunshunas.music.service.FileService;
 import top.itning.yunshunas.music.service.MusicService;
 import top.itning.yunshunas.music.service.SearchService;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * 音乐相关接口
@@ -76,9 +78,11 @@ public class MusicController {
      * @return 搜索结果
      */
     @GetMapping("/search_v2")
-    public ResponseEntity<RestModel<SearchHits<Lyric>>> searchV2(@PageableDefault(size = 20) Pageable page,
-                                                                 @NotEmpty(message = "关键字不能为空") String keyword) {
-        return RestModel.ok(searchService.searchLyric(keyword, page));
+    public ResponseEntity<RestModel<List<SearchResultDTO>>> searchV2(@PageableDefault(size = 20) Pageable page,
+                                                                     @NotEmpty(message = "关键字不能为空") String keyword) {
+        List<SearchResult> searchResults = searchService.searchLyric(keyword, page);
+        List<SearchResultDTO> result = SearchConverter.INSTANCE.entity2dto(searchResults);
+        return RestModel.ok(result);
     }
 
     /**
