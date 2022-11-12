@@ -12,13 +12,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import top.itning.yunshunas.common.model.RestModel;
+import top.itning.yunshunas.music.converter.SearchConverter;
 import top.itning.yunshunas.music.dto.MusicDTO;
 import top.itning.yunshunas.music.dto.MusicMetaInfo;
+import top.itning.yunshunas.music.dto.SearchResultDTO;
+import top.itning.yunshunas.music.entity.SearchResult;
 import top.itning.yunshunas.music.service.FileService;
 import top.itning.yunshunas.music.service.MusicService;
+import top.itning.yunshunas.music.service.SearchService;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * 音乐相关接口
@@ -32,11 +37,13 @@ import javax.validation.constraints.NotNull;
 public class MusicController {
     private final MusicService musicService;
     private final FileService fileService;
+    private final SearchService searchService;
 
     @Autowired
-    public MusicController(MusicService musicService, FileService fileService) {
+    public MusicController(MusicService musicService, FileService fileService, SearchService searchService) {
         this.musicService = musicService;
         this.fileService = fileService;
+        this.searchService = searchService;
     }
 
     /**
@@ -61,6 +68,21 @@ public class MusicController {
     public ResponseEntity<RestModel<Page<MusicDTO>>> search(@PageableDefault(size = 20, sort = "name", direction = Sort.Direction.ASC) Pageable page,
                                                             @NotEmpty(message = "关键字不能为空") String keyword) {
         return RestModel.ok(musicService.fuzzySearch(keyword, page));
+    }
+
+    /**
+     * 搜索音乐和歌手
+     *
+     * @param page    分页信息
+     * @param keyword 关键词
+     * @return 搜索结果
+     */
+    @GetMapping("/search_v2")
+    public ResponseEntity<RestModel<List<SearchResultDTO>>> searchV2(@PageableDefault(size = 20) Pageable page,
+                                                                     @NotEmpty(message = "关键字不能为空") String keyword) {
+        List<SearchResult> searchResults = searchService.searchLyric(keyword, page);
+        List<SearchResultDTO> result = SearchConverter.INSTANCE.entity2dto(searchResults);
+        return RestModel.ok(result);
     }
 
     /**
