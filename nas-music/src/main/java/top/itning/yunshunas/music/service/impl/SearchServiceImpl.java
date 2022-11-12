@@ -97,7 +97,7 @@ public class SearchServiceImpl implements SearchService {
         SearchHits<Lyric> search = elasticsearchRestTemplate.search(
                 new NativeSearchQueryBuilder()
                         .withQuery(QueryBuilders.matchPhraseQuery(SEARCH_FILED_FOR_LYRIC, keyword))
-                        .withHighlightBuilder(new HighlightBuilder().field(SEARCH_FILED_FOR_LYRIC))
+                        .withHighlightBuilder(new HighlightBuilder().field(SEARCH_FILED_FOR_LYRIC, 50, 1))
                         .withPageable(pageable)
                         .build()
                 , Lyric.class
