@@ -110,7 +110,10 @@ public class SearchServiceImpl implements SearchService {
                 .map(item -> {
                     Lyric lyric = item.getContent();
 
-                    Music music = musicRepository.findByMusicId(lyric.getMusicId()).orElseThrow(() -> new IllegalStateException("检索音乐信息失败，返回空"));
+                    Music music = musicRepository.findByMusicId(lyric.getMusicId()).orElseThrow(() -> {
+                        log.error("检索音乐信息失败，返回空 音乐ID：{} 歌词ID：{}", lyric.getMusicId(), lyric.getLyricId());
+                        return new IllegalStateException("检索音乐信息失败，返回空");
+                    });
 
                     SearchResult searchResult = new SearchResult();
                     searchResult.setMusicId(music.getMusicId());
