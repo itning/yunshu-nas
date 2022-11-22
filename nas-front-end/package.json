@@ -22,7 +22,7 @@
     "dplayer": "^1.27.0",
     "js-base64": "^3.7.3",
     "music-metadata-browser": "^2.2.7",
-    "ng-zorro-antd": "^14.1.1",
+    "ng-zorro-antd": "^14.2.0",
     "rxjs": "~7.5.7",
     "tslib": "^2.4.1",
     "zone.js": "~0.12.0"
