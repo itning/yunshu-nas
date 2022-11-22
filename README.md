@@ -24,6 +24,14 @@
 
 ---
 
+# 依赖
+
+MySQL = 8
+
+jre = 17
+
+Elasticsearch(可选) = 7
+
 # Docker
 
 镜像仓库地址：[DockerHub-itning](https://hub.docker.com/r/itning/yunshu-nas/tags?page=1&ordering=last_updated)
