@@ -21,8 +21,8 @@ import top.itning.yunshunas.music.service.FileService;
 import top.itning.yunshunas.music.service.MusicService;
 import top.itning.yunshunas.music.service.SearchService;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 /**

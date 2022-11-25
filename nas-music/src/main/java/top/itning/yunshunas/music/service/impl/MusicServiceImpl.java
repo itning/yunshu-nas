@@ -12,7 +12,7 @@ import top.itning.yunshunas.music.dto.MusicDTO;
 import top.itning.yunshunas.music.repository.MusicRepository;
 import top.itning.yunshunas.music.service.MusicService;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 /**
  * @author itning

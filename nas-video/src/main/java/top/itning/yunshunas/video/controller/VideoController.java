@@ -9,8 +9,8 @@ import top.itning.yunshunas.common.util.MultipartFileSender;
 import top.itning.yunshunas.video.service.VideoService;
 import top.itning.yunshunas.video.video.VideoTransformHandler;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

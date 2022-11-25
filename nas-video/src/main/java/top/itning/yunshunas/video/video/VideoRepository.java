@@ -10,7 +10,7 @@ import org.springframework.util.DigestUtils;
 import top.itning.yunshunas.common.config.NasProperties;
 import top.itning.yunshunas.video.repository.IVideoRepository;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.io.File;
 
 /**
