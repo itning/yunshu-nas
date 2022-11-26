@@ -56,8 +56,8 @@ docker run --name yunshu-nas -p 8888:8888 -e MYSQL_URL=mysql8 -e MYSQL_PORT=3306
 | nas.basic-auth.password             | basic基础认证密码         | basic基础认证密码，默认空                                                              |
 | nas.basic-auth.ignore-path          | basic基础认证忽略路径       | 多个路径使用英文逗号分隔，默认空                                                             |
 | nas.server-url                      | 服务端地址，用于前端调用后端API地址 | http://127.0.0.1:8888                                                        |
-| ENABLED_ELASTICSEARCH               | 是否开启Elasticsearch   | true                                                                         |
-| ELASTICSEARCH_URI                   | Elasticsearch服务端URL | 空                                                                            |
+| ENABLED_ELASTICSEARCH               | 是否开启Elasticsearch   | false                                                                        |
+| ELASTICSEARCH_URI                   | Elasticsearch服务端URL | http://localhost:9200                                         |
 
 # 启动脚本（aria2c 可以不用）
 
