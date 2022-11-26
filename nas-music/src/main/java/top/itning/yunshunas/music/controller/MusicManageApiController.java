@@ -14,7 +14,7 @@ import top.itning.yunshunas.music.dto.MusicDTO;
 import top.itning.yunshunas.music.dto.MusicManageDTO;
 import top.itning.yunshunas.music.service.MusicManageService;
 
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotEmpty;
 
 /**
  * 音乐管理接口

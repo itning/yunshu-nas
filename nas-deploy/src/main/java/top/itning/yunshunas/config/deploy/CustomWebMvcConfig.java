@@ -15,7 +15,7 @@ import java.util.Arrays;
 public class CustomWebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        String[] allMethod = Arrays.stream(HttpMethod.values()).map(Enum::name).toArray(String[]::new);
+        String[] allMethod = Arrays.stream(HttpMethod.values()).map(HttpMethod::name).toArray(String[]::new);
         registry.addMapping("/**")
                 .allowedOriginPatterns("*")
                 .allowCredentials(true)
