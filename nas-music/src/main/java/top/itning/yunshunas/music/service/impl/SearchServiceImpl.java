@@ -1,15 +1,19 @@
 package top.itning.yunshunas.music.service.impl;
 
+import co.elastic.clients.elasticsearch._types.query_dsl.MatchPhraseQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
+import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
 import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
+import org.springframework.data.elasticsearch.core.query.HighlightQuery;
+import org.springframework.data.elasticsearch.core.query.highlight.Highlight;
+import org.springframework.data.elasticsearch.core.query.highlight.HighlightField;
+import org.springframework.data.elasticsearch.core.query.highlight.HighlightFieldParameters;
 import org.springframework.stereotype.Service;
 import top.itning.yunshunas.music.datasource.CoverDataSource;
 import top.itning.yunshunas.music.datasource.LyricDataSource;
@@ -42,20 +46,25 @@ public class SearchServiceImpl implements SearchService {
     private static final String SEARCH_FILED_FOR_LYRIC = "content";
 
     private final LyricElasticsearchRepository lyricElasticsearchRepository;
-    private final ElasticsearchRestTemplate elasticsearchRestTemplate;
     private final MusicRepository musicRepository;
     private final MusicDataSource musicDataSource;
     private final LyricDataSource lyricDataSource;
     private final CoverDataSource coverDataSource;
+    private final ElasticsearchTemplate elasticsearchTemplate;
 
     @Autowired
-    public SearchServiceImpl(LyricElasticsearchRepository lyricElasticsearchRepository, ElasticsearchRestTemplate elasticsearchRestTemplate, MusicRepository musicRepository, MusicDataSource musicDataSource, LyricDataSource lyricDataSource, CoverDataSource coverDataSource) {
+    public SearchServiceImpl(LyricElasticsearchRepository lyricElasticsearchRepository,
+                             MusicRepository musicRepository,
+                             MusicDataSource musicDataSource,
+                             LyricDataSource lyricDataSource,
+                             CoverDataSource coverDataSource,
+                             ElasticsearchTemplate elasticsearchTemplate) {
         this.lyricElasticsearchRepository = lyricElasticsearchRepository;
-        this.elasticsearchRestTemplate = elasticsearchRestTemplate;
         this.musicRepository = musicRepository;
         this.musicDataSource = musicDataSource;
         this.lyricDataSource = lyricDataSource;
         this.coverDataSource = coverDataSource;
+        this.elasticsearchTemplate = elasticsearchTemplate;
     }
 
     @Override
@@ -96,14 +105,15 @@ public class SearchServiceImpl implements SearchService {
 
     @Override
     public List<SearchResult> searchLyric(String keyword, Pageable pageable) {
-        SearchHits<Lyric> search = elasticsearchRestTemplate.search(
-                new NativeSearchQueryBuilder()
-                        .withQuery(QueryBuilders.matchPhraseQuery(SEARCH_FILED_FOR_LYRIC, keyword))
-                        .withHighlightBuilder(new HighlightBuilder().field(SEARCH_FILED_FOR_LYRIC, 50, 1))
+        SearchHits<Lyric> search = elasticsearchTemplate.search(
+                new NativeQueryBuilder()
+                        .withQuery(new Query.Builder().matchPhrase(new MatchPhraseQuery.Builder().field(SEARCH_FILED_FOR_LYRIC).query(keyword).build()).build())
+                        .withHighlightQuery(new HighlightQuery(new Highlight(Collections.singletonList(new HighlightField(SEARCH_FILED_FOR_LYRIC, HighlightFieldParameters.builder().withFragmentSize(50).withNumberOfFragments(1).build()))), null))
                         .withPageable(pageable)
-                        .build()
-                , Lyric.class
+                        .build(),
+                Lyric.class
         );
+
         if (!search.hasSearchHits()) {
             return Collections.emptyList();
         }
