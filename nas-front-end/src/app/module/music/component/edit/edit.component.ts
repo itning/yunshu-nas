@@ -71,6 +71,10 @@ export class EditComponent implements OnInit {
     this.musicService.editMusic(formData).subscribe(data => {
       console.log(data);
       this.message.success('修改成功');
+    }, error => {
+      console.error(error);
+      const errorMsg = error.error?.msg ?? '出错啦';
+      this.message.error(errorMsg);
     });
   }
 

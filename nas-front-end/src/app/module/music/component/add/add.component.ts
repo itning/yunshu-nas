@@ -55,6 +55,10 @@ export class AddComponent implements OnInit {
       console.log(data);
       this.message.success('新增成功');
       this.router.navigateByUrl('/music/list').catch(console.error);
+    }, error => {
+      console.error(error);
+      const errorMsg = error.error?.msg ?? '出错啦';
+      this.message.error(errorMsg);
     });
   }
 
