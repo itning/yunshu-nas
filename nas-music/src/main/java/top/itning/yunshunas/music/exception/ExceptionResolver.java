@@ -44,4 +44,14 @@ public class ExceptionResolver {
         response.setStatus(HttpStatus.BAD_REQUEST.value());
         return restModel;
     }
+
+    @ExceptionHandler(value = IllegalArgumentException.class)
+    @ResponseBody
+    public RestModel<?> illegalArgumentException(HttpServletResponse response, IllegalArgumentException e) {
+        RestModel<?> restModel = new RestModel<>();
+        restModel.setCode(HttpStatus.BAD_REQUEST.value());
+        restModel.setMsg(e.getMessage());
+        response.setStatus(HttpStatus.BAD_REQUEST.value());
+        return restModel;
+    }
 }
