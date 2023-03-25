@@ -31,6 +31,17 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>8.0.32</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc -->
+        <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.hibernate.orm/hibernate-community-dialects -->
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-community-dialects</artifactId>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/org/jaudiotagger -->
         <dependency>
             <groupId>org</groupId>
