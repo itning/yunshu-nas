@@ -3,6 +3,7 @@ package top.itning.yunshunas.music.datasource.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import top.itning.yunshunas.common.config.NasProperties;
+import top.itning.yunshunas.music.config.NasMusicProperties;
 import top.itning.yunshunas.music.constant.MusicType;
 import top.itning.yunshunas.music.datasource.CoverDataSource;
 import top.itning.yunshunas.music.datasource.LyricDataSource;
@@ -28,38 +29,44 @@ import java.nio.file.Paths;
 @Slf4j
 public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDataSource {
 
-    protected final NasProperties nasProperties;
-    protected final NasProperties.FileDataSourceConfig fileDataSourceConfig;
+    private final NasMusicProperties.MusicDataSourceConfig musicDataSourceConfig;
 
-    public FileDataSource(NasProperties nasProperties, String port) {
-        this.nasProperties = nasProperties;
-        this.fileDataSourceConfig = nasProperties.getFileDataSource();
+    public FileDataSource(NasMusicProperties.MusicDataSourceConfig musicDataSourceConfig,
+                          NasProperties nasProperties) {
+        this.musicDataSourceConfig = musicDataSourceConfig;
 
-        if (StringUtils.isBlank(fileDataSourceConfig.getUrlPrefix())) {
-            fileDataSourceConfig.setUrlPrefix("http://127.0.0.1:" + port);
+        if (StringUtils.isBlank(musicDataSourceConfig.getMusicFileDir())) {
+            throw new IllegalArgumentException("datasource config music file dir can not be blank");
         }
-        if (fileDataSourceConfig.getUrlPrefix().endsWith("/")) {
-            fileDataSourceConfig.setUrlPrefix(fileDataSourceConfig.getUrlPrefix().substring(0, fileDataSourceConfig.getUrlPrefix().length() - 1));
+
+        if (StringUtils.isBlank(musicDataSourceConfig.getLyricFileDir())) {
+            throw new IllegalArgumentException("datasource config lyric file dir can not be blank");
+        }
+
+        if (StringUtils.isBlank(musicDataSourceConfig.getUrlPrefix())) {
+            musicDataSourceConfig.setUrlPrefix(nasProperties.getServerUrl().toString());
+        }
+
+        if (musicDataSourceConfig.getUrlPrefix().endsWith("/")) {
+            musicDataSourceConfig.setUrlPrefix(musicDataSourceConfig.getUrlPrefix().substring(0, musicDataSourceConfig.getUrlPrefix().length() - 1));
         }
     }
 
     @Override
     public void addMusic(File newMusicFile, MusicType musicType, String musicId) throws Exception {
-        File dest = new File(fileDataSourceConfig.getMusicFileDir() + File.separator + musicId);
+        File dest = new File(musicDataSourceConfig.getMusicFileDir() + File.separator + musicId);
         try (FileInputStream in = new FileInputStream(newMusicFile);
              FileChannel sourceChannel = in.getChannel();
              FileOutputStream out = new FileOutputStream(dest);
              FileChannel destChannel = out.getChannel()) {
             log.info("拷贝文件从{}到{}", newMusicFile.getPath(), dest.getPath());
             destChannel.transferFrom(sourceChannel, 0, sourceChannel.size());
-        } finally {
-            log.info("拷贝完成，删除临时文件，结果：{}", deleteFile(newMusicFile.toPath()));
         }
     }
 
     @Override
     public boolean deleteMusic(String musicId) {
-        File dest = new File(fileDataSourceConfig.getMusicFileDir() + File.separator + musicId);
+        File dest = new File(musicDataSourceConfig.getMusicFileDir() + File.separator + musicId);
         if (!dest.exists() || !dest.isFile()) {
             return false;
         }
@@ -68,21 +75,21 @@ public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDa
 
     @Override
     public URI getMusic(String musicId) {
-        return URI.create(fileDataSourceConfig.getUrlPrefix() + "/file?id=" + musicId);
+        return URI.create(musicDataSourceConfig.getUrlPrefix() + "/file?id=" + musicId);
     }
 
     @Override
     public void addLyric(InputStream lyricInputStream, long length, String lyricId) throws Exception {
-        File lyricFile = new File(fileDataSourceConfig.getLyricFileDir() + File.separator + lyricId);
+        File lyricFile = new File(musicDataSourceConfig.getLyricFileDir() + File.separator + lyricId);
         if (lyricFile.exists()) {
             throw new IllegalArgumentException("歌词已经存在了");
         }
-        Files.copy(lyricInputStream, Paths.get(fileDataSourceConfig.getLyricFileDir(), lyricId));
+        Files.copy(lyricInputStream, Paths.get(musicDataSourceConfig.getLyricFileDir(), lyricId));
     }
 
     @Override
     public boolean deleteLyric(String lyricId) {
-        File lyricFile = new File(fileDataSourceConfig.getLyricFileDir() + File.separator + lyricId);
+        File lyricFile = new File(musicDataSourceConfig.getLyricFileDir() + File.separator + lyricId);
         if (!lyricFile.exists() || !lyricFile.isFile()) {
             return false;
         }
@@ -91,7 +98,7 @@ public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDa
 
     @Override
     public URI getLyric(String lyricId) {
-        return URI.create(fileDataSourceConfig.getUrlPrefix() + "/file/lyric?id=" + lyricId);
+        return URI.create(musicDataSourceConfig.getUrlPrefix() + "/file/lyric?id=" + lyricId);
     }
 
     @Override
@@ -101,7 +108,7 @@ public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDa
 
     @Override
     public URI getCover(String musicId) {
-        return URI.create(fileDataSourceConfig.getUrlPrefix() + "/file/cover?id=" + musicId);
+        return URI.create(musicDataSourceConfig.getUrlPrefix() + "/file/cover?id=" + musicId);
     }
 
     @Override
@@ -109,7 +116,7 @@ public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDa
         return true;
     }
 
-    protected boolean deleteFile(Path path) {
+    private boolean deleteFile(Path path) {
         boolean success = false;
         try {
             Files.delete(path);

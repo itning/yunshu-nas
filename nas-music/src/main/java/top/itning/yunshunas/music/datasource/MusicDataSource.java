@@ -11,7 +11,7 @@ import java.net.URI;
  * @author itning
  * @since 2022/1/12 11:13
  */
-public interface MusicDataSource {
+public interface MusicDataSource extends DataSource {
     /**
      * 新增音乐
      *

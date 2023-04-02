@@ -8,7 +8,7 @@ import java.net.URI;
  * @author itning
  * @since 2022/1/12 14:57
  */
-public interface CoverDataSource {
+public interface CoverDataSource extends DataSource {
 
     /**
      * 添加封面
