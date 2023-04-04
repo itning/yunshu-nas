@@ -22,9 +22,7 @@ import top.itning.yunshunas.music.datasource.CoverDataSource;
 import top.itning.yunshunas.music.datasource.LyricDataSource;
 import top.itning.yunshunas.music.datasource.MusicDataSource;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URI;
 
 /**
@@ -90,7 +88,19 @@ public class TencentCosDataSource implements MusicDataSource, LyricDataSource, C
             }
             File resultFile = new File(System.getProperty("java.io.tmpdir") + File.separator + musicId + ".mp3");
             ProcessBuilder pb = new ProcessBuilder(nasProperties.getFfmpegBinDir() + File.separatorChar + "ffmpeg", "-i", newMusicFile.getPath(), resultFile.getPath());
+            pb.redirectErrorStream(true);
             Process process = pb.start();
+
+            InputStream inputStream = process.getInputStream();
+            InputStreamReader isr = new InputStreamReader(inputStream);
+            BufferedReader br = new BufferedReader(isr);
+
+            try (inputStream; isr; br) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    log.debug(line);
+                }
+            }
             process.waitFor();
             log.info("转换完成 耗时：{}ms", System.currentTimeMillis() - start);
             if (!resultFile.exists()) {
