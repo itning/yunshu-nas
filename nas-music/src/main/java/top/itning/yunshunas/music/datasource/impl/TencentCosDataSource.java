@@ -105,6 +105,9 @@ public class TencentCosDataSource implements MusicDataSource, LyricDataSource, C
         Upload upload = transferManager.upload(putObjectRequest);
         UploadResult uploadResult = upload.waitForUploadResult();
         log.info("腾讯云COS音乐数据源上传结果：{}", uploadResult.getKey());
+        if (musicDataSourceConfig.isConvertAudioToMp3BeforeUploading()) {
+            log.info("删除转换后的文件：{} 结果：{}", newMusicFile, newMusicFile.delete());
+        }
     }
 
     @Override
