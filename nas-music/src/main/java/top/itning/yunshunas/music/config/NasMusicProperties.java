@@ -69,7 +69,7 @@ public class NasMusicProperties {
         /**
          * 上传之前将音频文件转成MP3后再上传
          */
-        private boolean convertAudioToMP3BeforeUploading;
+        private boolean convertAudioToMp3BeforeUploading;
 
         /**
          * 上传时（写操作）存储到这个数据源
