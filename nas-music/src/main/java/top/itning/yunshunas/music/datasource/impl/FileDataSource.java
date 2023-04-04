@@ -61,7 +61,7 @@ public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDa
             return;
         }
 
-        if (musicDataSourceConfig.isConvertAudioToMp3BeforeUploading()) {
+        if (musicDataSourceConfig.isConvertAudioToMp3BeforeUploading() && musicType != MusicType.MP3) {
             //TODO itning 转换后和数据库里的音乐类型不匹配
             log.info("上传前将音频文件转成MP3 原始音频大小：{} 文件类型：{}", newMusicFile.length(), musicType);
             long start = System.currentTimeMillis();
