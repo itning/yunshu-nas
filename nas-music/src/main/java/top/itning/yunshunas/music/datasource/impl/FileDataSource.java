@@ -60,7 +60,7 @@ public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDa
             log.info("歌曲目录未配置，跳过上传歌曲");
             return;
         }
-        File dest;
+
         if (musicDataSourceConfig.isConvertAudioToMp3BeforeUploading()) {
             //TODO itning 转换后和数据库里的音乐类型不匹配
             log.info("上传前将音频文件转成MP3 原始音频大小：{} 文件类型：{}", newMusicFile.length(), musicType);
@@ -76,21 +76,20 @@ public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDa
             if (!resultFile.exists()) {
                 throw new IllegalStateException("无法转换：转换后检查文件不存在");
             }
-
-            dest = new File(resultFile.getPath(), musicId);
-            if (!resultFile.renameTo(dest)) {
-                throw new RuntimeException("无法转换:文件重命名失败");
-            }
-
-        } else {
-            dest = new File(musicDataSourceConfig.getMusicFileDir() + File.separator + musicId);
+            newMusicFile = resultFile;
         }
+
+        File dest = new File(musicDataSourceConfig.getMusicFileDir() + File.separator + musicId);
         try (FileInputStream in = new FileInputStream(newMusicFile);
              FileChannel sourceChannel = in.getChannel();
              FileOutputStream out = new FileOutputStream(dest);
              FileChannel destChannel = out.getChannel()) {
             log.info("拷贝文件从{}到{}", newMusicFile.getPath(), dest.getPath());
             destChannel.transferFrom(sourceChannel, 0, sourceChannel.size());
+        } finally {
+            if (musicDataSourceConfig.isConvertAudioToMp3BeforeUploading()) {
+                deleteFile(newMusicFile.toPath());
+            }
         }
     }
 
