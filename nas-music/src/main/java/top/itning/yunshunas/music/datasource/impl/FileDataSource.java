@@ -36,11 +36,11 @@ public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDa
         this.musicDataSourceConfig = musicDataSourceConfig;
 
         if (StringUtils.isBlank(musicDataSourceConfig.getMusicFileDir())) {
-            throw new IllegalArgumentException("datasource config music file dir can not be blank");
+            log.warn("datasource config music file dir is blank");
         }
 
         if (StringUtils.isBlank(musicDataSourceConfig.getLyricFileDir())) {
-            throw new IllegalArgumentException("datasource config lyric file dir can not be blank");
+            log.warn("datasource config lyric file dir is blank");
         }
 
         if (StringUtils.isBlank(musicDataSourceConfig.getUrlPrefix())) {
@@ -54,6 +54,10 @@ public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDa
 
     @Override
     public void addMusic(File newMusicFile, MusicType musicType, String musicId) throws Exception {
+        if (StringUtils.isBlank(musicDataSourceConfig.getMusicFileDir())) {
+            log.info("歌曲目录未配置，跳过上传歌曲");
+            return;
+        }
         File dest = new File(musicDataSourceConfig.getMusicFileDir() + File.separator + musicId);
         try (FileInputStream in = new FileInputStream(newMusicFile);
              FileChannel sourceChannel = in.getChannel();
@@ -66,6 +70,10 @@ public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDa
 
     @Override
     public boolean deleteMusic(String musicId) {
+        if (StringUtils.isBlank(musicDataSourceConfig.getMusicFileDir())) {
+            log.info("歌曲目录未配置，跳过删除歌曲");
+            return true;
+        }
         File dest = new File(musicDataSourceConfig.getMusicFileDir() + File.separator + musicId);
         if (!dest.exists() || !dest.isFile()) {
             return false;
@@ -80,6 +88,10 @@ public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDa
 
     @Override
     public void addLyric(InputStream lyricInputStream, long length, String lyricId) throws Exception {
+        if (StringUtils.isBlank(musicDataSourceConfig.getLyricFileDir())) {
+            log.info("歌词目录未配置，跳过添加歌词");
+            return;
+        }
         File lyricFile = new File(musicDataSourceConfig.getLyricFileDir() + File.separator + lyricId);
         if (lyricFile.exists()) {
             throw new IllegalArgumentException("歌词已经存在了");
@@ -89,6 +101,10 @@ public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDa
 
     @Override
     public boolean deleteLyric(String lyricId) {
+        if (StringUtils.isBlank(musicDataSourceConfig.getLyricFileDir())) {
+            log.info("歌词目录未配置，跳过删除歌词");
+            return true;
+        }
         File lyricFile = new File(musicDataSourceConfig.getLyricFileDir() + File.separator + lyricId);
         if (!lyricFile.exists() || !lyricFile.isFile()) {
             return false;
