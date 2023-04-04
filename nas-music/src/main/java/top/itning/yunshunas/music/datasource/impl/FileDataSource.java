@@ -30,10 +30,12 @@ import java.nio.file.Paths;
 public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDataSource {
 
     private final NasMusicProperties.MusicDataSourceConfig musicDataSourceConfig;
+    private final NasProperties nasProperties;
 
     public FileDataSource(NasMusicProperties.MusicDataSourceConfig musicDataSourceConfig,
                           NasProperties nasProperties) {
         this.musicDataSourceConfig = musicDataSourceConfig;
+        this.nasProperties = nasProperties;
 
         if (StringUtils.isBlank(musicDataSourceConfig.getMusicFileDir())) {
             log.warn("datasource config music file dir is blank");
@@ -58,7 +60,31 @@ public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDa
             log.info("歌曲目录未配置，跳过上传歌曲");
             return;
         }
-        File dest = new File(musicDataSourceConfig.getMusicFileDir() + File.separator + musicId);
+        File dest;
+        if (musicDataSourceConfig.isConvertAudioToMp3BeforeUploading()) {
+            //TODO itning 转换后和数据库里的音乐类型不匹配
+            log.info("上传前将音频文件转成MP3 原始音频大小：{} 文件类型：{}", newMusicFile.length(), musicType);
+            long start = System.currentTimeMillis();
+            if (StringUtils.isBlank(nasProperties.getFfmpegBinDir())) {
+                throw new IllegalStateException("无法转换：ffmpeg bin目录未配置");
+            }
+            File resultFile = new File(System.getProperty("java.io.tmpdir") + File.separator + musicId + ".mp3");
+            ProcessBuilder pb = new ProcessBuilder(nasProperties.getFfmpegBinDir() + File.separatorChar + "ffmpeg", "-i", newMusicFile.getPath(), resultFile.getPath());
+            Process process = pb.start();
+            process.waitFor();
+            log.info("转换完成 耗时：{}ms", System.currentTimeMillis() - start);
+            if (!resultFile.exists()) {
+                throw new IllegalStateException("无法转换：转换后检查文件不存在");
+            }
+
+            dest = new File(resultFile.getPath(), musicId);
+            if (!resultFile.renameTo(dest)) {
+                throw new RuntimeException("无法转换:文件重命名失败");
+            }
+
+        } else {
+            dest = new File(musicDataSourceConfig.getMusicFileDir() + File.separator + musicId);
+        }
         try (FileInputStream in = new FileInputStream(newMusicFile);
              FileChannel sourceChannel = in.getChannel();
              FileOutputStream out = new FileOutputStream(dest);
