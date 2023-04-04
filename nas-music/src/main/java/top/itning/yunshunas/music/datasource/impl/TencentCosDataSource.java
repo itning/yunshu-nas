@@ -15,6 +15,7 @@ import com.qcloud.cos.transfer.TransferManagerConfiguration;
 import com.qcloud.cos.transfer.Upload;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import top.itning.yunshunas.common.config.NasProperties;
 import top.itning.yunshunas.music.config.NasMusicProperties;
 import top.itning.yunshunas.music.constant.MusicType;
 import top.itning.yunshunas.music.datasource.CoverDataSource;
@@ -40,10 +41,12 @@ public class TencentCosDataSource implements MusicDataSource, LyricDataSource, C
     private static final String COVER_DIR_NAME = "cover";
 
     private final COSClient cosClient;
+    private final NasProperties nasProperties;
     private final NasMusicProperties.MusicDataSourceConfig musicDataSourceConfig;
     private final TransferManager transferManager;
 
-    public TencentCosDataSource(NasMusicProperties.MusicDataSourceConfig musicDataSourceConfig) {
+    public TencentCosDataSource(NasProperties nasProperties, NasMusicProperties.MusicDataSourceConfig musicDataSourceConfig) {
+        this.nasProperties = nasProperties;
         this.musicDataSourceConfig = musicDataSourceConfig;
         if (StringUtils.isAnyBlank(musicDataSourceConfig.getSecretId(), musicDataSourceConfig.getSecretKey())) {
             throw new IllegalArgumentException("SecretId或SecretKey未配置");
@@ -78,6 +81,23 @@ public class TencentCosDataSource implements MusicDataSource, LyricDataSource, C
 
     @Override
     public void addMusic(File newMusicFile, MusicType musicType, String musicId) throws Exception {
+        if (musicDataSourceConfig.isConvertAudioToMP3BeforeUploading()) {
+            //TODO itning 转换后和数据库里的音乐类型不匹配
+            log.info("上传前将音频文件转成MP3 原始音频大小：{} 文件类型：{}", newMusicFile.length(), musicType);
+            long start = System.currentTimeMillis();
+            if (StringUtils.isBlank(nasProperties.getFfmpegBinDir())) {
+                throw new IllegalStateException("无法转换：ffmpeg bin目录未配置");
+            }
+            File resultFile = new File(System.getProperty("java.io.tmpdir") + File.separator + musicId + ".mp3");
+            ProcessBuilder pb = new ProcessBuilder(nasProperties.getFfmpegBinDir() + File.separatorChar + "ffmpeg", "-i", newMusicFile.getPath(), resultFile.getPath());
+            Process process = pb.start();
+            process.waitFor();
+            log.info("转换完成 耗时：{}ms", System.currentTimeMillis() - start);
+            if (!resultFile.exists()) {
+                throw new IllegalStateException("无法转换：转换后检查文件不存在");
+            }
+            newMusicFile = resultFile;
+        }
         PutObjectRequest putObjectRequest = new PutObjectRequest(musicDataSourceConfig.getBucketName(), MUSIC_DIR_NAME + "/" + musicId, newMusicFile);
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentType(musicType.getMediaType());
