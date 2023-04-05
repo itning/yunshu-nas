@@ -13,6 +13,7 @@
 
     <properties>
         <jarFileName>${project.version}</jarFileName>
+        <start-class>top.itning.yunshunas.YunshuNasApplication</start-class>
     </properties>
 
     <dependencies>
