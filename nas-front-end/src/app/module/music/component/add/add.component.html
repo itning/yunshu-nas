@@ -22,6 +22,7 @@
           [nzSrc]="coverUri"
           alt="封面"
         />
+        <input type="file" nz-input id="cover" (change)="handleFile($event,'coverFile')" accept="image/*">
       </nz-form-control>
     </nz-form-item>
     <nz-form-item *ngIf="musicUri">

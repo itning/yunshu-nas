@@ -1,5 +1,5 @@
 import {Component, OnInit, SecurityContext} from '@angular/core';
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {filter, mergeMap} from "rxjs";
 import {map} from "rxjs/operators";
 import {MusicService} from "../../../../service/music.service";
@@ -30,7 +30,8 @@ export class EditComponent implements OnInit {
               private musicService: MusicService,
               private fb: UntypedFormBuilder,
               private message: NzMessageService,
-              private sanitizer: DomSanitizer) {
+              private sanitizer: DomSanitizer,
+              private router: Router) {
   }
 
   ngOnInit(): void {
@@ -71,6 +72,7 @@ export class EditComponent implements OnInit {
     this.musicService.editMusic(formData).subscribe(data => {
       console.log(data);
       this.message.success('修改成功');
+      this.router.navigateByUrl('/music/list').catch(console.error);
     }, error => {
       console.error(error);
       const errorMsg = error.error?.msg ?? '出错啦';
@@ -97,6 +99,10 @@ export class EditComponent implements OnInit {
       }
       case 'lyricFile': {
         this.musicService.getLyricFromUrl(this.sanitizer.sanitize(SecurityContext.URL, this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(file)))).subscribe(lyric => this.lyric = lyric);
+        break;
+      }
+      case 'coverFile': {
+        this.music.coverUri = this.sanitizer.sanitize(SecurityContext.URL, this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(file)));
         break;
       }
     }

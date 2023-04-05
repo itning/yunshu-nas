@@ -83,6 +83,10 @@ export class AddComponent implements OnInit {
         this.musicService.getLyricFromUrl(this.sanitizer.sanitize(SecurityContext.URL, this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(file)))).subscribe(lyric => this.lyric = lyric);
         break;
       }
+      case 'coverFile': {
+        this.coverUri = this.sanitizer.sanitize(SecurityContext.URL, this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(file)));
+        break;
+      }
     }
   }
 
