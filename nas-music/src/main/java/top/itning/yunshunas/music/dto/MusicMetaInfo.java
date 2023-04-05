@@ -1,7 +1,9 @@
 package top.itning.yunshunas.music.dto;
 
 import lombok.Data;
+import lombok.ToString;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -29,7 +31,10 @@ public class MusicMetaInfo {
 
     @Data
     public static class CoverPicture {
+        private File file;
+        @ToString.Exclude
         private String base64;
+        @ToString.Exclude
         private byte[] binaryData;
         private String mimeType = "";
         private String description = "";

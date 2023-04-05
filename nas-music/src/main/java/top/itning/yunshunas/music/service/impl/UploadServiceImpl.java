@@ -1,6 +1,7 @@
 package top.itning.yunshunas.music.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,29 +46,39 @@ public class UploadServiceImpl implements UploadService {
     }
 
     @Override
-    public MusicDTO uploadMusic(MultipartFile file) throws Exception {
+    public MusicDTO uploadMusic(MultipartFile file, MusicMetaInfo musicMetaInfo) throws Exception {
         String musicId = UUID.randomUUID().toString().replaceAll("-", "");
         File musicTempFile = new File(System.getProperty("java.io.tmpdir") + File.separator + musicId);
         file.transferTo(musicTempFile);
 
         MusicType musicType = MusicType.getMusicTypeFromFilePath(file.getOriginalFilename()).orElseThrow(() -> new IllegalArgumentException("不支持的文件类型"));
-        MusicMetaInfo musicMetaInfo = musicMetaInfoService.metaInfo(musicTempFile, musicType);
-        if (null == musicMetaInfo) {
+
+        MusicMetaInfo musicMetaInfoFromFile = musicMetaInfoService.metaInfo(musicTempFile, musicType);
+
+        if (null == musicMetaInfoFromFile) {
             throw new IllegalArgumentException("音乐标签数据解析失败");
         }
-        if (StringUtils.isBlank(musicMetaInfo.getTitle())) {
+
+        if (StringUtils.isAllBlank(musicMetaInfoFromFile.getTitle(), musicMetaInfo.getTitle())) {
             throw new IllegalArgumentException("音乐标题为空");
         }
-        if (CollectionUtils.isEmpty(musicMetaInfo.getArtists())) {
+        if (CollectionUtils.isEmpty(musicMetaInfoFromFile.getArtists()) && CollectionUtils.isEmpty(musicMetaInfo.getArtists())) {
             throw new IllegalArgumentException("艺术家为空");
         }
-        if (StringUtils.isBlank(musicMetaInfo.getAlbum())) {
+        if (StringUtils.isBlank(musicMetaInfoFromFile.getAlbum())) {
             log.warn("{} 专辑信息为空", file.getOriginalFilename());
         }
-        if (CollectionUtils.isEmpty(musicMetaInfo.getCoverPictures())) {
+        if (CollectionUtils.isEmpty(musicMetaInfoFromFile.getCoverPictures()) && CollectionUtils.isEmpty(musicMetaInfo.getCoverPictures())) {
             log.warn("{} 封面信息为空", file.getOriginalFilename());
         } else {
-            MusicMetaInfo.CoverPicture coverPicture = musicMetaInfo.getCoverPictures().get(0);
+            MusicMetaInfo.CoverPicture coverPicture = !CollectionUtils.isEmpty(musicMetaInfo.getCoverPictures()) ?
+                    musicMetaInfo.getCoverPictures().get(0) :
+                    musicMetaInfoFromFile.getCoverPictures().get(0);
+
+            if (null != coverPicture.getFile()) {
+                coverPicture.setBinaryData(FileUtils.readFileToByteArray(coverPicture.getFile()));
+            }
+
             if (coverPicture.getBinaryData() != null && coverPicture.getBinaryData().length > 0) {
                 String mimeType = coverPicture.getMimeType();
                 if (StringUtils.isBlank(mimeType)) {
@@ -77,6 +88,7 @@ public class UploadServiceImpl implements UploadService {
             }
         }
         try {
+            musicMetaInfoService.editMetaInfo(musicTempFile, musicType, merge(musicMetaInfoFromFile, musicMetaInfo));
             musicDataSource.addMusic(musicTempFile, musicType, musicId);
         } catch (Exception e) {
             coverDataSource.deleteCover(musicId);
@@ -85,8 +97,8 @@ public class UploadServiceImpl implements UploadService {
         }
         Music music = new Music();
         music.setMusicId(musicId);
-        music.setName(musicMetaInfo.getTitle());
-        music.setSinger(musicMetaInfo.getArtists().get(0));
+        music.setName(StringUtils.isNotBlank(musicMetaInfo.getTitle()) ? musicMetaInfo.getTitle() : musicMetaInfoFromFile.getTitle());
+        music.setSinger(!CollectionUtils.isEmpty(musicMetaInfo.getArtists()) ? musicMetaInfo.getArtists().get(0) : musicMetaInfoFromFile.getArtists().get(0));
         music.setLyricId(musicId);
         music.setType(musicType.getType());
         log.info("写入数据库：{}", music);
@@ -94,7 +106,7 @@ public class UploadServiceImpl implements UploadService {
             musicRepository.save(music);
             musicRepository.flush();
         } catch (Exception e) {
-            log.error("写入数据库异常，移除已经拷贝的文件：{}", musicDataSource.deleteMusic(musicId));
+            log.error("写入数据库异常，移除已经拷贝的文件：music {} cover {}", musicDataSource.deleteMusic(musicId), coverDataSource.deleteCover(musicId));
         }
         log.info("上传音乐文件完成，音乐ID：{}", musicId);
         MusicDTO musicDTO = MusicConverter.INSTANCE.entity2dto(music);
@@ -105,7 +117,7 @@ public class UploadServiceImpl implements UploadService {
     }
 
     @Override
-    public MusicDTO editMusic(String musicId, MultipartFile file) throws Exception {
+    public MusicDTO editMusic(String musicId, MultipartFile file, MusicMetaInfo musicMetaInfo) throws Exception {
 
         Music music = musicRepository.findByMusicId(musicId).orElseThrow(() -> new IllegalArgumentException("音乐不存在"));
 
@@ -113,23 +125,32 @@ public class UploadServiceImpl implements UploadService {
         file.transferTo(musicTempFile);
 
         MusicType musicType = MusicType.getMusicTypeFromFilePath(file.getOriginalFilename()).orElseThrow(() -> new IllegalArgumentException("不支持的文件类型"));
-        MusicMetaInfo musicMetaInfo = musicMetaInfoService.metaInfo(musicTempFile, musicType);
-        if (null == musicMetaInfo) {
+        MusicMetaInfo musicMetaInfoFromFile = musicMetaInfoService.metaInfo(musicTempFile, musicType);
+        if (null == musicMetaInfoFromFile) {
             throw new IllegalArgumentException("音乐标签数据解析失败");
         }
-        if (StringUtils.isBlank(musicMetaInfo.getTitle())) {
+
+        if (StringUtils.isAllBlank(musicMetaInfoFromFile.getTitle(), musicMetaInfo.getTitle())) {
             throw new IllegalArgumentException("音乐标题为空");
         }
-        if (CollectionUtils.isEmpty(musicMetaInfo.getArtists())) {
+        if (CollectionUtils.isEmpty(musicMetaInfoFromFile.getArtists()) && CollectionUtils.isEmpty(musicMetaInfo.getArtists())) {
             throw new IllegalArgumentException("艺术家为空");
         }
-        if (StringUtils.isBlank(musicMetaInfo.getAlbum())) {
+
+        if (StringUtils.isBlank(musicMetaInfoFromFile.getAlbum())) {
             log.warn("{} 专辑信息为空", file.getOriginalFilename());
         }
-        if (CollectionUtils.isEmpty(musicMetaInfo.getCoverPictures())) {
+
+        if (CollectionUtils.isEmpty(musicMetaInfoFromFile.getCoverPictures())) {
             log.warn("{} 封面信息为空", file.getOriginalFilename());
         } else {
-            MusicMetaInfo.CoverPicture coverPicture = musicMetaInfo.getCoverPictures().get(0);
+            MusicMetaInfo.CoverPicture coverPicture = !CollectionUtils.isEmpty(musicMetaInfo.getCoverPictures()) ?
+                    musicMetaInfo.getCoverPictures().get(0) :
+                    musicMetaInfoFromFile.getCoverPictures().get(0);
+
+            if (null != coverPicture.getFile()) {
+                coverPicture.setBinaryData(FileUtils.readFileToByteArray(coverPicture.getFile()));
+            }
             if (coverPicture.getBinaryData() != null && coverPicture.getBinaryData().length > 0) {
                 String mimeType = coverPicture.getMimeType();
                 if (StringUtils.isBlank(mimeType)) {
@@ -139,10 +160,11 @@ public class UploadServiceImpl implements UploadService {
             }
         }
         musicDataSource.deleteMusic(musicId);
+        musicMetaInfoService.editMetaInfo(musicTempFile, musicType, merge(musicMetaInfoFromFile, musicMetaInfo));
         musicDataSource.addMusic(musicTempFile, musicType, musicId);
 
-        music.setName(musicMetaInfo.getTitle());
-        music.setSinger(musicMetaInfo.getArtists().get(0));
+        music.setName(StringUtils.isNotBlank(musicMetaInfo.getTitle()) ? musicMetaInfo.getTitle() : musicMetaInfoFromFile.getTitle());
+        music.setSinger(!CollectionUtils.isEmpty(musicMetaInfo.getArtists()) ? musicMetaInfo.getArtists().get(0) : musicMetaInfoFromFile.getArtists().get(0));
         music.setType(musicType.getType());
         music.setGmtModified(null);
         log.info("写入数据库：{}", music);
@@ -182,5 +204,31 @@ public class UploadServiceImpl implements UploadService {
         byte[] bytes = file.getBytes();
         lyricDataSource.addLyric(new ByteArrayInputStream(bytes), file.getSize(), lyricId);
         return bytes;
+    }
+
+    private MusicMetaInfo merge(MusicMetaInfo musicMetaInfoFromFile, MusicMetaInfo musicMetaInfoFromUser) {
+
+        MusicMetaInfo needEditMusicMetaInfo = new MusicMetaInfo();
+        if (StringUtils.isNotBlank(musicMetaInfoFromUser.getTitle()) && StringUtils.isNotBlank(musicMetaInfoFromFile.getTitle())) {
+            if (!musicMetaInfoFromUser.getTitle().equals(musicMetaInfoFromFile.getTitle())) {
+                needEditMusicMetaInfo.setTitle(musicMetaInfoFromUser.getTitle());
+            }
+        } else if (StringUtils.isNotBlank(musicMetaInfoFromUser.getTitle())) {
+            needEditMusicMetaInfo.setTitle(musicMetaInfoFromUser.getTitle());
+        }
+
+        if (!CollectionUtils.isEmpty(musicMetaInfoFromUser.getArtists()) && !CollectionUtils.isEmpty(musicMetaInfoFromFile.getArtists())) {
+            if (!musicMetaInfoFromUser.getArtists().equals(musicMetaInfoFromFile.getArtists())) {
+                needEditMusicMetaInfo.setArtists(musicMetaInfoFromUser.getArtists());
+            }
+        } else if (CollectionUtils.isEmpty(musicMetaInfoFromUser.getArtists())) {
+            needEditMusicMetaInfo.setArtists(musicMetaInfoFromUser.getArtists());
+        }
+
+        needEditMusicMetaInfo.setCoverPictures(musicMetaInfoFromUser.getCoverPictures());
+
+        log.info("修改的文件信息：{}", needEditMusicMetaInfo);
+
+        return needEditMusicMetaInfo;
     }
 }

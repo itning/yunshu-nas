@@ -14,15 +14,19 @@ import top.itning.yunshunas.music.datasource.MusicDataSource;
 import top.itning.yunshunas.music.dto.MusicChangeDTO;
 import top.itning.yunshunas.music.dto.MusicDTO;
 import top.itning.yunshunas.music.dto.MusicManageDTO;
+import top.itning.yunshunas.music.dto.MusicMetaInfo;
 import top.itning.yunshunas.music.entity.Music;
 import top.itning.yunshunas.music.repository.MusicRepository;
 import top.itning.yunshunas.music.service.MusicManageService;
 import top.itning.yunshunas.music.service.SearchService;
 import top.itning.yunshunas.music.service.UploadService;
 
+import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * 音乐管理服务实现
@@ -96,8 +100,32 @@ public class MusicManageServiceImpl implements MusicManageService {
         MultipartFile musicFile = changeDTO.getMusicFile();
         MusicDTO musicDTO = null;
         if (null != musicFile) {
+            MusicMetaInfo musicMetaInfo = new MusicMetaInfo();
+            musicMetaInfo.setTitle(changeDTO.getName());
+            musicMetaInfo.setArtists(Collections.singletonList(changeDTO.getSinger()));
+
+            MultipartFile coverFile = changeDTO.getCoverFile();
+            File coverTempFile = null;
+            if (null != changeDTO.getCoverFile()) {
+                MusicMetaInfo.CoverPicture coverPicture = new MusicMetaInfo.CoverPicture();
+
+                String filenameExtension = org.springframework.util.StringUtils.getFilenameExtension(coverFile.getOriginalFilename());
+                coverTempFile = new File(System.getProperty("java.io.tmpdir") + File.separator + UUID.randomUUID().toString().replaceAll("-", "") + "." + filenameExtension);
+                coverFile.transferTo(coverTempFile);
+                coverPicture.setFile(coverTempFile);
+                coverPicture.setMimeType(coverFile.getContentType());
+                musicMetaInfo.setCoverPictures(Collections.singletonList(coverPicture));
+
+            }
+
             log.debug("修改音乐文件 {}", musicFile.getOriginalFilename());
-            musicDTO = uploadService.editMusic(changeDTO.getMusicId(), musicFile);
+            try {
+                musicDTO = uploadService.editMusic(changeDTO.getMusicId(), musicFile, musicMetaInfo);
+            } finally {
+                if (null != coverTempFile) {
+                    log.info("删除封面临时文件，结果：{}", coverTempFile.delete());
+                }
+            }
         }
 
         Music music = musicRepository.findByMusicId(changeDTO.getMusicId()).orElseThrow(() -> new IllegalArgumentException("音乐不存在"));
@@ -147,13 +175,37 @@ public class MusicManageServiceImpl implements MusicManageService {
         if (null == musicFile) {
             throw new IllegalArgumentException("音乐文件不能为空");
         }
-        MusicDTO musicDTO = uploadService.uploadMusic(musicFile);
-        MultipartFile lyricFile = music.getLyricFile();
-        if (null != lyricFile) {
-            byte[] contentBytes = uploadService.uploadLyric(musicDTO.getMusicId(), lyricFile);
-            searchService.saveOrUpdateLyric(musicDTO.getMusicId(), musicDTO.getLyricId(), new String(contentBytes, StandardCharsets.UTF_8));
+
+        MusicMetaInfo musicMetaInfo = new MusicMetaInfo();
+        musicMetaInfo.setTitle(music.getName());
+        musicMetaInfo.setArtists(Collections.singletonList(music.getSinger()));
+        musicMetaInfo.setAlbum(null);
+        MultipartFile coverFile = music.getCoverFile();
+        File coverTempFile = null;
+        if (null != coverFile) {
+            MusicMetaInfo.CoverPicture coverPicture = new MusicMetaInfo.CoverPicture();
+
+            String filenameExtension = org.springframework.util.StringUtils.getFilenameExtension(coverFile.getOriginalFilename());
+            coverTempFile = new File(System.getProperty("java.io.tmpdir") + File.separator + UUID.randomUUID().toString().replaceAll("-", "") + "." + filenameExtension);
+            coverFile.transferTo(coverTempFile);
+            coverPicture.setFile(coverTempFile);
+            coverPicture.setMimeType(coverFile.getContentType());
+            musicMetaInfo.setCoverPictures(Collections.singletonList(coverPicture));
         }
-        return musicDTO;
+
+        try {
+            MusicDTO musicDTO = uploadService.uploadMusic(musicFile, musicMetaInfo);
+            MultipartFile lyricFile = music.getLyricFile();
+            if (null != lyricFile) {
+                byte[] contentBytes = uploadService.uploadLyric(musicDTO.getMusicId(), lyricFile);
+                searchService.saveOrUpdateLyric(musicDTO.getMusicId(), musicDTO.getLyricId(), new String(contentBytes, StandardCharsets.UTF_8));
+            }
+            return musicDTO;
+        } finally {
+            if (null != coverTempFile) {
+                log.info("删除封面临时文件，结果：{}", coverTempFile.delete());
+            }
+        }
     }
 
     @Override
