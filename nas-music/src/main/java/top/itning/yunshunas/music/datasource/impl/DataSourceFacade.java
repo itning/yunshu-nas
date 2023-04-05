@@ -117,7 +117,7 @@ public class DataSourceFacade implements MusicDataSource, CoverDataSource, Lyric
 
     @Override
     public URI getLyric(String lyricId) {
-        return ((LyricDataSource) readDataSourceMap.get(CoverDataSource.class).dataSource()).getLyric(lyricId);
+        return ((LyricDataSource) readDataSourceMap.get(LyricDataSource.class).dataSource()).getLyric(lyricId);
     }
 
     @Override
@@ -159,7 +159,7 @@ public class DataSourceFacade implements MusicDataSource, CoverDataSource, Lyric
 
     @Override
     public URI getMusic(String musicId) {
-        return ((MusicDataSource) readDataSourceMap.get(CoverDataSource.class).dataSource()).getMusic(musicId);
+        return ((MusicDataSource) readDataSourceMap.get(MusicDataSource.class).dataSource()).getMusic(musicId);
     }
 
     private boolean deleteFile(Path path) {
