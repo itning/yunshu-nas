@@ -83,7 +83,7 @@ nohup aria2c --rpc-listen-port 6800 --enable-rpc --rpc-listen-all >aria2c.log 2>
 
 - [ ] 图片在线查看
 
-- [ ] 提供ftp服务
+- [X] 提供ftp服务
 
 - [ ] 资料加密
 
