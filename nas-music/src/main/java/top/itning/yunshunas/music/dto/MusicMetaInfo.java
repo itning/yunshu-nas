@@ -2,6 +2,8 @@ package top.itning.yunshunas.music.dto;
 
 import lombok.Data;
 import lombok.ToString;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.CollectionUtils;
 
 import java.io.File;
 import java.util.List;
@@ -41,5 +43,9 @@ public class MusicMetaInfo {
         private boolean isLinked = false;
         private String imageUrl = "";
         private int pictureType = -1;
+    }
+
+    public boolean needModify() {
+        return StringUtils.isNotBlank(title) || StringUtils.isNotBlank(album) || !CollectionUtils.isEmpty(artists) || !CollectionUtils.isEmpty(coverPictures);
     }
 }

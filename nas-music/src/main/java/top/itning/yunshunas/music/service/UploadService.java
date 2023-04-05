@@ -31,6 +31,15 @@ public interface UploadService {
     MusicDTO editMusic(String musicId, MultipartFile file, MusicMetaInfo musicMetaInfo) throws Exception;
 
     /**
+     * 修改音乐元数据信息
+     *
+     * @param musicId       音乐ID
+     * @param musicMetaInfo 音乐元数据信息
+     * @throws Exception 修改出错
+     */
+    void editMetaInfo(String musicId, MusicMetaInfo musicMetaInfo) throws Exception;
+
+    /**
      * 上传歌词
      *
      * @param musicId 歌词对应的歌曲ID
