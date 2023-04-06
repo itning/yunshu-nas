@@ -105,4 +105,4 @@ nohup aria2c --rpc-listen-port 6800 --enable-rpc --rpc-listen-all >aria2c.log 2>
 
 # 感谢
 
-<img src="https://raw.githubusercontent.com/itning/yunshu-nas/master/pic/jetbrains.png" style="zoom: 25%;" />
+![JetBrains Logo (Main) logo](https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg)
