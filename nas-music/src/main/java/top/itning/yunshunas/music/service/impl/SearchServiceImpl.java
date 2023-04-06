@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
 import org.springframework.data.elasticsearch.core.SearchHits;
@@ -104,12 +103,11 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public List<SearchResult> searchLyric(String keyword, Pageable pageable) {
+    public List<SearchResult> searchLyric(String keyword) {
         SearchHits<Lyric> search = elasticsearchTemplate.search(
                 new NativeQueryBuilder()
                         .withQuery(new Query.Builder().matchPhrase(new MatchPhraseQuery.Builder().field(SEARCH_FILED_FOR_LYRIC).query(keyword).build()).build())
                         .withHighlightQuery(new HighlightQuery(new Highlight(Collections.singletonList(new HighlightField(SEARCH_FILED_FOR_LYRIC, HighlightFieldParameters.builder().withFragmentSize(50).withNumberOfFragments(1).build()))), null))
-                        .withPageable(pageable)
                         .build(),
                 Lyric.class
         );

@@ -1,0 +1,137 @@
+package top.itning.yunshunas.common.db;
+
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.SingleColumnRowMapper;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+import top.itning.yunshunas.common.config.NasProperties;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+/**
+ * @author itning
+ * @since 2023/4/6 10:44
+ */
+@Slf4j
+@Component
+public class DbSourceConfig {
+
+    private final NasProperties nasProperties;
+    private HikariDataSource dbInfoDataSource;
+    private HikariDataSource userDataSource;
+    private JdbcTemplate dbInfoJdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
+    private DbEntry dbEntry;
+
+    public DbSourceConfig(NasProperties nasProperties) {
+        this.nasProperties = nasProperties;
+    }
+
+    @PostConstruct
+    public void init() {
+        String jdbcUrl = Optional.ofNullable(nasProperties.getDefaultDbPath()).map(it -> "jdbc:sqlite:" + it).orElse("jdbc:sqlite:yunshu-nas.db");
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(jdbcUrl);
+
+        String createTableQuery = "CREATE TABLE IF NOT EXISTS db (" +
+                "  id INTEGER PRIMARY KEY autoincrement," +
+                "  name TEXT NOT NULL," +
+                "  type TEXT NOT NULL," +
+                "  jdbcUrl TEXT NOT NULL," +
+                "  username TEXT NOT NULL," +
+                "  password TEXT NOT NULL" +
+                ")";
+
+        config.setConnectionInitSql(createTableQuery);
+        dbInfoDataSource = new HikariDataSource(config);
+        this.dbInfoJdbcTemplate = new JdbcTemplate(dbInfoDataSource, false);
+        List<DbEntry> results = dbInfoJdbcTemplate.query("SELECT id,name,type,jdbcUrl,username,password FROM db ORDER BY id DESC LIMIT 1", new BeanPropertyRowMapper<>(DbEntry.class));
+        if (CollectionUtils.isEmpty(results)) {
+            return;
+        }
+        dbEntry = results.get(0);
+        log.info("获取的db信息：{}", dbEntry);
+        if (Objects.isNull(dbEntry)) {
+            return;
+        }
+        this.jdbcTemplate = getJdbcTemplate(dbEntry);
+    }
+
+    @PreDestroy
+    public void destroy() {
+        if (Objects.nonNull(userDataSource)) {
+            userDataSource.close();
+        }
+        if (Objects.nonNull(dbInfoDataSource)) {
+            dbInfoDataSource.close();
+        }
+    }
+
+    private JdbcTemplate getJdbcTemplate(DbEntry dbEntry) {
+        HikariDataSource dataSource = getDataSource(dbEntry);
+        if (Objects.nonNull(userDataSource)) {
+            userDataSource.close();
+        }
+        userDataSource = dataSource;
+        return new JdbcTemplate(userDataSource, true);
+    }
+
+    private HikariDataSource getDataSource(DbEntry dbEntry) {
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(dbEntry.getJdbcUrl());
+        config.setUsername(dbEntry.getUsername());
+        config.setPassword(dbEntry.getPassword());
+        //TODO itning add index  index_music_id
+        String createTableQuery = "CREATE TABLE IF NOT EXISTS 'music'(" +
+                "'id' BIGINT PRIMARY KEY AUTO_INCREMEN," +
+                "'music_id' VARCHAR," +
+                "'lyric_id' VARCHAR," +
+                "'name' VARCHAR," +
+                "'singer' VARCHAR," +
+                "'type' INT," +
+                "'gmt_create' DATETIME DEFAULT CURRENT_TIMESTAMP," +
+                "'gmt_modified' DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAM" +
+                ");";
+        config.setConnectionInitSql(createTableQuery);
+        return new HikariDataSource(config);
+    }
+
+
+    public boolean checkConnection(DbEntry dbEntry) {
+        try (HikariDataSource dataSource = getDataSource(dbEntry)) {
+            return dataSource.isRunning();
+        } catch (Exception e) {
+            log.warn("check connection failed {}", dbEntry, e);
+            return false;
+        }
+    }
+
+    public void setDataSource(DbEntry dbEntry) {
+
+        String insertSql = "INSERT INTO db(name, type,jdbcUrl,username,password) VALUES (?, ?, ?, ?, ?)";
+        int updated = dbInfoJdbcTemplate.update(insertSql, dbEntry.getName(), dbEntry.getType().name(), dbEntry.getJdbcUrl(), dbEntry.getUsername(), dbEntry.getPassword());
+        if (updated != 1) {
+            throw new RuntimeException("插入数据库失败 " + updated);
+        }
+        this.jdbcTemplate = getJdbcTemplate(dbEntry);
+    }
+
+    public JdbcTemplate getJdbcTemplate() {
+        if (Objects.isNull(jdbcTemplate)) {
+            throw new RuntimeException("数据库未配置，请先配置数据库！");
+        }
+        return jdbcTemplate;
+    }
+
+    public DbEntry getDbEntry() {
+        return this.dbEntry;
+    }
+}

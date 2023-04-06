@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.CollectionUtils;
 import top.itning.yunshunas.common.config.NasProperties;
 import top.itning.yunshunas.music.datasource.CoverDataSource;
 import top.itning.yunshunas.music.datasource.DataSource;
@@ -40,6 +41,9 @@ public class DataSourceConfig {
             nasProperties.setServerUrl(new URL("http://127.0.0.1:" + port));
         }
         Map<String, NasMusicProperties.MusicDataSourceConfig> dataSourceMap = nasMusicProperties.getDataSource();
+        if (CollectionUtils.isEmpty(dataSourceMap)) {
+            return;
+        }
         DataSourceWrapper readMusicDataSource = null;
         DataSourceWrapper readLyricDataSource = null;
         DataSourceWrapper readCoverDataSource = null;

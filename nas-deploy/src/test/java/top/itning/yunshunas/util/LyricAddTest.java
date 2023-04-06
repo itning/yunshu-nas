@@ -46,7 +46,7 @@ public class LyricAddTest {
 
     @Test
     public void testSearch() {
-        List<SearchResult> result = searchService.searchLyric("我嫉妒", Pageable.unpaged());
+        List<SearchResult> result = searchService.searchLyric("我嫉妒");
 
         result.forEach(System.out::println);
     }

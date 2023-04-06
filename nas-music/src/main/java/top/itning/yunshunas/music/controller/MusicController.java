@@ -1,10 +1,8 @@
 package top.itning.yunshunas.music.controller;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
@@ -21,8 +19,6 @@ import top.itning.yunshunas.music.service.FileService;
 import top.itning.yunshunas.music.service.MusicService;
 import top.itning.yunshunas.music.service.SearchService;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -49,38 +45,33 @@ public class MusicController {
     /**
      * 分页获取音乐列表
      *
-     * @param page 分页信息
      * @return 音乐列表
      */
     @GetMapping
-    public ResponseEntity<RestModel<Page<MusicDTO>>> getAll(@PageableDefault(size = 20, sort = "name", direction = Sort.Direction.ASC) Pageable page) {
-        return RestModel.ok(musicService.findAll(page));
+    public ResponseEntity<RestModel<List<MusicDTO>>> getAll() {
+        return RestModel.ok(musicService.findAll());
     }
 
     /**
      * 搜索音乐和歌手
      *
-     * @param page    分页信息
      * @param keyword 关键词
      * @return 搜索结果
      */
     @GetMapping("/search")
-    public ResponseEntity<RestModel<Page<MusicDTO>>> search(@PageableDefault(size = 20, sort = "name", direction = Sort.Direction.ASC) Pageable page,
-                                                            @NotEmpty(message = "关键字不能为空") String keyword) {
-        return RestModel.ok(musicService.fuzzySearch(keyword, page));
+    public ResponseEntity<RestModel<List<MusicDTO>>> search(@NotEmpty(message = "关键字不能为空") String keyword) {
+        return RestModel.ok(musicService.fuzzySearch(keyword));
     }
 
     /**
      * 搜索音乐和歌手
      *
-     * @param page    分页信息
      * @param keyword 关键词
      * @return 搜索结果
      */
     @GetMapping("/search_v2")
-    public ResponseEntity<RestModel<List<SearchResultDTO>>> searchV2(@PageableDefault(size = 20) Pageable page,
-                                                                     @NotEmpty(message = "关键字不能为空") String keyword) {
-        List<SearchResult> searchResults = searchService.searchLyric(keyword, page);
+    public ResponseEntity<RestModel<List<SearchResultDTO>>> searchV2(@NotEmpty(message = "关键字不能为空") String keyword) {
+        List<SearchResult> searchResults = searchService.searchLyric(keyword);
         List<SearchResultDTO> result = SearchConverter.INSTANCE.entity2dto(searchResults);
         return RestModel.ok(result);
     }
@@ -88,27 +79,23 @@ public class MusicController {
     /**
      * 搜索歌名
      *
-     * @param page    分页信息
      * @param keyword 关键词
      * @return 搜索结果
      */
     @GetMapping("/search/name")
-    public ResponseEntity<RestModel<Page<MusicDTO>>> searchName(@PageableDefault(size = 20, sort = "name", direction = Sort.Direction.ASC) Pageable page,
-                                                                @NotEmpty(message = "关键字不能为空") String keyword) {
-        return RestModel.ok(musicService.fuzzySearchName(keyword, page));
+    public ResponseEntity<RestModel<List<MusicDTO>>> searchName(@NotEmpty(message = "关键字不能为空") String keyword) {
+        return RestModel.ok(musicService.fuzzySearchName(keyword));
     }
 
     /**
      * 搜索歌手
      *
-     * @param page    分页信息
      * @param keyword 关键词
      * @return 搜索结果
      */
     @GetMapping("/search/singer")
-    public ResponseEntity<RestModel<Page<MusicDTO>>> searchSinger(@PageableDefault(size = 20, sort = "name", direction = Sort.Direction.ASC) Pageable page,
-                                                                  @NotEmpty(message = "关键字不能为空") String keyword) {
-        return RestModel.ok(musicService.fuzzySearchSinger(keyword, page));
+    public ResponseEntity<RestModel<List<MusicDTO>>> searchSinger(@NotEmpty(message = "关键字不能为空") String keyword) {
+        return RestModel.ok(musicService.fuzzySearchSinger(keyword));
     }
 
     /**

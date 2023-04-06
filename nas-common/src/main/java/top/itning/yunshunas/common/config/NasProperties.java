@@ -18,6 +18,8 @@ import java.util.Objects;
 @Data
 public class NasProperties {
 
+    private String defaultDbPath;
+
     /**
      * 文件输出目录
      */
