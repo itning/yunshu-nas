@@ -114,6 +114,7 @@ public class DataSourceConfig {
     }
 
     private DataSource tryNewInstance(String name, Class<? extends DataSource> dataSourceClass, NasMusicProperties.MusicDataSourceConfig musicDataSourceConfig, NasProperties nasProperties) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        //TODO itning 重构 先查出所有的构造方法
         DataSource dataSource = null;
         try {
             Constructor<? extends DataSource> declaredConstructor = dataSourceClass.getDeclaredConstructor();
