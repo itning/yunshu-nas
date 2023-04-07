@@ -142,11 +142,16 @@ public class DbSourceConfig {
     }
 
     public <T> T getSetting(String key, Class<T> tClass) {
-        List<T> results = dbInfoJdbcTemplate.query("SELECT * FROM setting WHERE key = ?", new BeanPropertyRowMapper<>(tClass), key);
+        List<String> results = dbInfoJdbcTemplate.query("SELECT * FROM setting WHERE key = ?", new BeanPropertyRowMapper<>(String.class), key);
         if (CollectionUtils.isEmpty(results)) {
             return null;
         }
-        return results.get(0);
+        String value = results.get(0);
+        try {
+            return OBJECT_MAPPER.readValue(value, tClass);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public <T> T updateSetting(String key, T obj) {
