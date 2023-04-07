@@ -39,8 +39,8 @@ public class DataSourceConfig {
     @Autowired
     public DataSourceConfig(@Value("${server.port}") String port,
                             DbSourceConfig dbSourceConfig) throws Exception {
-        NasProperties nasProperties = dbSourceConfig.getSetting("nas", NasProperties.class);
-        NasMusicProperties nasMusicProperties = dbSourceConfig.getSetting("datasource", NasMusicProperties.class);
+        NasProperties nasProperties = dbSourceConfig.getSetting(NasProperties.class);
+        NasMusicProperties nasMusicProperties = dbSourceConfig.getSetting(NasMusicProperties.class);
         if (Objects.isNull(nasProperties) || Objects.isNull(nasMusicProperties)) {
             return;
         }

@@ -9,6 +9,7 @@ import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
@@ -141,8 +142,8 @@ public class DbSourceConfig {
         return this.dbEntry;
     }
 
-    public <T> T getSetting(String key, Class<T> tClass) {
-        List<String> results = dbInfoJdbcTemplate.query("SELECT * FROM setting WHERE key = ?", new BeanPropertyRowMapper<>(String.class), key);
+    public <T> T getSetting(Class<T> tClass) {
+        List<String> results = dbInfoJdbcTemplate.query("SELECT value FROM setting WHERE key = ?", new SingleColumnRowMapper<>(String.class), tClass.getName());
         if (CollectionUtils.isEmpty(results)) {
             return null;
         }
@@ -154,9 +155,17 @@ public class DbSourceConfig {
         }
     }
 
-    public <T> T updateSetting(String key, T obj) {
+    public <T> T setSetting(T obj) {
+        if (Objects.isNull(getSetting(obj.getClass()))) {
+            return createSetting(obj);
+        } else {
+            return updateSetting(obj);
+        }
+    }
+
+    public <T> T updateSetting(T obj) {
         try {
-            int updated = dbInfoJdbcTemplate.update("UPDATE setting SET value = ? WHERE key = ?", OBJECT_MAPPER.writeValueAsString(obj), key);
+            int updated = dbInfoJdbcTemplate.update("UPDATE setting SET value = ? WHERE key = ?", OBJECT_MAPPER.writeValueAsString(obj), obj.getClass().getName());
             if (updated != 1) {
                 return null;
             }
@@ -166,12 +175,12 @@ public class DbSourceConfig {
         }
     }
 
-    public <T> T createSetting(String key, T obj) {
+    public <T> T createSetting(T obj) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        int updated = getJdbcTemplate().update(connection -> {
+        int updated = dbInfoJdbcTemplate.update(connection -> {
             try {
                 PreparedStatement ps = connection.prepareStatement("INSERT INTO setting(key, value) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
-                ps.setString(1, key);
+                ps.setString(1, obj.getClass().getName());
                 ps.setString(2, OBJECT_MAPPER.writeValueAsString(obj));
                 return ps;
             } catch (Exception e) {

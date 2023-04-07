@@ -1,5 +1,7 @@
 package top.itning.yunshunas.music.config;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -14,6 +16,8 @@ import java.util.Map;
 @ConfigurationProperties(prefix = "nas.music")
 @Component
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class NasMusicProperties {
 
     private Map<String, MusicDataSourceConfig> dataSource;

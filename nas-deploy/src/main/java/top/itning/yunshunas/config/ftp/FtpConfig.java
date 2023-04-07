@@ -11,6 +11,7 @@ import org.apache.ftpserver.usermanager.UserFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import top.itning.yunshunas.common.config.NasFtpProperties;
+import top.itning.yunshunas.common.db.DbSourceConfig;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,15 +27,19 @@ public class FtpConfig {
 
     private Map<String, FtpServer> instance;
 
-    private final NasFtpProperties nasFtpProperties;
+    private final DbSourceConfig dbSourceConfig;
 
     @Autowired
-    public FtpConfig(NasFtpProperties nasFtpProperties) {
-        this.nasFtpProperties = nasFtpProperties;
+    public FtpConfig(DbSourceConfig dbSourceConfig) {
+        this.dbSourceConfig = dbSourceConfig;
     }
 
     @PostConstruct
     public void init() throws FtpException {
+        NasFtpProperties nasFtpProperties = dbSourceConfig.getSetting(NasFtpProperties.class);
+        if (Objects.isNull(nasFtpProperties)) {
+            return;
+        }
         Map<String, NasFtpProperties.FtpConfig> configMap = nasFtpProperties.getConfig();
         if (Objects.isNull(configMap)) {
             return;
