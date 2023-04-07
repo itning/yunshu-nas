@@ -51,7 +51,7 @@ public class MusicRepositoryImpl extends AbstractRepository implements MusicRepo
 
     @Override
     public List<Music> findAll() {
-        return getJdbcTemplate().query("SELECT * FROM music", new BeanPropertyRowMapper<>());
+        return getJdbcTemplate().query("SELECT * FROM music", new BeanPropertyRowMapper<>(Music.class));
     }
 
     @Override
@@ -59,26 +59,26 @@ public class MusicRepositoryImpl extends AbstractRepository implements MusicRepo
         return getJdbcTemplate().query("SELECT * FROM music WHERE name LIKE '%?%'OR singer LIKE '%?%'", ps -> {
             ps.setString(1, name);
             ps.setString(2, singer);
-        }, new BeanPropertyRowMapper<>());
+        }, new BeanPropertyRowMapper<>(Music.class));
     }
 
     @Override
     public List<Music> findAllByNameLike(String name) {
         return getJdbcTemplate().query("SELECT * FROM music WHERE name LIKE '%?%'",
                 ps -> ps.setString(1, name),
-                new BeanPropertyRowMapper<>());
+                new BeanPropertyRowMapper<>(Music.class));
     }
 
     @Override
     public List<Music> findAllBySingerLike(String singer) {
         return getJdbcTemplate().query("SELECT * FROM music WHERE singer LIKE '%?%'",
                 ps -> ps.setString(1, singer),
-                new BeanPropertyRowMapper<>());
+                new BeanPropertyRowMapper<>(Music.class));
     }
 
     @Override
     public Optional<Music> findByMusicId(String musicId) {
-        List<Music> result = getJdbcTemplate().query("SELECT * FROM music WHERE music_id = ?", ps -> ps.setString(1, musicId), new BeanPropertyRowMapper<>());
+        List<Music> result = getJdbcTemplate().query("SELECT * FROM music WHERE music_id = ?", ps -> ps.setString(1, musicId), new BeanPropertyRowMapper<>(Music.class));
         if (CollectionUtils.isEmpty(result)) {
             return Optional.empty();
         }
@@ -90,7 +90,7 @@ public class MusicRepositoryImpl extends AbstractRepository implements MusicRepo
         if (null == id) {
             return Optional.empty();
         }
-        List<Music> result = getJdbcTemplate().query("SELECT * FROM music WHERE id = ?", ps -> ps.setLong(1, id), new BeanPropertyRowMapper<>());
+        List<Music> result = getJdbcTemplate().query("SELECT * FROM music WHERE id = ?", ps -> ps.setLong(1, id), new BeanPropertyRowMapper<>(Music.class));
         if (CollectionUtils.isEmpty(result)) {
             return Optional.empty();
         }

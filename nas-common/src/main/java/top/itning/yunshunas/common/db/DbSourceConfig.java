@@ -7,7 +7,6 @@ import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import top.itning.yunshunas.common.config.NasProperties;
@@ -41,24 +40,26 @@ public class DbSourceConfig {
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(jdbcUrl);
 
-        String createTableQuery = "CREATE TABLE IF NOT EXISTS db (" +
-                "  id INTEGER PRIMARY KEY autoincrement," +
-                "  name TEXT NOT NULL," +
-                "  type TEXT NOT NULL," +
-                "  jdbcUrl TEXT NOT NULL," +
-                "  username TEXT NOT NULL," +
-                "  password TEXT NOT NULL" +
-                ")";
+        String createTableQuery = """
+                CREATE TABLE IF NOT EXISTS db (
+                id INTEGER PRIMARY KEY autoincrement,
+                name TEXT NOT NULL,
+                type TEXT NOT NULL,
+                jdbcUrl TEXT NOT NULL,
+                username TEXT DEFAULT NULL,
+                password TEXT DEFAULT NULL
+                );
+                """;
 
         config.setConnectionInitSql(createTableQuery);
         dbInfoDataSource = new HikariDataSource(config);
         this.dbInfoJdbcTemplate = new JdbcTemplate(dbInfoDataSource, false);
-        List<DbEntry> results = dbInfoJdbcTemplate.query("SELECT id,name,type,jdbcUrl,username,password FROM db ORDER BY id DESC LIMIT 1", new BeanPropertyRowMapper<>(DbEntry.class));
+        List<DbEntry> results = dbInfoJdbcTemplate.query("SELECT * FROM db ORDER BY id DESC LIMIT 1", new BeanPropertyRowMapper<>(DbEntry.class));
         if (CollectionUtils.isEmpty(results)) {
             return;
         }
         dbEntry = results.get(0);
-        log.info("获取的db信息：{}", dbEntry);
+        log.info("Get DB Info: {}", dbEntry.getName());
         if (Objects.isNull(dbEntry)) {
             return;
         }
@@ -89,18 +90,7 @@ public class DbSourceConfig {
         config.setJdbcUrl(dbEntry.getJdbcUrl());
         config.setUsername(dbEntry.getUsername());
         config.setPassword(dbEntry.getPassword());
-        //TODO itning add index  index_music_id
-        String createTableQuery = "CREATE TABLE IF NOT EXISTS 'music'(" +
-                "'id' BIGINT PRIMARY KEY AUTO_INCREMEN," +
-                "'music_id' VARCHAR," +
-                "'lyric_id' VARCHAR," +
-                "'name' VARCHAR," +
-                "'singer' VARCHAR," +
-                "'type' INT," +
-                "'gmt_create' DATETIME DEFAULT CURRENT_TIMESTAMP," +
-                "'gmt_modified' DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAM" +
-                ");";
-        config.setConnectionInitSql(createTableQuery);
+        config.setConnectionInitSql(dbEntry.getType().getDdlSql());
         return new HikariDataSource(config);
     }
 
