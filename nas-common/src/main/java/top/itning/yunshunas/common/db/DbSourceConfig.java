@@ -54,6 +54,14 @@ public class DbSourceConfig {
         config.setConnectionInitSql(createTableQuery);
         dbInfoDataSource = new HikariDataSource(config);
         this.dbInfoJdbcTemplate = new JdbcTemplate(dbInfoDataSource, false);
+        this.dbInfoJdbcTemplate.execute("""
+                CREATE TABLE IF NOT EXISTS setting (
+                id INTEGER PRIMARY KEY autoincrement,
+                key TEXT NOT NULL,
+                value TEXT NOT NULL
+                );
+                """
+        );
         List<DbEntry> results = dbInfoJdbcTemplate.query("SELECT * FROM db ORDER BY id DESC LIMIT 1", new BeanPropertyRowMapper<>(DbEntry.class));
         if (CollectionUtils.isEmpty(results)) {
             return;

@@ -60,6 +60,7 @@
     </appender>
 
     <logger name="top.itning.yunshunas" level="DEBUG"/>
+    <logger name="org.springframework.jdbc" level="DEBUG"/>
     　　　
     <root level="INFO">　　　　　
         <appender-ref ref="CONSOLE"/>　
