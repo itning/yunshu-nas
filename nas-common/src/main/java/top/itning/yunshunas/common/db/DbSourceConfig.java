@@ -173,7 +173,7 @@ public class DbSourceConfig {
                 throw new SQLException(e);
             }
         }, keyHolder);
-        if (updated != 1) {
+        if (updated != 1 && keyHolder.getKey() != null) {
             return null;
         }
         return obj;
