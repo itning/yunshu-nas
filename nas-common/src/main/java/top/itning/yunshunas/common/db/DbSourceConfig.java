@@ -1,5 +1,7 @@
 package top.itning.yunshunas.common.db;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import jakarta.annotation.PostConstruct;
@@ -7,10 +9,15 @@ import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import top.itning.yunshunas.common.config.NasProperties;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -23,6 +30,7 @@ import java.util.Optional;
 @Component
 public class DbSourceConfig {
 
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private final NasProperties nasProperties;
     private HikariDataSource dbInfoDataSource;
     private HikariDataSource userDataSource;
@@ -57,7 +65,7 @@ public class DbSourceConfig {
         this.dbInfoJdbcTemplate.execute("""
                 CREATE TABLE IF NOT EXISTS setting (
                 id INTEGER PRIMARY KEY autoincrement,
-                key TEXT NOT NULL,
+                key TEXT NOT NULL unique,
                 value TEXT NOT NULL
                 );
                 """
@@ -131,5 +139,43 @@ public class DbSourceConfig {
 
     public DbEntry getDbEntry() {
         return this.dbEntry;
+    }
+
+    public <T> T getSetting(String key, Class<T> tClass) {
+        List<T> results = dbInfoJdbcTemplate.query("SELECT * FROM setting WHERE key = ? LIMIT 1", new BeanPropertyRowMapper<>(tClass), key);
+        if (CollectionUtils.isEmpty(results)) {
+            return null;
+        }
+        return results.get(0);
+    }
+
+    public <T> T updateSetting(String key, T obj) {
+        try {
+            int updated = dbInfoJdbcTemplate.update("UPDATE setting SET value = ? WHERE key = ?", OBJECT_MAPPER.writeValueAsString(obj), key);
+            if (updated != 1) {
+                return null;
+            }
+            return obj;
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public <T> T createSetting(String key, T obj) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        int updated = getJdbcTemplate().update(connection -> {
+            try {
+                PreparedStatement ps = connection.prepareStatement("INSERT INTO setting(key, value) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
+                ps.setString(1, key);
+                ps.setString(2, OBJECT_MAPPER.writeValueAsString(obj));
+                return ps;
+            } catch (Exception e) {
+                throw new SQLException(e);
+            }
+        }, keyHolder);
+        if (updated != 1) {
+            return null;
+        }
+        return obj;
     }
 }
