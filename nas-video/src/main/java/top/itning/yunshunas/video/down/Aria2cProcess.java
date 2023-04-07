@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import top.itning.yunshunas.common.config.NasProperties;
-import top.itning.yunshunas.common.db.DbSourceConfig;
+import top.itning.yunshunas.common.db.ApplicationConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,8 +25,8 @@ import static top.itning.yunshunas.common.util.CommandUtils.process;
 public class Aria2cProcess {
     private static final Logger logger = LoggerFactory.getLogger(Aria2cProcess.class);
 
-    public Aria2cProcess(DbSourceConfig dbSourceConfig) {
-        NasProperties nasProperties = dbSourceConfig.getSetting(NasProperties.class);
+    public Aria2cProcess(ApplicationConfig applicationConfig) {
+        NasProperties nasProperties = applicationConfig.getSetting(NasProperties.class);
         if (Objects.isNull(nasProperties)) {
             return;
         }

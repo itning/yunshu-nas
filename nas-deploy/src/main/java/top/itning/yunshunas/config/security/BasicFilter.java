@@ -14,7 +14,7 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import top.itning.yunshunas.common.config.NasProperties;
-import top.itning.yunshunas.common.db.DbSourceConfig;
+import top.itning.yunshunas.common.db.ApplicationConfig;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -31,15 +31,15 @@ public class BasicFilter extends OncePerRequestFilter {
     private static final AntPathMatcher ANT_PATH_MATCHER = new AntPathMatcher();
     private static final String HEALTH_CHECK_PATH = "/health";
 
-    private final DbSourceConfig dbSourceConfig;
+    private final ApplicationConfig applicationConfig;
 
-    public BasicFilter(DbSourceConfig dbSourceConfig) {
-        this.dbSourceConfig = dbSourceConfig;
+    public BasicFilter(ApplicationConfig applicationConfig) {
+        this.applicationConfig = applicationConfig;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        NasProperties nasProperties = dbSourceConfig.getSetting(NasProperties.class);
+        NasProperties nasProperties = applicationConfig.getSetting(NasProperties.class);
         if (Objects.isNull(nasProperties)) {
             filterChain.doFilter(request, response);
             return;

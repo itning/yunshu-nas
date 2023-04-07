@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.CollectionUtils;
 import top.itning.yunshunas.common.config.NasProperties;
-import top.itning.yunshunas.common.db.DbSourceConfig;
+import top.itning.yunshunas.common.db.ApplicationConfig;
 import top.itning.yunshunas.music.datasource.CoverDataSource;
 import top.itning.yunshunas.music.datasource.DataSource;
 import top.itning.yunshunas.music.datasource.LyricDataSource;
@@ -38,9 +38,9 @@ public class DataSourceConfig {
 
     @Autowired
     public DataSourceConfig(@Value("${server.port}") String port,
-                            DbSourceConfig dbSourceConfig) throws Exception {
-        NasProperties nasProperties = dbSourceConfig.getSetting(NasProperties.class);
-        NasMusicProperties nasMusicProperties = dbSourceConfig.getSetting(NasMusicProperties.class);
+                            ApplicationConfig applicationConfig) throws Exception {
+        NasProperties nasProperties = applicationConfig.getSetting(NasProperties.class);
+        NasMusicProperties nasMusicProperties = applicationConfig.getSetting(NasMusicProperties.class);
         if (Objects.isNull(nasProperties) || Objects.isNull(nasMusicProperties)) {
             return;
         }

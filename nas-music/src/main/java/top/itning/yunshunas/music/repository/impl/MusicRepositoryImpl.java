@@ -6,7 +6,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import top.itning.yunshunas.common.db.DbSourceConfig;
+import top.itning.yunshunas.common.db.ApplicationConfig;
 import top.itning.yunshunas.music.entity.Music;
 import top.itning.yunshunas.music.repository.MusicRepository;
 
@@ -21,8 +21,8 @@ import java.util.*;
 @Service
 public class MusicRepositoryImpl extends AbstractRepository implements MusicRepository {
 
-    public MusicRepositoryImpl(DbSourceConfig dbSourceConfig) {
-        super(dbSourceConfig);
+    public MusicRepositoryImpl(ApplicationConfig applicationConfig) {
+        super(applicationConfig);
     }
 
     @Override

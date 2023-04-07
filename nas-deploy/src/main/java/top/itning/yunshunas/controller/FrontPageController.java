@@ -9,7 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import top.itning.yunshunas.common.config.NasProperties;
-import top.itning.yunshunas.common.db.DbSourceConfig;
+import top.itning.yunshunas.common.db.ApplicationConfig;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -24,14 +24,14 @@ public class FrontPageController {
     @Value("${server.port}")
     private String port;
 
-    private final DbSourceConfig dbSourceConfig;
+    private final ApplicationConfig applicationConfig;
 
     @Autowired(required = false)
     private BuildProperties buildProperties;
 
     @Autowired
-    public FrontPageController(DbSourceConfig dbSourceConfig) {
-        this.dbSourceConfig = dbSourceConfig;
+    public FrontPageController(ApplicationConfig applicationConfig) {
+        this.applicationConfig = applicationConfig;
     }
 
     @PostConstruct
@@ -46,7 +46,7 @@ public class FrontPageController {
 
     @GetMapping("/")
     public String index(Model model) throws MalformedURLException {
-        URL url = Optional.ofNullable(dbSourceConfig.getSetting(NasProperties.class)).map(NasProperties::getServerUrl).orElse(new URL("http://localhost:" + port));
+        URL url = Optional.ofNullable(applicationConfig.getSetting(NasProperties.class)).map(NasProperties::getServerUrl).orElse(new URL("http://localhost:" + port));
         model.addAttribute("nasUrl", url);
         model.addAttribute("buildProperties", buildProperties);
         return "index";

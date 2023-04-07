@@ -6,7 +6,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import top.itning.yunshunas.common.config.NasFtpProperties;
 import top.itning.yunshunas.common.config.NasProperties;
-import top.itning.yunshunas.common.db.DbSourceConfig;
+import top.itning.yunshunas.common.db.ApplicationConfig;
 import top.itning.yunshunas.common.model.RestModel;
 import top.itning.yunshunas.common.util.JsonUtils;
 import top.itning.yunshunas.music.config.NasMusicProperties;
@@ -19,24 +19,24 @@ import top.itning.yunshunas.music.config.NasMusicProperties;
 @RequestMapping("/api/setting")
 @RestController
 public class SettingController {
-    private final DbSourceConfig dbSourceConfig;
+    private final ApplicationConfig applicationConfig;
 
     @Autowired
-    public SettingController(DbSourceConfig dbSourceConfig) {
-        this.dbSourceConfig = dbSourceConfig;
+    public SettingController(ApplicationConfig applicationConfig) {
+        this.applicationConfig = applicationConfig;
     }
 
     @GetMapping("/{type}")
     public ResponseEntity<RestModel<Object>> getSetting(@PathVariable String type) {
         switch (type) {
             case "nas" -> {
-                return RestModel.ok(dbSourceConfig.getSetting(NasProperties.class));
+                return RestModel.ok(applicationConfig.getSetting(NasProperties.class));
             }
             case "datasource" -> {
-                return RestModel.ok(dbSourceConfig.getSetting(NasMusicProperties.class));
+                return RestModel.ok(applicationConfig.getSetting(NasMusicProperties.class));
             }
             case "ftp" -> {
-                return RestModel.ok(dbSourceConfig.getSetting(NasFtpProperties.class));
+                return RestModel.ok(applicationConfig.getSetting(NasFtpProperties.class));
             }
             default -> throw new IllegalArgumentException("未知类型");
         }
@@ -47,15 +47,15 @@ public class SettingController {
         switch (type) {
             case "nas" -> {
                 NasProperties nasProperties = JsonUtils.OBJECT_MAPPER.readValue(value, NasProperties.class);
-                return RestModel.ok(dbSourceConfig.setSetting(nasProperties));
+                return RestModel.ok(applicationConfig.setSetting(nasProperties));
             }
             case "datasource" -> {
                 NasMusicProperties nasMusicProperties = JsonUtils.OBJECT_MAPPER.readValue(value, NasMusicProperties.class);
-                return RestModel.ok(dbSourceConfig.setSetting(nasMusicProperties));
+                return RestModel.ok(applicationConfig.setSetting(nasMusicProperties));
             }
             case "ftp" -> {
                 NasFtpProperties nasFtpProperties = JsonUtils.OBJECT_MAPPER.readValue(value, NasFtpProperties.class);
-                return RestModel.ok(dbSourceConfig.setSetting(nasFtpProperties));
+                return RestModel.ok(applicationConfig.setSetting(nasFtpProperties));
             }
             default -> throw new IllegalArgumentException("未知类型");
         }

@@ -34,7 +34,7 @@ import static top.itning.yunshunas.common.util.JsonUtils.OBJECT_MAPPER;
  */
 @Slf4j
 @Component
-public class DbSourceConfig {
+public class ApplicationConfig {
 
     private HikariDataSource applicationDataSource;
     private HikariDataSource userDataSource;

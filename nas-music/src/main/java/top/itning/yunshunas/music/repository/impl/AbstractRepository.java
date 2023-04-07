@@ -1,7 +1,7 @@
 package top.itning.yunshunas.music.repository.impl;
 
 import org.springframework.jdbc.core.JdbcTemplate;
-import top.itning.yunshunas.common.db.DbSourceConfig;
+import top.itning.yunshunas.common.db.ApplicationConfig;
 
 /**
  * @author ning.wang
@@ -9,13 +9,13 @@ import top.itning.yunshunas.common.db.DbSourceConfig;
  */
 public abstract class AbstractRepository {
 
-    private final DbSourceConfig dbSourceConfig;
+    private final ApplicationConfig applicationConfig;
 
-    protected AbstractRepository(DbSourceConfig dbSourceConfig) {
-        this.dbSourceConfig = dbSourceConfig;
+    protected AbstractRepository(ApplicationConfig applicationConfig) {
+        this.applicationConfig = applicationConfig;
     }
 
     protected JdbcTemplate getJdbcTemplate() {
-        return dbSourceConfig.getJdbcTemplate();
+        return applicationConfig.getJdbcTemplate();
     }
 }
