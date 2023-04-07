@@ -1,5 +1,6 @@
 package top.itning.yunshunas.music.repository.impl;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -11,8 +12,7 @@ import top.itning.yunshunas.music.repository.MusicRepository;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @author ning.wang
@@ -47,6 +47,39 @@ public class MusicRepositoryImpl extends AbstractRepository implements MusicRepo
     @Override
     public boolean delete(Music music) {
         return false;
+    }
+
+    @Override
+    public Music update(Music music) {
+        String sql = "UPDATE music SET ";
+        List<Object> params = new ArrayList<>();
+        if (StringUtils.isNotBlank(music.getName())) {
+            sql += "name=?, ";
+            params.add(music.getName());
+        }
+        if (StringUtils.isNotBlank(music.getSinger())) {
+            sql += "singer=?, ";
+            params.add(music.getSinger());
+        }
+        if (StringUtils.isNotBlank(music.getMusicId())) {
+            sql += "music_id=?, ";
+            params.add(music.getMusicId());
+        }
+        if (StringUtils.isNotBlank(music.getLyricId())) {
+            sql += "lyric_id=?, ";
+            params.add(music.getLyricId());
+        }
+        if (Objects.nonNull(music.getType())) {
+            sql += "type=?, ";
+            params.add(music.getType());
+        }
+        sql += "gmt_modified=CURRENT_TIMESTAMP WHERE id=?";
+        params.add(music.getId());
+        int updated = getJdbcTemplate().update(sql, params.toArray());
+        if (updated != 1) {
+            return null;
+        }
+        return findById(music.getId()).orElse(null);
     }
 
     @Override

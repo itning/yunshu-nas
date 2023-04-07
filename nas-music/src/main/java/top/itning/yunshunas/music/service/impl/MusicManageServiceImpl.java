@@ -159,7 +159,7 @@ public class MusicManageServiceImpl implements MusicManageService {
         music.setGmtModified(new Date());
 
         log.info("修改音乐 {}", music);
-        Music savedMusic = musicRepository.save(music);
+        Music savedMusic = musicRepository.update(music);
         musicDTO = MusicConverter.INSTANCE.entity2dto(savedMusic);
         musicDTO.setMusicUri(musicDataSource.getMusic(musicDTO.getMusicId()));
         musicDTO.setLyricUri(lyricDataSource.getLyric(musicDTO.getLyricId()));

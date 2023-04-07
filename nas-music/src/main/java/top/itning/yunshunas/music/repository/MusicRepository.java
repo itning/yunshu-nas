@@ -13,6 +13,9 @@ public interface MusicRepository{
     Music save(Music music);
 
     boolean delete(Music music);
+
+    Music update(Music music);
+
     List<Music> findAll();
 
     List<Music> findAllByNameLikeOrSingerLike(String name, String singer);

@@ -34,7 +34,7 @@ public class Music {
      * 音乐类型
      * {@link top.itning.yunshunas.music.constant.MusicType}
      */
-    private int type;
+    private Integer type;
     /**
      * 创建时间
      */
