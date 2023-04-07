@@ -142,7 +142,7 @@ public class DbSourceConfig {
     }
 
     public <T> T getSetting(String key, Class<T> tClass) {
-        List<T> results = dbInfoJdbcTemplate.query("SELECT * FROM setting WHERE key = ? LIMIT 1", new BeanPropertyRowMapper<>(tClass), key);
+        List<T> results = dbInfoJdbcTemplate.query("SELECT * FROM setting WHERE key = ?", new BeanPropertyRowMapper<>(tClass), key);
         if (CollectionUtils.isEmpty(results)) {
             return null;
         }
