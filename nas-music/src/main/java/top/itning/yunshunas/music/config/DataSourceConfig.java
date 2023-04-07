@@ -37,11 +37,13 @@ public class DataSourceConfig {
     private final Map<Class<? extends DataSource>, DataSourceWrapper> readDataSourceMap = new HashMap<>();
 
     @Autowired
-    public DataSourceConfig(NasMusicProperties nasMusicProperties,
-                            NasProperties nasProperties,
-                            @Value("${server.port}") String port,
+    public DataSourceConfig(@Value("${server.port}") String port,
                             DbSourceConfig dbSourceConfig) throws Exception {
-        NasMusicProperties setting = dbSourceConfig.getSetting("datasource", NasMusicProperties.class);
+        NasProperties nasProperties = dbSourceConfig.getSetting("nas", NasProperties.class);
+        NasMusicProperties nasMusicProperties = dbSourceConfig.getSetting("datasource", NasMusicProperties.class);
+        if (Objects.isNull(nasProperties) || Objects.isNull(nasMusicProperties)) {
+            return;
+        }
         if (Objects.isNull(nasProperties.getServerUrl())) {
             nasProperties.setServerUrl(new URL("http://127.0.0.1:" + port));
         }
