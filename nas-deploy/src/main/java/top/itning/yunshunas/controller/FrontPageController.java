@@ -1,5 +1,6 @@
 package top.itning.yunshunas.controller;
 
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,8 +9,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import top.itning.yunshunas.common.config.NasProperties;
+import top.itning.yunshunas.common.db.DbSourceConfig;
 
-import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -23,14 +24,14 @@ public class FrontPageController {
     @Value("${server.port}")
     private String port;
 
-    private final NasProperties nasProperties;
+    private final DbSourceConfig dbSourceConfig;
 
     @Autowired(required = false)
     private BuildProperties buildProperties;
 
     @Autowired
-    public FrontPageController(NasProperties nasProperties) {
-        this.nasProperties = nasProperties;
+    public FrontPageController(DbSourceConfig dbSourceConfig) {
+        this.dbSourceConfig = dbSourceConfig;
     }
 
     @PostConstruct
@@ -45,7 +46,7 @@ public class FrontPageController {
 
     @GetMapping("/")
     public String index(Model model) throws MalformedURLException {
-        URL url = Optional.ofNullable(nasProperties.getServerUrl()).orElse(new URL("http://localhost:" + port));
+        URL url = Optional.ofNullable(dbSourceConfig.getSetting(NasProperties.class)).map(NasProperties::getServerUrl).orElse(new URL("http://localhost:" + port));
         model.addAttribute("nasUrl", url);
         model.addAttribute("buildProperties", buildProperties);
         return "index";

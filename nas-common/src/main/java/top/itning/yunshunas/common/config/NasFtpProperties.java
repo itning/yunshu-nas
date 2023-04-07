@@ -3,8 +3,6 @@ package top.itning.yunshunas.common.config;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.util.List;
@@ -15,8 +13,6 @@ import java.util.Map;
  *
  * @author itning
  */
-@ConfigurationProperties(prefix = "nas.ftp")
-@Component
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)

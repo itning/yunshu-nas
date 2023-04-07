@@ -1,5 +1,9 @@
 package top.itning.yunshunas.config.security;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
@@ -10,14 +14,12 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import top.itning.yunshunas.common.config.NasProperties;
+import top.itning.yunshunas.common.db.DbSourceConfig;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 /**
  * @author itning
@@ -29,17 +31,25 @@ public class BasicFilter extends OncePerRequestFilter {
     private static final AntPathMatcher ANT_PATH_MATCHER = new AntPathMatcher();
     private static final String HEALTH_CHECK_PATH = "/health";
 
-    private final NasProperties nasProperties;
-    private final NasProperties.BasicAuthConfig basicAuthConfig;
+    private final DbSourceConfig dbSourceConfig;
 
-    public BasicFilter(NasProperties nasProperties) {
-        this.nasProperties = nasProperties;
-        this.basicAuthConfig = nasProperties.getBasicAuth();
+    public BasicFilter(DbSourceConfig dbSourceConfig) {
+        this.dbSourceConfig = dbSourceConfig;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        NasProperties nasProperties = dbSourceConfig.getSetting(NasProperties.class);
+        if (Objects.isNull(nasProperties)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         if (!nasProperties.isEnableBasicAuth()) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+        NasProperties.BasicAuthConfig basicAuthConfig = nasProperties.getBasicAuth();
+        if (Objects.isNull(basicAuthConfig)) {
             filterChain.doFilter(request, response);
             return;
         }

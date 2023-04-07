@@ -1,12 +1,16 @@
 package top.itning.yunshunas.common.db;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.benmanes.caffeine.cache.CacheLoader;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
@@ -14,14 +18,15 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-import top.itning.yunshunas.common.config.NasProperties;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+
+import static top.itning.yunshunas.common.util.JsonUtils.OBJECT_MAPPER;
 
 /**
  * @author itning
@@ -31,21 +36,19 @@ import java.util.Optional;
 @Component
 public class DbSourceConfig {
 
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    private final NasProperties nasProperties;
-    private HikariDataSource dbInfoDataSource;
+    private HikariDataSource applicationDataSource;
     private HikariDataSource userDataSource;
-    private JdbcTemplate dbInfoJdbcTemplate;
+    private JdbcTemplate applicationJdbcTemplate;
     private JdbcTemplate jdbcTemplate;
     private DbEntry dbEntry;
 
-    public DbSourceConfig(NasProperties nasProperties) {
-        this.nasProperties = nasProperties;
-    }
+    @Value("${nas.defaultDbPath:yunshu-nas.db}")
+    private String defaultDbPath;
+    private LoadingCache<Class<?>, Object> settingCache;
 
     @PostConstruct
     public void init() {
-        String jdbcUrl = Optional.ofNullable(nasProperties.getDefaultDbPath()).map(it -> "jdbc:sqlite:" + it).orElse("jdbc:sqlite:yunshu-nas.db");
+        String jdbcUrl = "jdbc:sqlite:" + defaultDbPath;
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(jdbcUrl);
 
@@ -61,9 +64,9 @@ public class DbSourceConfig {
                 """;
 
         config.setConnectionInitSql(createTableQuery);
-        dbInfoDataSource = new HikariDataSource(config);
-        this.dbInfoJdbcTemplate = new JdbcTemplate(dbInfoDataSource, false);
-        this.dbInfoJdbcTemplate.execute("""
+        applicationDataSource = new HikariDataSource(config);
+        this.applicationJdbcTemplate = new JdbcTemplate(applicationDataSource, false);
+        this.applicationJdbcTemplate.execute("""
                 CREATE TABLE IF NOT EXISTS setting (
                 id INTEGER PRIMARY KEY autoincrement,
                 key TEXT NOT NULL unique,
@@ -71,7 +74,21 @@ public class DbSourceConfig {
                 );
                 """
         );
-        List<DbEntry> results = dbInfoJdbcTemplate.query("SELECT * FROM db ORDER BY id DESC LIMIT 1", new BeanPropertyRowMapper<>(DbEntry.class));
+        settingCache = Caffeine.newBuilder()
+                .maximumSize(1024L)
+                .expireAfterWrite(1, TimeUnit.HOURS)
+                .build(new CacheLoader<>() {
+                    @Override
+                    public @Nullable Object load(Class<?> tClass) throws Exception {
+                        List<String> results = applicationJdbcTemplate.query("SELECT value FROM setting WHERE key = ?", new SingleColumnRowMapper<>(String.class), tClass.getName());
+                        if (CollectionUtils.isEmpty(results)) {
+                            return null;
+                        }
+                        String value = results.get(0);
+                        return OBJECT_MAPPER.readValue(value, tClass);
+                    }
+                });
+        List<DbEntry> results = applicationJdbcTemplate.query("SELECT * FROM db ORDER BY id DESC LIMIT 1", new BeanPropertyRowMapper<>(DbEntry.class));
         if (CollectionUtils.isEmpty(results)) {
             return;
         }
@@ -88,8 +105,8 @@ public class DbSourceConfig {
         if (Objects.nonNull(userDataSource)) {
             userDataSource.close();
         }
-        if (Objects.nonNull(dbInfoDataSource)) {
-            dbInfoDataSource.close();
+        if (Objects.nonNull(applicationDataSource)) {
+            applicationDataSource.close();
         }
     }
 
@@ -124,7 +141,7 @@ public class DbSourceConfig {
     public void setDataSource(DbEntry dbEntry) {
 
         String insertSql = "INSERT INTO db(name, type,jdbcUrl,username,password) VALUES (?, ?, ?, ?, ?)";
-        int updated = dbInfoJdbcTemplate.update(insertSql, dbEntry.getName(), dbEntry.getType().name(), dbEntry.getJdbcUrl(), dbEntry.getUsername(), dbEntry.getPassword());
+        int updated = applicationJdbcTemplate.update(insertSql, dbEntry.getName(), dbEntry.getType().name(), dbEntry.getJdbcUrl(), dbEntry.getUsername(), dbEntry.getPassword());
         if (updated != 1) {
             throw new RuntimeException("插入数据库失败 " + updated);
         }
@@ -142,17 +159,9 @@ public class DbSourceConfig {
         return this.dbEntry;
     }
 
+    @SuppressWarnings("all")
     public <T> T getSetting(Class<T> tClass) {
-        List<String> results = dbInfoJdbcTemplate.query("SELECT value FROM setting WHERE key = ?", new SingleColumnRowMapper<>(String.class), tClass.getName());
-        if (CollectionUtils.isEmpty(results)) {
-            return null;
-        }
-        String value = results.get(0);
-        try {
-            return OBJECT_MAPPER.readValue(value, tClass);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        return (T) settingCache.get(tClass);
     }
 
     public <T> T setSetting(T obj) {
@@ -165,10 +174,11 @@ public class DbSourceConfig {
 
     public <T> T updateSetting(T obj) {
         try {
-            int updated = dbInfoJdbcTemplate.update("UPDATE setting SET value = ? WHERE key = ?", OBJECT_MAPPER.writeValueAsString(obj), obj.getClass().getName());
+            int updated = applicationJdbcTemplate.update("UPDATE setting SET value = ? WHERE key = ?", OBJECT_MAPPER.writeValueAsString(obj), obj.getClass().getName());
             if (updated != 1) {
                 return null;
             }
+            settingCache.invalidate(obj.getClass());
             return obj;
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
@@ -177,7 +187,7 @@ public class DbSourceConfig {
 
     public <T> T createSetting(T obj) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        int updated = dbInfoJdbcTemplate.update(connection -> {
+        int updated = applicationJdbcTemplate.update(connection -> {
             try {
                 PreparedStatement ps = connection.prepareStatement("INSERT INTO setting(key, value) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
                 ps.setString(1, obj.getClass().getName());
@@ -190,6 +200,7 @@ public class DbSourceConfig {
         if (updated != 1 && keyHolder.getKey() != null) {
             return null;
         }
+        settingCache.invalidate(obj.getClass());
         return obj;
     }
 }
