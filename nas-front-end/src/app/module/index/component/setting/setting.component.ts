@@ -191,8 +191,8 @@ export class SettingComponent implements OnInit {
       this.fb.group({
         name: [null, [Validators.required]],
         className: ['top.itning.yunshunas.music.datasource.impl.FileDataSource', [Validators.required]],
-        musicFileDir: [null, [Validators.required]],
-        lyricFileDir: [null, [Validators.required]],
+        musicFileDir: [null],
+        lyricFileDir: [null],
         urlPrefix: [null],
         secretId: [null],
         secretKey: [null],
@@ -298,11 +298,6 @@ export class SettingComponent implements OnInit {
 
   dataSourceTypeChange(item: AbstractControl): void {
     if (item.get('className').value === 'top.itning.yunshunas.music.datasource.impl.FileDataSource') {
-      ['musicFileDir', 'lyricFileDir'].forEach(key => {
-        item.get(key).setValidators(Validators.required);
-        item.get(key).markAsDirty();
-        item.get(key).updateValueAndValidity();
-      });
       ['secretId', 'secretKey', 'regionName', 'bucketName'].forEach(key => {
         item.get(key).clearValidators();
         item.get(key).markAsPristine();
@@ -313,11 +308,6 @@ export class SettingComponent implements OnInit {
       ['secretId', 'secretKey', 'regionName', 'bucketName'].forEach(key => {
         item.get(key).setValidators(Validators.required);
         item.get(key).markAsDirty();
-        item.get(key).updateValueAndValidity();
-      });
-      ['musicFileDir', 'lyricFileDir'].forEach(key => {
-        item.get(key).clearValidators();
-        item.get(key).markAsPristine();
         item.get(key).updateValueAndValidity();
       });
 

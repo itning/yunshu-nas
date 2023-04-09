@@ -193,14 +193,14 @@
             </nz-form-control>
           </nz-form-item>
           <nz-form-item *ngIf="enableFileDataSource(item)">
-            <nz-form-label [nzSm]="6" [nzXs]="24" [nzFor]="i+'musicFileDir'" nzRequired>音乐文件目录</nz-form-label>
-            <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="音乐文件目录必填">
+            <nz-form-label [nzSm]="6" [nzXs]="24" [nzFor]="i+'musicFileDir'">音乐文件目录</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24">
               <input nz-input formControlName="musicFileDir" [id]="i+'musicFileDir'"/>
             </nz-form-control>
           </nz-form-item>
           <nz-form-item *ngIf="enableFileDataSource(item)">
-            <nz-form-label [nzSm]="6" [nzXs]="24" [nzFor]="i+'lyricFileDir'" nzRequired>歌词文件目录</nz-form-label>
-            <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="歌词文件目录必填">
+            <nz-form-label [nzSm]="6" [nzXs]="24" [nzFor]="i+'lyricFileDir'">歌词文件目录</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24">
               <input nz-input formControlName="lyricFileDir" [id]="i+'lyricFileDir'"/>
             </nz-form-control>
           </nz-form-item>
