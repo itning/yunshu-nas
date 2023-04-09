@@ -84,12 +84,12 @@ public class MusicRepositoryImpl extends AbstractRepository implements MusicRepo
 
     @Override
     public List<Music> findAll() {
-        return getJdbcTemplate().query("SELECT * FROM music", new BeanPropertyRowMapper<>(Music.class));
+        return getJdbcTemplate().query("SELECT * FROM music ORDER BY gmt_create DESC", new BeanPropertyRowMapper<>(Music.class));
     }
 
     @Override
     public List<Music> findAllByNameLikeOrSingerLike(String name, String singer) {
-        return getJdbcTemplate().query("SELECT * FROM music WHERE name LIKE '%?%'OR singer LIKE '%?%'", ps -> {
+        return getJdbcTemplate().query("SELECT * FROM music WHERE name LIKE ? OR singer LIKE ? ORDER BY gmt_create DESC", ps -> {
             ps.setString(1, name);
             ps.setString(2, singer);
         }, new BeanPropertyRowMapper<>(Music.class));
@@ -97,14 +97,14 @@ public class MusicRepositoryImpl extends AbstractRepository implements MusicRepo
 
     @Override
     public List<Music> findAllByNameLike(String name) {
-        return getJdbcTemplate().query("SELECT * FROM music WHERE name LIKE '%?%'",
+        return getJdbcTemplate().query("SELECT * FROM music WHERE name LIKE ? ORDER BY gmt_create DESC",
                 ps -> ps.setString(1, name),
                 new BeanPropertyRowMapper<>(Music.class));
     }
 
     @Override
     public List<Music> findAllBySingerLike(String singer) {
-        return getJdbcTemplate().query("SELECT * FROM music WHERE singer LIKE '%?%'",
+        return getJdbcTemplate().query("SELECT * FROM music WHERE singer LIKE ? ORDER BY gmt_create DESC",
                 ps -> ps.setString(1, singer),
                 new BeanPropertyRowMapper<>(Music.class));
     }

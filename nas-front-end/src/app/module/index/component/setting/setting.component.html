@@ -51,6 +51,54 @@
     </nz-card>
   </div>
   <div style="margin-top: 16px">
+    <nz-card nzTitle="Elasticsearch配置">
+      <form nz-form [formGroup]="esConfigFromGroup">
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="enabled">
+            开启Elasticsearch
+          </nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24">
+            <label nz-checkbox formControlName="enabled" id="enabled">开启Elasticsearch</label>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item *ngIf="esConfigFromGroup.get('enabled').value">
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="uris">Elasticsearch地址</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24">
+            <nz-select nzMode="tags" formControlName="uris" id="uris" nzPlaceHolder="http://localhost:9200">
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item *ngIf="esConfigFromGroup.get('enabled').value">
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="esusername">用户名</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24">
+            <input nz-input formControlName="username" id="esusername"/>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item *ngIf="esConfigFromGroup.get('enabled').value">
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="espassword">密码</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24">
+            <input nz-input formControlName="password" id="espassword"/>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item *ngIf="esConfigFromGroup.get('enabled').value">
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="pathPrefix">请求路径前缀</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24">
+            <input nz-input formControlName="pathPrefix" id="pathPrefix"/>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item nz-row *ngIf="esConfigFromGroup.get('enabled').value">
+          <nz-form-control [nzSpan]="14" [nzOffset]="6">
+            <button nz-button nzType="primary" nz-popconfirm
+                    nzPopconfirmTitle="确定保存？"
+                    (nzOnConfirm)="submitEsConfigForm()" [disabled]="!esConfigFromGroup.valid"
+                    [nzLoading]="buttonLoading.submitEsConfigForm">保存ES配置
+            </button>
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </nz-card>
+  </div>
+  <div style="margin-top: 16px">
     <nz-card nzTitle="应用配置">
       <form nz-form [formGroup]="nasConfigFromGroup">
         <nz-form-item>

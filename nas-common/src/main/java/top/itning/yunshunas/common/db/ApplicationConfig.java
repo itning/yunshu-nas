@@ -172,6 +172,7 @@ public class ApplicationConfig {
             throw new RuntimeException("插入数据库失败 " + updated);
         }
         this.jdbcTemplate = getJdbcTemplate(dbEntry);
+        this.dbEntry = dbEntry;
     }
 
     public JdbcTemplate getJdbcTemplate() {

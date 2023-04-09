@@ -8,6 +8,7 @@ import {DbInfoCheckResponse} from "../http/model/DbInfoCheckResponse";
 import {NasConfigRequest, NasConfigResponse} from "../http/model/NasConfig";
 import {DatasourceConfigRequest, DatasourceConfigResponse} from "../http/model/DatasourceConfig";
 import {NasFtpConfigRequest, NasFtpConfigResponse} from "../http/model/NasFtpConfig";
+import {ElasticsearchConfigRequest, ElasticsearchConfigResponse} from "../http/model/ElasticsearchConfig";
 
 @Injectable({
   providedIn: 'root'
@@ -51,5 +52,13 @@ export class SettingService {
 
   setFtpConfigSetting(request: NasFtpConfigRequest): Observable<NasFtpConfigResponse> {
     return this.http.post<NasFtpConfigResponse>(environment.backEndUrl + "/api/setting/ftp", request)
+  }
+
+  getEsConfigSetting(): Observable<ElasticsearchConfigResponse> {
+    return this.http.get<ElasticsearchConfigResponse>(environment.backEndUrl + "/api/setting/es")
+  }
+
+  setEsConfigSetting(request: ElasticsearchConfigRequest): Observable<ElasticsearchConfigResponse> {
+    return this.http.post<ElasticsearchConfigResponse>(environment.backEndUrl + "/api/setting/es", request)
   }
 }

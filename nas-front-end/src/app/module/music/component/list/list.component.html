@@ -5,17 +5,13 @@
   <ng-template #suffixIconSearch>
     <i nz-icon nzType="search"></i>
   </ng-template>
-  <nz-table
-    nzShowSizeChanger
-    nzShowQuickJumper
-    [nzData]="musicData"
-    [nzFrontPagination]="false"
-    [nzLoading]="loading"
-    [nzTotal]="music.totalElements"
-    [nzPageSize]="music.size"
-    [nzPageIndex]="music.number"
-    [nzPageSizeOptions]="[ 100,1000,2000,5000 ]"
-    (nzQueryParams)="onQueryParamsChange($event)"
+  <nz-table #rowTable
+            nzShowSizeChanger
+            nzShowQuickJumper
+            nzPageSize="100"
+            [nzData]="music"
+            [nzLoading]="loading"
+            [nzPageSizeOptions]="[ 100,200,500,1000,5000 ]"
   >
     <thead>
     <tr>
@@ -28,7 +24,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let data of musicData">
+    <tr *ngFor="let data of rowTable.data">
       <td><img nz-image width="50px" height="50px" [nzSrc]="data.coverUri" alt="封面"/></td>
       <td nz-tooltip [nzTooltipTitle]="data.musicId">{{ data.name }}</td>
       <td>{{ data.singer }}</td>

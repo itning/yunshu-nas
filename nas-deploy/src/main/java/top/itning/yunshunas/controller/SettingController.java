@@ -9,6 +9,7 @@ import top.itning.yunshunas.common.config.NasProperties;
 import top.itning.yunshunas.common.db.ApplicationConfig;
 import top.itning.yunshunas.common.model.RestModel;
 import top.itning.yunshunas.common.util.JsonUtils;
+import top.itning.yunshunas.music.config.ElasticsearchProperties;
 import top.itning.yunshunas.music.config.NasMusicProperties;
 
 /**
@@ -38,6 +39,9 @@ public class SettingController {
             case "ftp" -> {
                 return RestModel.ok(applicationConfig.getSetting(NasFtpProperties.class));
             }
+            case "es" -> {
+                return RestModel.ok(applicationConfig.getSetting(ElasticsearchProperties.class));
+            }
             default -> throw new IllegalArgumentException("未知类型");
         }
     }
@@ -56,6 +60,10 @@ public class SettingController {
             case "ftp" -> {
                 NasFtpProperties nasFtpProperties = JsonUtils.OBJECT_MAPPER.readValue(value, NasFtpProperties.class);
                 return RestModel.ok(applicationConfig.setSetting(nasFtpProperties));
+            }
+            case "es" -> {
+                ElasticsearchProperties elasticsearchProperties = JsonUtils.OBJECT_MAPPER.readValue(value, ElasticsearchProperties.class);
+                return RestModel.ok(applicationConfig.setSetting(elasticsearchProperties));
             }
             default -> throw new IllegalArgumentException("未知类型");
         }

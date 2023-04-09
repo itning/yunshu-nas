@@ -25,6 +25,7 @@ export class SettingComponent implements OnInit {
   datasourceConfigFromGroupArray: UntypedFormArray;
   ftpConfigFromGroup: UntypedFormGroup;
   ftpConfigFromGroupArray: UntypedFormArray;
+  esConfigFromGroup: UntypedFormGroup;
   enableBasicAuth = false;
   buttonLoading = {
     testDbConfig: false,
@@ -32,6 +33,7 @@ export class SettingComponent implements OnInit {
     submitNasConfigForm: false,
     submitDataSourceConfigForm: false,
     submitFtpConfigForm: false,
+    submitEsConfigForm: false,
   }
 
   constructor(private route: ActivatedRoute,
@@ -65,7 +67,14 @@ export class SettingComponent implements OnInit {
     });
     this.ftpConfigFromGroup = this.fb.group({
       config: this.fb.array([])
-    })
+    });
+    this.esConfigFromGroup = this.fb.group({
+      enabled: [false, [Validators.required]],
+      uris: [null],
+      username: [null],
+      password: [null],
+      pathPrefix: [null],
+    });
     this.datasourceConfigFromGroupArray = (this.datasourceConfigFromGroup.get('dataSource') as FormArray);
     this.ftpConfigFromGroupArray = (this.ftpConfigFromGroup.get('config') as FormArray);
 
@@ -73,10 +82,14 @@ export class SettingComponent implements OnInit {
     this.initNasConfigSetting();
     this.initDataSourceConfigSetting();
     this.initFtpConfigSetting();
+    this.initEsConfigSetting();
   }
 
   private initDbConfigSetting() {
     this.setting.getDbConfigSetting().subscribe(response => {
+      if (!response) {
+        return;
+      }
       this.dbConfigFromGroup.patchValue({name: response.name});
       this.dbConfigFromGroup.patchValue({type: response.type});
       this.dbConfigFromGroup.patchValue({jdbcUrl: response.jdbcUrl});
@@ -86,6 +99,9 @@ export class SettingComponent implements OnInit {
 
   private initNasConfigSetting() {
     this.setting.getNasConfigSetting().subscribe(response => {
+      if (!response) {
+        return;
+      }
       this.nasConfigFromGroup.patchValue({outDir: response.outDir});
       this.nasConfigFromGroup.patchValue({ffmpegBinDir: response.ffmpegBinDir});
       this.nasConfigFromGroup.patchValue({aria2cFile: response.aria2cFile});
@@ -105,6 +121,9 @@ export class SettingComponent implements OnInit {
 
   private initDataSourceConfigSetting() {
     this.setting.getDatasourceConfigSetting().subscribe(response => {
+      if (!response) {
+        return;
+      }
       this.datasourceConfigFromGroupArray.clear();
       for (let item of response?.dataSource) {
         this.datasourceConfigFromGroupArray.push(
@@ -151,6 +170,19 @@ export class SettingComponent implements OnInit {
           })
         )
       }
+    })
+  }
+
+  private initEsConfigSetting() {
+    this.setting.getEsConfigSetting().subscribe(response => {
+      if (!response) {
+        return;
+      }
+      this.esConfigFromGroup.patchValue({enabled: response.enabled});
+      this.esConfigFromGroup.patchValue({uris: response.uris});
+      this.esConfigFromGroup.patchValue({username: response.username});
+      this.esConfigFromGroup.patchValue({password: response.password});
+      this.esConfigFromGroup.patchValue({pathPrefix: response.pathPrefix});
     })
   }
 
@@ -359,6 +391,18 @@ export class SettingComponent implements OnInit {
         itemUser.get(key).setValidators(Validators.required);
         itemUser.get(key).markAsDirty();
         itemUser.get(key).updateValueAndValidity();
+      });
+    }
+  }
+
+  submitEsConfigForm() {
+    this.esConfigFromGroup.markAsDirty();
+    if (this.esConfigFromGroup.valid) {
+      this.buttonLoading.submitEsConfigForm = true;
+      this.setting.setEsConfigSetting(this.esConfigFromGroup.value).subscribe(response => {
+        this.initEsConfigSetting();
+        this.buttonLoading.submitEsConfigForm = false;
+        this.message.success('保存成功');
       });
     }
   }

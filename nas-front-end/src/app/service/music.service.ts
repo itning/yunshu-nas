@@ -15,20 +15,12 @@ export class MusicService {
   constructor(private http: HttpClient) {
   }
 
-  getMusicList(queryParams: NzTableQueryParams): Observable<Page<Music>> {
-    return this.http.get<Page<Music>>(environment.backEndUrl + "/api/music/list" + this.convertQueryParameters(queryParams))
-      .pipe(map(item => {
-        item.number += 1;
-        return item;
-      }));
+  getMusicList(): Observable<Music[]> {
+    return this.http.get<Music[]>(environment.backEndUrl + "/api/music/list");
   }
 
-  searchMusic(keyword: string, queryParams: NzTableQueryParams): Observable<Page<Music>> {
-    return this.http.get<Page<Music>>(environment.backEndUrl + "/api/music/list/search" + this.convertQueryParameters(queryParams, `keyword=${keyword}`))
-      .pipe(map(item => {
-        item.number += 1;
-        return item;
-      }));
+  searchMusic(keyword: string, queryParams: NzTableQueryParams): Observable<Music[]> {
+    return this.http.get<Music[]>(environment.backEndUrl + "/api/music/list/search" + this.convertQueryParameters(queryParams, `keyword=${keyword}`));
   }
 
   getOneMusic(musicId: string): Observable<Music> {
