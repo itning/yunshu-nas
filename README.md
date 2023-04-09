@@ -51,7 +51,7 @@ nohup java -jar yunshu-nas.jar >log.log 2>&1 &
 nohup aria2c --rpc-listen-port 6800 --enable-rpc --rpc-listen-all >aria2c.log 2>&1 &
 ```
 
-启动后访问 `http://127.0.0.1:8888``进入设置页面设置数据库及数据源配置。
+启动后访问 `http://127.0.0.1:8888` 进入设置页面设置数据库及数据源配置。
 
 # 实现功能
 - [X] 点播视频文件
