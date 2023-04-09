@@ -1,13 +1,16 @@
 package top.itning.yunshunas.music.config;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.CollectionUtils;
 import top.itning.yunshunas.common.config.NasProperties;
 import top.itning.yunshunas.common.db.ApplicationConfig;
+import top.itning.yunshunas.common.event.ConfigChangeEvent;
 import top.itning.yunshunas.music.datasource.CoverDataSource;
 import top.itning.yunshunas.music.datasource.DataSource;
 import top.itning.yunshunas.music.datasource.LyricDataSource;
@@ -17,6 +20,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -28,17 +32,30 @@ import java.util.Objects;
  */
 @Slf4j
 @Configuration
-public class DataSourceConfig {
+public class DataSourceConfig implements ApplicationListener<ConfigChangeEvent> {
 
     private final Map<String, DataSourceWrapper> musicDataSourceMap = new HashMap<>();
     private final Map<String, DataSourceWrapper> lyricDataSourceMap = new HashMap<>();
     private final Map<String, DataSourceWrapper> coverDataSourceMap = new HashMap<>();
 
     private final Map<Class<? extends DataSource>, DataSourceWrapper> readDataSourceMap = new HashMap<>();
+    private final String port;
+    private final ApplicationConfig applicationConfig;
 
     @Autowired
     public DataSourceConfig(@Value("${server.port}") String port,
                             ApplicationConfig applicationConfig) throws Exception {
+        this.port = port;
+        this.applicationConfig = applicationConfig;
+        init();
+    }
+
+    public void init() throws Exception {
+        musicDataSourceMap.clear();
+        lyricDataSourceMap.clear();
+        coverDataSourceMap.clear();
+        readDataSourceMap.clear();
+
         NasProperties nasProperties = applicationConfig.getSetting(NasProperties.class);
         NasMusicProperties nasMusicProperties = applicationConfig.getSetting(NasMusicProperties.class);
         if (Objects.isNull(nasProperties) || Objects.isNull(nasMusicProperties)) {
@@ -47,16 +64,15 @@ public class DataSourceConfig {
         if (Objects.isNull(nasProperties.getServerUrl())) {
             nasProperties.setServerUrl(new URL("http://127.0.0.1:" + port));
         }
-        Map<String, NasMusicProperties.MusicDataSourceConfig> dataSourceMap = nasMusicProperties.getDataSource();
-        if (CollectionUtils.isEmpty(dataSourceMap)) {
+        List<NasMusicProperties.MusicDataSourceConfig> dataSourceList = nasMusicProperties.getDataSource();
+        if (CollectionUtils.isEmpty(dataSourceList)) {
             return;
         }
         DataSourceWrapper readMusicDataSource = null;
         DataSourceWrapper readLyricDataSource = null;
         DataSourceWrapper readCoverDataSource = null;
-        for (Map.Entry<String, NasMusicProperties.MusicDataSourceConfig> item : dataSourceMap.entrySet()) {
-            String name = item.getKey();
-            NasMusicProperties.MusicDataSourceConfig dataSourceConfig = item.getValue();
+        for (NasMusicProperties.MusicDataSourceConfig dataSourceConfig : dataSourceList) {
+            String name = dataSourceConfig.getName();
             DataSource dataSource = tryNewInstance(name, dataSourceConfig.getClassName(), dataSourceConfig, nasProperties);
             DataSourceWrapper dataSourceWrapper = new DataSourceWrapper(dataSource, dataSourceConfig);
             if (dataSource instanceof MusicDataSource) {
@@ -100,6 +116,13 @@ public class DataSourceConfig {
         readDataSourceMap.put(CoverDataSource.class, readCoverDataSource);
     }
 
+    @SneakyThrows
+    @Override
+    public void onApplicationEvent(ConfigChangeEvent event) {
+        if (event.getSource() instanceof NasMusicProperties) {
+            this.init();
+        }
+    }
 
     public record DataSourceWrapper(DataSource dataSource, NasMusicProperties.MusicDataSourceConfig config) {
     }

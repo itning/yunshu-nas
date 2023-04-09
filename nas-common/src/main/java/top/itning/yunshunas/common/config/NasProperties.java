@@ -1,5 +1,6 @@
 package top.itning.yunshunas.common.config;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
@@ -46,6 +47,7 @@ public class NasProperties {
      *
      * @return 是否开启
      */
+    @JsonIgnore
     public boolean isEnableBasicAuth() {
         return Objects.nonNull(basicAuth);
     }

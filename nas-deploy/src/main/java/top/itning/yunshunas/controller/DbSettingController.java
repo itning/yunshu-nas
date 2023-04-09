@@ -4,10 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import top.itning.yunshunas.common.db.DbEntry;
 import top.itning.yunshunas.common.db.ApplicationConfig;
+import top.itning.yunshunas.common.db.DbCheckConnectionResult;
+import top.itning.yunshunas.common.db.DbEntry;
 import top.itning.yunshunas.common.model.RestModel;
 import top.itning.yunshunas.converter.SettingConverter;
+import top.itning.yunshunas.dto.DbInfoCheckResponse;
 import top.itning.yunshunas.dto.DbInfoRequest;
 import top.itning.yunshunas.dto.DbInfoResponse;
 
@@ -34,9 +36,11 @@ public class DbSettingController {
     }
 
     @PostMapping("/check")
-    public ResponseEntity<RestModel<Boolean>> checkDbInfo(@RequestBody DbInfoRequest request) {
+    public ResponseEntity<RestModel<DbInfoCheckResponse>> checkDbInfo(@RequestBody DbInfoRequest request) {
         DbEntry dbEntry = SettingConverter.INSTANCE.dto2entity(request);
-        return RestModel.ok(applicationConfig.checkConnection(dbEntry));
+        DbCheckConnectionResult dbCheckConnectionResult = applicationConfig.checkConnection(dbEntry);
+        DbInfoCheckResponse dbInfoCheckResponse = SettingConverter.INSTANCE.entity2dto(dbCheckConnectionResult);
+        return RestModel.ok(dbInfoCheckResponse);
     }
 
     @PostMapping

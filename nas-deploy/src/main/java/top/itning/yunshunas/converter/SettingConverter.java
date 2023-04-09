@@ -3,7 +3,9 @@ package top.itning.yunshunas.converter;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
+import top.itning.yunshunas.common.db.DbCheckConnectionResult;
 import top.itning.yunshunas.common.db.DbEntry;
+import top.itning.yunshunas.dto.DbInfoCheckResponse;
 import top.itning.yunshunas.dto.DbInfoRequest;
 import top.itning.yunshunas.dto.DbInfoResponse;
 
@@ -20,4 +22,7 @@ public interface SettingConverter {
 
     @Mappings({})
     DbInfoResponse entity2dto(DbEntry dbEntry);
+
+    @Mappings({})
+    DbInfoCheckResponse entity2dto(DbCheckConnectionResult result);
 }

@@ -10,7 +10,9 @@ import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
@@ -18,7 +20,9 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import top.itning.yunshunas.common.event.ConfigChangeEvent;
 
+import java.io.File;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -45,6 +49,13 @@ public class ApplicationConfig {
     @Value("${nas.defaultDbPath:yunshu-nas.db}")
     private String defaultDbPath;
     private LoadingCache<Class<?>, Object> settingCache;
+
+    private final ApplicationEventPublisher applicationEventPublisher;
+
+    @Autowired
+    public ApplicationConfig(ApplicationEventPublisher applicationEventPublisher) {
+        this.applicationEventPublisher = applicationEventPublisher;
+    }
 
     @PostConstruct
     public void init() {
@@ -120,21 +131,36 @@ public class ApplicationConfig {
     }
 
     private HikariDataSource getDataSource(DbEntry dbEntry) {
+        return this.getDataSource(dbEntry, null);
+    }
+
+    private HikariDataSource getDataSource(DbEntry dbEntry, Long connectionTimeoutMs) {
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(dbEntry.getJdbcUrl());
         config.setUsername(dbEntry.getUsername());
         config.setPassword(dbEntry.getPassword());
         config.setConnectionInitSql(dbEntry.getType().getDdlSql());
+        if (Objects.nonNull(connectionTimeoutMs)) {
+            config.setConnectionTimeout(connectionTimeoutMs);
+        }
         return new HikariDataSource(config);
     }
 
 
-    public boolean checkConnection(DbEntry dbEntry) {
-        try (HikariDataSource dataSource = getDataSource(dbEntry)) {
-            return dataSource.isRunning();
+    public DbCheckConnectionResult checkConnection(DbEntry dbEntry) {
+        try (HikariDataSource dataSource = getDataSource(dbEntry, 3000L)) {
+            return dataSource.isRunning() ? DbCheckConnectionResult.success() : DbCheckConnectionResult.failed("running status is false");
         } catch (Exception e) {
             log.warn("check connection failed {}", dbEntry, e);
-            return false;
+            return DbCheckConnectionResult.failed(e);
+        } finally {
+            if (dbEntry.getType() == DbEntry.Type.SQLITE && Objects.nonNull(dbEntry.getJdbcUrl()) && dbEntry.getJdbcUrl().toLowerCase().startsWith("jdbc:sqlite:")) {
+                String path = dbEntry.getJdbcUrl().substring(12);
+                File file = new File(path);
+                if (file.exists() && file.canRead()) {
+                    log.debug("删除测试后的文件：{} {}", file, file.delete());
+                }
+            }
         }
     }
 
@@ -179,6 +205,7 @@ public class ApplicationConfig {
                 return null;
             }
             settingCache.invalidate(obj.getClass());
+            publishConfigChangeEvent(obj);
             return obj;
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
@@ -201,6 +228,12 @@ public class ApplicationConfig {
             return null;
         }
         settingCache.invalidate(obj.getClass());
+        publishConfigChangeEvent(obj);
         return obj;
+    }
+
+    private void publishConfigChangeEvent(Object object) {
+        ConfigChangeEvent customSpringEvent = new ConfigChangeEvent(object);
+        applicationEventPublisher.publishEvent(customSpringEvent);
     }
 }

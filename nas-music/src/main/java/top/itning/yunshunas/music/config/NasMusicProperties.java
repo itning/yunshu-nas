@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import top.itning.yunshunas.music.datasource.DataSource;
 
-import java.util.Map;
+import java.util.List;
 
 /**
  * @author itning
@@ -16,10 +16,14 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class NasMusicProperties {
 
-    private Map<String, MusicDataSourceConfig> dataSource;
+    private List<MusicDataSourceConfig> dataSource;
 
     @Data
     public static class MusicDataSourceConfig {
+        /**
+         * 数据源名称
+         */
+        private String name;
 
         /**
          * 数据源类型

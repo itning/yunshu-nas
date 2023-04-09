@@ -22,6 +22,7 @@ import {NzCardModule} from 'ng-zorro-antd/card';
 import {NzSelectModule} from 'ng-zorro-antd/select';
 import {NzCheckboxModule} from 'ng-zorro-antd/checkbox';
 import {NzDividerModule} from 'ng-zorro-antd/divider';
+import {NzInputNumberModule} from 'ng-zorro-antd/input-number';
 import {
   CodeOutline,
   CustomerServiceOutline,
@@ -66,7 +67,8 @@ const modules = [
   NzCardModule,
   NzSelectModule,
   NzCheckboxModule,
-  NzDividerModule
+  NzDividerModule,
+  NzInputNumberModule
 ];
 
 @NgModule({
