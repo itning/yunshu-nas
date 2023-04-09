@@ -19,7 +19,6 @@ import top.itning.yunshunas.music.datasource.MusicDataSource;
 import top.itning.yunshunas.music.entity.Lyric;
 import top.itning.yunshunas.music.entity.Music;
 import top.itning.yunshunas.music.entity.SearchResult;
-import top.itning.yunshunas.music.repository.LyricElasticsearchRepository;
 import top.itning.yunshunas.music.repository.MusicRepository;
 import top.itning.yunshunas.music.service.SearchService;
 
@@ -42,7 +41,6 @@ public class SearchServiceImpl implements SearchService {
      */
     private static final String SEARCH_FILED_FOR_LYRIC = "content";
 
-    private final LyricElasticsearchRepository lyricElasticsearchRepository;
     private final MusicRepository musicRepository;
     private final MusicDataSource musicDataSource;
     private final LyricDataSource lyricDataSource;
@@ -50,13 +48,11 @@ public class SearchServiceImpl implements SearchService {
     private final ElasticsearchConfig elasticsearchConfig;
 
     @Autowired
-    public SearchServiceImpl(LyricElasticsearchRepository lyricElasticsearchRepository,
-                             MusicRepository musicRepository,
+    public SearchServiceImpl(MusicRepository musicRepository,
                              MusicDataSource musicDataSource,
                              LyricDataSource lyricDataSource,
                              CoverDataSource coverDataSource,
                              ElasticsearchConfig elasticsearchConfig) {
-        this.lyricElasticsearchRepository = lyricElasticsearchRepository;
         this.musicRepository = musicRepository;
         this.musicDataSource = musicDataSource;
         this.lyricDataSource = lyricDataSource;
@@ -95,7 +91,7 @@ public class SearchServiceImpl implements SearchService {
         lyric.setLyricId(lyricId);
         lyric.setContent(content);
 
-        lyricElasticsearchRepository.save(lyric);
+        elasticsearchConfig.getElasticsearchTemplate().save(lyric);
     }
 
     @Override
@@ -103,7 +99,7 @@ public class SearchServiceImpl implements SearchService {
         if (!elasticsearchConfig.enabled()) {
             return;
         }
-        lyricElasticsearchRepository.deleteById(lyricId);
+        elasticsearchConfig.getElasticsearchTemplate().delete(lyricId, Lyric.class);
     }
 
     @Override
