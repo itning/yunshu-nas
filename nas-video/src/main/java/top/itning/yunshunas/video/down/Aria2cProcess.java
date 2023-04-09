@@ -6,9 +6,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import top.itning.yunshunas.common.config.NasProperties;
+import top.itning.yunshunas.common.db.ApplicationConfig;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -23,7 +25,11 @@ import static top.itning.yunshunas.common.util.CommandUtils.process;
 public class Aria2cProcess {
     private static final Logger logger = LoggerFactory.getLogger(Aria2cProcess.class);
 
-    public Aria2cProcess(NasProperties nasProperties) {
+    public Aria2cProcess(ApplicationConfig applicationConfig) {
+        NasProperties nasProperties = applicationConfig.getSetting(NasProperties.class);
+        if (Objects.isNull(nasProperties)) {
+            return;
+        }
         if (StringUtils.isBlank(nasProperties.getAria2cFile())) {
             return;
         }

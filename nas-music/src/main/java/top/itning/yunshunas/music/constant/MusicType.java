@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.util.StringUtils;
 
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -35,11 +36,14 @@ public enum MusicType {
     private final String mediaType;
     private final String ext;
 
-    public static Optional<String> getMediaType(int type) {
+    public static Optional<String> getMediaType(Integer type) {
         return getMediaTypeEnum(type).map(MusicType::getMediaType);
     }
 
-    public static Optional<MusicType> getMediaTypeEnum(int type) {
+    public static Optional<MusicType> getMediaTypeEnum(Integer type) {
+        if (Objects.isNull(type)) {
+            return Optional.empty();
+        }
         for (MusicType musicType : MusicType.values()) {
             if (musicType.getType() == type) {
                 return Optional.of(musicType);

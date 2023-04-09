@@ -116,7 +116,6 @@ public class UploadServiceImpl implements UploadService {
         log.info("写入数据库：{}", music);
         try {
             musicRepository.save(music);
-            musicRepository.flush();
         } catch (Exception e) {
             log.error("写入数据库异常，移除已经拷贝的文件：music {} cover {}", musicDataSource.deleteMusic(musicId), coverDataSource.deleteCover(musicId));
         }
@@ -182,8 +181,7 @@ public class UploadServiceImpl implements UploadService {
         music.setGmtModified(null);
         log.info("写入数据库：{}", music);
         try {
-            musicRepository.save(music);
-            musicRepository.flush();
+            musicRepository.update(music);
         } catch (Exception e) {
             log.error("写入数据库异常，移除已经拷贝的文件：{}", musicDataSource.deleteMusic(musicId));
         }
@@ -236,8 +234,7 @@ public class UploadServiceImpl implements UploadService {
 
         music.setType(musicType.getType());
         music.setGmtModified(null);
-        musicRepository.save(music);
-        musicRepository.flush();
+        musicRepository.update(music);
     }
 
     @Override

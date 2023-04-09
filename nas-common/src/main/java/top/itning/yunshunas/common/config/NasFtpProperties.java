@@ -1,27 +1,30 @@
 package top.itning.yunshunas.common.config;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.util.List;
-import java.util.Map;
 
 /**
  * FTP 配置
  *
  * @author itning
  */
-@ConfigurationProperties(prefix = "nas.ftp")
-@Component
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class NasFtpProperties {
 
-    private Map<String, FtpConfig> config;
+    private List<FtpConfig> config;
 
     @Data
     public static class FtpConfig {
+        /**
+         * Ftp服务名称
+         */
+        private String name;
         /**
          * 监听端口 默认21
          */

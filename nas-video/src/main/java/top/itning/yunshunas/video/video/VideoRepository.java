@@ -3,14 +3,15 @@ package top.itning.yunshunas.video.video;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import jakarta.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.DigestUtils;
 import top.itning.yunshunas.common.config.NasProperties;
+import top.itning.yunshunas.common.db.ApplicationConfig;
 import top.itning.yunshunas.video.repository.IVideoRepository;
 
-import jakarta.annotation.Nonnull;
 import java.io.File;
 
 /**
@@ -22,10 +23,10 @@ public class VideoRepository implements IVideoRepository {
     private static final Logger logger = LoggerFactory.getLogger(VideoRepository.class);
 
     private final LoadingCache<String, String> locationMd5Cache;
-    private final NasProperties nasProperties;
+    private final ApplicationConfig applicationConfig;
 
-    public VideoRepository(NasProperties nasProperties) {
-        this.nasProperties = nasProperties;
+    public VideoRepository(ApplicationConfig applicationConfig) {
+        this.applicationConfig = applicationConfig;
         this.locationMd5Cache = CacheBuilder.newBuilder()
                 .softValues()
                 .initialCapacity(100)
@@ -45,6 +46,7 @@ public class VideoRepository implements IVideoRepository {
 
     @Override
     public String getWriteDir(String location) {
+        NasProperties nasProperties = applicationConfig.getSetting(NasProperties.class);
         File file = new File(nasProperties.getOutDir() + File.separator + getLocationMd5(location));
         boolean mkdirs = file.mkdirs();
         if (logger.isDebugEnabled()) {
@@ -55,6 +57,7 @@ public class VideoRepository implements IVideoRepository {
 
     @Override
     public String readM3U8File(String name) {
+        NasProperties nasProperties = applicationConfig.getSetting(NasProperties.class);
         return nasProperties.getOutDir() + File.separator + name + File.separator + name + ".m3u8";
     }
 
@@ -62,6 +65,7 @@ public class VideoRepository implements IVideoRepository {
     public String readTsFile(String name) {
         int i = name.lastIndexOf("-");
         String dir = name.substring(0, i);
+        NasProperties nasProperties = applicationConfig.getSetting(NasProperties.class);
         return nasProperties.getOutDir() + File.separator + dir + File.separator + name + ".ts";
     }
 }

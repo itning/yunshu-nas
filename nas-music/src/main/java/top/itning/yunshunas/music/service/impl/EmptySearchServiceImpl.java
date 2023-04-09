@@ -26,7 +26,7 @@ public class EmptySearchServiceImpl implements SearchService {
     }
 
     @Override
-    public List<SearchResult> searchLyric(String keyword, Pageable pageable) {
+    public List<SearchResult> searchLyric(String keyword) {
         return null;
     }
 }

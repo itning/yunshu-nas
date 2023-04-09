@@ -1,10 +1,10 @@
 package top.itning.yunshunas.music.service;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import top.itning.yunshunas.music.dto.MusicChangeDTO;
 import top.itning.yunshunas.music.dto.MusicDTO;
 import top.itning.yunshunas.music.dto.MusicManageDTO;
+
+import java.util.List;
 
 /**
  * 音乐管理服务
@@ -16,19 +16,17 @@ public interface MusicManageService {
     /**
      * 分页查找全部音乐
      *
-     * @param pageable 分页
      * @return 音乐信息
      */
-    Page<MusicManageDTO> getMusicList(Pageable pageable);
+    List<MusicManageDTO> getMusicList();
 
     /**
      * 模糊搜索：搜索音乐名和歌手名，只要包含关键字就返回
      *
      * @param keyword  关键字
-     * @param pageable 分页
      * @return 音乐信息
      */
-    Page<MusicManageDTO> fuzzySearch(String keyword, Pageable pageable);
+    List<MusicManageDTO> fuzzySearch(String keyword);
 
     /**
      * 获取一个音乐

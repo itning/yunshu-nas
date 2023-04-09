@@ -2,6 +2,7 @@ package top.itning.yunshunas.config.ftp;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ftpserver.FtpServer;
 import org.apache.ftpserver.FtpServerFactory;
@@ -9,10 +10,14 @@ import org.apache.ftpserver.ftplet.FtpException;
 import org.apache.ftpserver.listener.ListenerFactory;
 import org.apache.ftpserver.usermanager.UserFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Configuration;
 import top.itning.yunshunas.common.config.NasFtpProperties;
+import top.itning.yunshunas.common.db.ApplicationConfig;
+import top.itning.yunshunas.common.event.ConfigChangeEvent;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -22,28 +27,31 @@ import java.util.Objects;
  */
 @Slf4j
 @Configuration
-public class FtpConfig {
+public class FtpConfig implements ApplicationListener<ConfigChangeEvent> {
 
-    private Map<String, FtpServer> instance;
+    private final Map<String, FtpServer> instance = new HashMap<>();
 
-    private final NasFtpProperties nasFtpProperties;
+    private final ApplicationConfig applicationConfig;
 
     @Autowired
-    public FtpConfig(NasFtpProperties nasFtpProperties) {
-        this.nasFtpProperties = nasFtpProperties;
+    public FtpConfig(ApplicationConfig applicationConfig) {
+        this.applicationConfig = applicationConfig;
     }
 
     @PostConstruct
     public void init() throws FtpException {
-        Map<String, NasFtpProperties.FtpConfig> configMap = nasFtpProperties.getConfig();
-        if (Objects.isNull(configMap)) {
+        NasFtpProperties nasFtpProperties = applicationConfig.getSetting(NasFtpProperties.class);
+        if (Objects.isNull(nasFtpProperties)) {
+            return;
+        }
+        List<NasFtpProperties.FtpConfig> ftpConfigList = nasFtpProperties.getConfig();
+        if (Objects.isNull(ftpConfigList)) {
             return;
         }
 
-        instance = new HashMap<>();
-        for (Map.Entry<String, NasFtpProperties.FtpConfig> item : configMap.entrySet()) {
-            String name = item.getKey();
-            NasFtpProperties.FtpConfig config = item.getValue();
+        this.destroy();
+        for (NasFtpProperties.FtpConfig config : ftpConfigList) {
+            String name = config.getName();
 
             FtpServerFactory serverFactory = new FtpServerFactory();
             ListenerFactory listenerFactory = new ListenerFactory();
@@ -66,18 +74,20 @@ public class FtpConfig {
                 serverFactory.getUserManager().save(userFactory.createUser());
             }
             FtpServer server = serverFactory.createServer();
-            server.start();
-            log.info("start ftp {} for port {}", name, config.getPort());
-
-            instance.put(name, server);
+            try {
+                instance.put(name, server);
+                server.start();
+                log.info("start ftp {} for port {}", name, config.getPort());
+            } catch (Exception e) {
+                server.stop();
+                instance.remove(name);
+                throw e;
+            }
         }
     }
 
     @PreDestroy
     public void destroy() {
-        if (Objects.isNull(instance)) {
-            return;
-        }
         for (Map.Entry<String, FtpServer> item : instance.entrySet()) {
             String name = item.getKey();
             FtpServer server = item.getValue();
@@ -86,6 +96,15 @@ public class FtpConfig {
                 server.stop();
                 log.info("stop ftp {}", name);
             }
+        }
+    }
+
+    @SneakyThrows
+    @Override
+    public void onApplicationEvent(ConfigChangeEvent event) {
+        if (event.getSource() instanceof NasFtpProperties) {
+            this.destroy();
+            this.init();
         }
     }
 }
