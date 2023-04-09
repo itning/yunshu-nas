@@ -13,9 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.core.IndexOperations;
 import org.springframework.util.StringUtils;
 import top.itning.yunshunas.common.db.ApplicationConfig;
 import top.itning.yunshunas.common.event.ConfigChangeEvent;
+import top.itning.yunshunas.music.entity.Lyric;
 
 import java.io.IOException;
 import java.net.URI;
@@ -56,6 +58,10 @@ public class ElasticsearchConfig implements ApplicationListener<ConfigChangeEven
         restClientTransport = new RestClientTransport(restClient, new JacksonJsonpMapper());
         ElasticsearchClient elasticsearchClient = new ElasticsearchClient(restClientTransport);
         elasticsearchTemplate = new ElasticsearchTemplate(elasticsearchClient);
+        IndexOperations indexOperations = elasticsearchTemplate.indexOps(Lyric.class);
+        if (!indexOperations.exists()) {
+            indexOperations.create();
+        }
     }
 
     @PreDestroy
