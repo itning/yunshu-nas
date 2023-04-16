@@ -117,7 +117,8 @@ public class UploadServiceImpl implements UploadService {
         try {
             musicRepository.save(music);
         } catch (Exception e) {
-            log.error("写入数据库异常，移除已经拷贝的文件：music {} cover {}", musicDataSource.deleteMusic(musicId), coverDataSource.deleteCover(musicId));
+            log.error("写入数据库异常，移除已经拷贝的文件：music {} cover {}", musicDataSource.deleteMusic(musicId), coverDataSource.deleteCover(musicId), e);
+            throw e;
         }
         log.info("上传音乐文件完成，音乐ID：{}", musicId);
         MusicDTO musicDTO = MusicConverter.INSTANCE.entity2dto(music);
