@@ -79,7 +79,8 @@ public class TencentCosDataSource implements MusicDataSource, LyricDataSource, C
 
     @Override
     public void addMusic(File newMusicFile, MusicType musicType, String musicId) throws Exception {
-        if (musicDataSourceConfig.isConvertAudioToMp3BeforeUploading() && musicType != MusicType.MP3) {
+        boolean change2mp3 = musicDataSourceConfig.isConvertAudioToMp3BeforeUploading() && musicType != MusicType.MP3;
+        if (change2mp3) {
             //TODO itning 转换后和数据库里的音乐类型不匹配
             log.info("上传前将音频文件转成MP3 原始音频大小：{} 文件类型：{}", newMusicFile.length(), musicType);
             long start = System.currentTimeMillis();
@@ -110,7 +111,7 @@ public class TencentCosDataSource implements MusicDataSource, LyricDataSource, C
         }
         PutObjectRequest putObjectRequest = new PutObjectRequest(musicDataSourceConfig.getBucketName(), MUSIC_DIR_NAME + "/" + musicId, newMusicFile);
         ObjectMetadata objectMetadata = new ObjectMetadata();
-        objectMetadata.setContentType(musicType.getMediaType());
+        objectMetadata.setContentType(change2mp3 ? MusicType.MP3.getMediaType() : musicType.getMediaType());
         putObjectRequest.setMetadata(objectMetadata);
         Upload upload = transferManager.upload(putObjectRequest);
         UploadResult uploadResult = upload.waitForUploadResult();
