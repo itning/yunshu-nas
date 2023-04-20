@@ -45,8 +45,9 @@ public class MusicRepositoryImpl extends AbstractRepository implements MusicRepo
     }
 
     @Override
-    public boolean delete(Music music) {
-        return false;
+    public boolean deleteById(Long id) {
+        int updated = getJdbcTemplate().update("DELETE FROM music WHERE id=?", id);
+        return updated != 0;
     }
 
     @Override

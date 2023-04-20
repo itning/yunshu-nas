@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface MusicRepository{
     Music save(Music music);
 
-    boolean delete(Music music);
+    boolean deleteById(Long id);
 
     Music update(Music music);
 

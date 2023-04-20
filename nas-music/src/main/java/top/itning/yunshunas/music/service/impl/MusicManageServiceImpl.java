@@ -218,7 +218,7 @@ public class MusicManageServiceImpl implements MusicManageService {
         musicDataSource.deleteMusic(musicId);
         lyricDataSource.deleteLyric(music.getLyricId());
         coverDataSource.deleteCover(music.getMusicId());
-        musicRepository.delete(music);
+        musicRepository.deleteById(music.getId());
         searchService.deleteLyric(music.getLyricId());
     }
 }
