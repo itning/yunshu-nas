@@ -21,7 +21,7 @@
     "dayjs": "^1.11.7",
     "dplayer": "^1.27.1",
     "js-base64": "^3.7.5",
-    "music-metadata-browser": "^2.2.7",
+    "music-metadata-browser": "^2.5.10",
     "ng-zorro-antd": "^15.1.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.5.0",
