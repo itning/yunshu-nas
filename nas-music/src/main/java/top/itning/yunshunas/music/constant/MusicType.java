@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.util.StringUtils;
 
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -17,28 +18,32 @@ public enum MusicType {
     /**
      * FLAC
      */
-    FLAC(1, "audio/flac"),
+    FLAC(1, "audio/flac", "flac"),
     /**
      * MP3
      */
-    MP3(2, "audio/mpeg"),
+    MP3(2, "audio/mpeg", "mp3"),
     /**
      * WAV
      */
-    WAV(3, "audio/wav"),
+    WAV(3, "audio/wav", "wav"),
     /**
      * AAC
      */
-    AAC(4, "audio/aac");
+    AAC(4, "audio/aac", "aac");
 
     private final int type;
     private final String mediaType;
+    private final String ext;
 
-    public static Optional<String> getMediaType(int type) {
+    public static Optional<String> getMediaType(Integer type) {
         return getMediaTypeEnum(type).map(MusicType::getMediaType);
     }
 
-    public static Optional<MusicType> getMediaTypeEnum(int type) {
+    public static Optional<MusicType> getMediaTypeEnum(Integer type) {
+        if (Objects.isNull(type)) {
+            return Optional.empty();
+        }
         for (MusicType musicType : MusicType.values()) {
             if (musicType.getType() == type) {
                 return Optional.of(musicType);

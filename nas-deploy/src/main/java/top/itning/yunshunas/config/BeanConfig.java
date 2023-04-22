@@ -3,6 +3,7 @@ package top.itning.yunshunas.config;
 import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 
 import jakarta.servlet.MultipartConfigElement;
@@ -23,5 +24,10 @@ public class BeanConfig {
         MultipartConfigFactory factory = new MultipartConfigFactory();
         factory.setLocation(System.getProperty("java.io.tmpdir"));
         return factory.createMultipartConfig();
+    }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 }

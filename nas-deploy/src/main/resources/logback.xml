@@ -1,6 +1,6 @@
 <configuration scan="false" scanPeriod="60 seconds" debug="true">
     <!--定义日志文件的存储地址 勿在 LogBack 的配置中使用相对路径-->
-    <property name="LOG_HOME" value="/var/log"/>
+    <property name="LOG_HOME" value="/tmp/log"/>
     <!-- 彩色日志依赖的渲染类 -->
     <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
     <conversionRule conversionWord="wex"
@@ -60,6 +60,7 @@
     </appender>
 
     <logger name="top.itning.yunshunas" level="DEBUG"/>
+    <logger name="org.springframework.jdbc" level="DEBUG"/>
     　　　
     <root level="INFO">　　　　　
         <appender-ref ref="CONSOLE"/>　

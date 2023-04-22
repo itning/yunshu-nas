@@ -1,8 +1,5 @@
 package top.itning.yunshunas.music.repository;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
 import top.itning.yunshunas.music.entity.Music;
 
 import java.util.List;
@@ -12,20 +9,22 @@ import java.util.Optional;
  * @author itning
  * @since 2020/9/5 11:15
  */
-public interface MusicRepository extends JpaRepository<Music, Long> {
-    Page<Music> findAllByNameLikeOrSingerLike(String name, String singer, Pageable pageable);
+public interface MusicRepository{
+    Music save(Music music);
 
-    Page<Music> findAllByNameLike(String name, Pageable pageable);
+    boolean deleteById(Long id);
 
-    Page<Music> findAllBySingerLike(String singer, Pageable pageable);
+    Music update(Music music);
+
+    List<Music> findAll();
+
+    List<Music> findAllByNameLikeOrSingerLike(String name, String singer);
+
+    List<Music> findAllByNameLike(String name);
+
+    List<Music> findAllBySingerLike(String singer);
 
     Optional<Music> findByMusicId(String musicId);
 
-    boolean existsByName(String name);
-
-    boolean existsByMusicId(String musicId);
-
-    void deleteByMusicId(String musicId);
-
-    List<Music> findAllByNameLikeAndSingerLike(String name, String singer);
+    Optional<Music> findById(Long id);
 }

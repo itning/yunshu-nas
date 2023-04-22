@@ -8,6 +8,7 @@ import {EditComponent} from "./module/music/component/edit/edit.component";
 import {PlayComponent} from "./module/video/component/play/play.component";
 import {LogComponent} from "./module/index/component/log/log.component";
 import {DownloadComponent} from "./module/video/component/download/download.component";
+import {SettingComponent} from "./module/index/component/setting/setting.component";
 
 const routes: Routes = [
   {
@@ -23,6 +24,7 @@ const routes: Routes = [
       {path: 'music/edit/:id', component: EditComponent},
       {path: 'log', component: LogComponent},
       {path: 'download', component: DownloadComponent},
+      {path: 'setting', component: SettingComponent},
       {path: '**', redirectTo: 'video/list', pathMatch: 'full'}
     ]
   }

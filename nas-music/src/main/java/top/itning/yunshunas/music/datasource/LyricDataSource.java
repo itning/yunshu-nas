@@ -9,7 +9,7 @@ import java.net.URI;
  * @author itning
  * @since 2022/1/12 11:39
  */
-public interface LyricDataSource {
+public interface LyricDataSource extends DataSource {
 
     /**
      * 添加歌词

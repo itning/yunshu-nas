@@ -26,9 +26,13 @@
 
 # 依赖
 
-MySQL = 8
-
 jre = 17
+
+# 支持数据库类型
+
+MySQL8
+
+Sqlite
 
 Elasticsearch(可选) = 7
 
@@ -37,40 +41,17 @@ Elasticsearch(可选) = 7
 镜像仓库地址：[DockerHub-itning](https://hub.docker.com/r/itning/yunshu-nas/tags?page=1&ordering=last_updated)
 
 ```shell script
-docker run --name yunshu-nas -p 8888:8888 -e MYSQL_URL=mysql8 -e MYSQL_PORT=3306 -e MYSQL_USERNAME=root -e MYSQL_PASSWORD=root -e nas.server-url=http://127.0.0.1:8888 -d itning/yunshu-nas:latest
+docker run --name yunshu-nas -p 8888:8888 itning/yunshu-nas:latest
 ```
-
-| 环境变量                                | 用途                  | 默认值                                                                          |
-|-------------------------------------|---------------------|------------------------------------------------------------------------------|
-| MYSQL_URL                           | MySQL的地址（不包含端口号）    | localhost                                                                    |
-| MYSQL_PORT                          | MySQL的端口号           | 3306                                                                         |
-| MYSQL_USERNAME                      | MySQL用户名            | root                                                                         |
-| MYSQL_PASSWORD                      | MySQL密码             | root                                                                         |
-| nas.ffmpeg-bin-dir                  | ffmpeg bin 目录位置     | /home/ffmpeg/bin                                                             |
-| nas.out-dir                         | 转码目录位置              | /home/tmp                                                                    |
-| nas.aria2c-file                     | aria2c.exe 文件位置     | 空                                                                            |
-| nas.file-data-source.music-file-dir | 音乐文件目录              | /home/music_yunshu                                                           |
-| nas.file-data-source.lyric-file-dir | 歌词文件目录              | /home/lyric_yunshu                                                           |
-| nas.file-data-source.url-prefix     | 文件数据源URL前缀          | 影响音乐API返回结果，例如配置：http://example.com 则返回音乐URL为：http://example.com/file?id=abc |
-| nas.basic-auth.username             | basic基础认证用户名        | basic基础认证用户名，默认空                                                             |
-| nas.basic-auth.password             | basic基础认证密码         | basic基础认证密码，默认空                                                              |
-| nas.basic-auth.ignore-path          | basic基础认证忽略路径       | 多个路径使用英文逗号分隔，默认空                                                             |
-| nas.server-url                      | 服务端地址，用于前端调用后端API地址 | http://127.0.0.1:8888                                                        |
-| ENABLED_ELASTICSEARCH               | 是否开启Elasticsearch   | false                                                                        |
-| ELASTICSEARCH_URI                   | Elasticsearch服务端URL | http://localhost:9200                                         |
 
 # 启动脚本（aria2c 可以不用）
 
 ```shell script
-nohup java -jar yunshu-nas-0.0.1-SNAPSHOT.jar --nas.ffmpeg-bin-dir=/home/shw/ffmpeg-4.2.1-amd64-static --nas.out-dir=/home/shw/a --nas.aria2c-file=/usr/local/bin/aria2c >log.log 2>&1 &
+nohup java -jar yunshu-nas.jar >log.log 2>&1 &
 nohup aria2c --rpc-listen-port 6800 --enable-rpc --rpc-listen-all >aria2c.log 2>&1 &
 ```
-| 属性               | 含义             | 例子                                                     |
-| ------------------ | ---------------- | -------------------------------------------------------- |
-| nas.ffmpeg-bin-dir | Ffmpeg 所在目录  | --nas.ffmpeg-bin-dir=/home/shw/ffmpeg-4.2.1-amd64-static |
-| nas.out-dir        | HLS视频输出目录  | --nas.out-dir=/home/shw/a                                |
-| nas.aria2c-file    | aria2c文件全路径 | --nas.aria2c-file=/usr/local/bin/aria2c                  |
-| nas.music-file-dir | 音乐文件目录 | --nas.music-file-dir=/home/music           |
+
+启动后访问 `http://127.0.0.1:8888` 进入设置页面设置数据库及数据源配置。
 
 # 实现功能
 - [X] 点播视频文件
@@ -83,7 +64,7 @@ nohup aria2c --rpc-listen-port 6800 --enable-rpc --rpc-listen-all >aria2c.log 2>
 
 - [ ] 图片在线查看
 
-- [ ] 提供ftp服务
+- [X] 提供ftp服务
 
 - [ ] 资料加密
 
@@ -105,4 +86,4 @@ nohup aria2c --rpc-listen-port 6800 --enable-rpc --rpc-listen-all >aria2c.log 2>
 
 # 感谢
 
-<img src="https://raw.githubusercontent.com/itning/yunshu-nas/master/pic/jetbrains.png" style="zoom: 25%;" />
+![JetBrains Logo (Main) logo](https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg)

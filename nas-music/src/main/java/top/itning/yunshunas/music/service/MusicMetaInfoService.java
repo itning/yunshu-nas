@@ -19,4 +19,14 @@ public interface MusicMetaInfoService {
      * @throws Exception 解析出现错误
      */
     MusicMetaInfo metaInfo(File musicFile, MusicType musicType) throws Exception;
+
+    /**
+     * 修改音乐元信息
+     *
+     * @param musicFile     音乐文件
+     * @param musicType     类型
+     * @param musicMetaInfo 音乐元信息
+     * @throws Exception 修改出现错误
+     */
+    void editMetaInfo(File musicFile, MusicType musicType, MusicMetaInfo musicMetaInfo) throws Exception;
 }

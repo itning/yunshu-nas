@@ -1,7 +1,5 @@
 import {Component, OnInit} from '@angular/core';
 import {Music} from "../../../../http/model/Music";
-import {Page} from "../../../../http/model/page/Page";
-import {NzTableQueryParams} from "ng-zorro-antd/table";
 import {MusicService} from "../../../../service/music.service";
 import {debounceTime, distinctUntilChanged, Subject} from "rxjs";
 import {NzMessageService} from "ng-zorro-antd/message";
@@ -13,9 +11,7 @@ import {NzMessageService} from "ng-zorro-antd/message";
 })
 export class ListComponent implements OnInit {
 
-  musicData: Music[] = [];
-
-  music: Page<Music>;
+  music: Music[] = [];
 
   loading = true;
 
@@ -26,10 +22,6 @@ export class ListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const page = new Page<Music>();
-    page.size = 100;
-    page.number = 1;
-    this.music = page;
     this.searchSubject
       .pipe(
         debounceTime(300),
@@ -37,11 +29,11 @@ export class ListComponent implements OnInit {
       .subscribe(item => {
         this.doSearch(item);
       });
+    this.onQueryParamsChange();
   }
 
-  onQueryParamsChange($event: NzTableQueryParams) {
-    this.musicService.getMusicList($event).subscribe(data => {
-      this.musicData = data.content;
+  onQueryParamsChange() {
+    this.musicService.getMusicList().subscribe(data => {
       this.music = data;
       this.loading = false;
     });
@@ -51,7 +43,7 @@ export class ListComponent implements OnInit {
     console.log(`删除音乐：${musicId}`);
     this.musicService.delMusic(musicId).subscribe(data => {
       this.message.success(data);
-      this.onQueryParamsChange({pageSize: 100, pageIndex: 1, sort: [], filter: []});
+      this.onQueryParamsChange();
     })
   }
 
@@ -63,11 +55,10 @@ export class ListComponent implements OnInit {
   private doSearch(keyword: string) {
     this.loading = true;
     if (!keyword || keyword.trim() === '') {
-      this.onQueryParamsChange({pageSize: 100, pageIndex: 1, sort: [], filter: []});
+      this.onQueryParamsChange();
       return
     }
     this.musicService.searchMusic(keyword, {pageSize: 100, pageIndex: 1, sort: [], filter: []}).subscribe(data => {
-      this.musicData = data.content;
       this.music = data;
       this.loading = false;
     });

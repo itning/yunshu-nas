@@ -20,6 +20,11 @@ public class MusicChangeDTO {
     private MultipartFile lyricFile;
 
     /**
+     * 封面文件
+     */
+    private MultipartFile coverFile;
+
+    /**
      * 音乐名
      */
     private String name;

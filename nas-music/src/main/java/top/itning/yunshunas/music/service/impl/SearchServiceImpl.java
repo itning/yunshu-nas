@@ -5,9 +5,6 @@ import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.query.HighlightQuery;
@@ -15,13 +12,13 @@ import org.springframework.data.elasticsearch.core.query.highlight.Highlight;
 import org.springframework.data.elasticsearch.core.query.highlight.HighlightField;
 import org.springframework.data.elasticsearch.core.query.highlight.HighlightFieldParameters;
 import org.springframework.stereotype.Service;
+import top.itning.yunshunas.music.config.ElasticsearchConfig;
 import top.itning.yunshunas.music.datasource.CoverDataSource;
 import top.itning.yunshunas.music.datasource.LyricDataSource;
 import top.itning.yunshunas.music.datasource.MusicDataSource;
 import top.itning.yunshunas.music.entity.Lyric;
 import top.itning.yunshunas.music.entity.Music;
 import top.itning.yunshunas.music.entity.SearchResult;
-import top.itning.yunshunas.music.repository.LyricElasticsearchRepository;
 import top.itning.yunshunas.music.repository.MusicRepository;
 import top.itning.yunshunas.music.service.SearchService;
 
@@ -38,37 +35,36 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
-@ConditionalOnProperty(value = "spring.data.elasticsearch.repositories.enabled", havingValue = "true")
 public class SearchServiceImpl implements SearchService {
     /**
      * 歌词搜索字段
      */
     private static final String SEARCH_FILED_FOR_LYRIC = "content";
 
-    private final LyricElasticsearchRepository lyricElasticsearchRepository;
     private final MusicRepository musicRepository;
     private final MusicDataSource musicDataSource;
     private final LyricDataSource lyricDataSource;
     private final CoverDataSource coverDataSource;
-    private final ElasticsearchTemplate elasticsearchTemplate;
+    private final ElasticsearchConfig elasticsearchConfig;
 
     @Autowired
-    public SearchServiceImpl(LyricElasticsearchRepository lyricElasticsearchRepository,
-                             MusicRepository musicRepository,
+    public SearchServiceImpl(MusicRepository musicRepository,
                              MusicDataSource musicDataSource,
                              LyricDataSource lyricDataSource,
                              CoverDataSource coverDataSource,
-                             ElasticsearchTemplate elasticsearchTemplate) {
-        this.lyricElasticsearchRepository = lyricElasticsearchRepository;
+                             ElasticsearchConfig elasticsearchConfig) {
         this.musicRepository = musicRepository;
         this.musicDataSource = musicDataSource;
         this.lyricDataSource = lyricDataSource;
         this.coverDataSource = coverDataSource;
-        this.elasticsearchTemplate = elasticsearchTemplate;
+        this.elasticsearchConfig = elasticsearchConfig;
     }
 
     @Override
     public void saveOrUpdateLyric(String musicId, String lyricId, String content) {
+        if (!elasticsearchConfig.enabled()) {
+            return;
+        }
         if (StringUtils.isAnyBlank(musicId, lyricId)) {
             throw new IllegalArgumentException("音乐ID或歌词ID为空！");
         }
@@ -95,21 +91,26 @@ public class SearchServiceImpl implements SearchService {
         lyric.setLyricId(lyricId);
         lyric.setContent(content);
 
-        lyricElasticsearchRepository.save(lyric);
+        elasticsearchConfig.getElasticsearchTemplate().save(lyric);
     }
 
     @Override
     public void deleteLyric(String lyricId) {
-        lyricElasticsearchRepository.deleteById(lyricId);
+        if (!elasticsearchConfig.enabled()) {
+            return;
+        }
+        elasticsearchConfig.getElasticsearchTemplate().delete(lyricId, Lyric.class);
     }
 
     @Override
-    public List<SearchResult> searchLyric(String keyword, Pageable pageable) {
-        SearchHits<Lyric> search = elasticsearchTemplate.search(
+    public List<SearchResult> searchLyric(String keyword) {
+        if (!elasticsearchConfig.enabled()) {
+            return Collections.emptyList();
+        }
+        SearchHits<Lyric> search = elasticsearchConfig.getElasticsearchTemplate().search(
                 new NativeQueryBuilder()
                         .withQuery(new Query.Builder().matchPhrase(new MatchPhraseQuery.Builder().field(SEARCH_FILED_FOR_LYRIC).query(keyword).build()).build())
                         .withHighlightQuery(new HighlightQuery(new Highlight(Collections.singletonList(new HighlightField(SEARCH_FILED_FOR_LYRIC, HighlightFieldParameters.builder().withFragmentSize(50).withNumberOfFragments(1).build()))), null))
-                        .withPageable(pageable)
                         .build(),
                 Lyric.class
         );

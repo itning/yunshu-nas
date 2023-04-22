@@ -1,6 +1,5 @@
 package top.itning.yunshunas.music.service;
 
-import org.springframework.data.domain.Pageable;
 import top.itning.yunshunas.music.entity.SearchResult;
 
 import java.util.List;
@@ -32,8 +31,7 @@ public interface SearchService {
      * 搜索歌词
      *
      * @param keyword  关键字
-     * @param pageable 分页信息
      * @return 搜索结果
      */
-    List<SearchResult> searchLyric(String keyword, Pageable pageable);
+    List<SearchResult> searchLyric(String keyword);
 }

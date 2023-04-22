@@ -1,0 +1,387 @@
+<div>
+  <div>
+    <nz-card nzTitle="数据库配置">
+      <form nz-form [formGroup]="dbConfigFromGroup">
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="name">名称</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="名称必填">
+            <input nz-input formControlName="name" id="name"/>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="type">数据库类型</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="数据库类型必填">
+            <nz-select formControlName="type" id="type" nzPlaceHolder="请选择数据库类型">
+              <nz-option nzValue="MYSQL" nzLabel="MySQL"></nz-option>
+              <nz-option nzValue="SQLITE" nzLabel="SQLite"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="jdbcUrl">JDBC URL</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="JDBC URL必填">
+            <input nz-input formControlName="jdbcUrl" id="jdbcUrl"/>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="username">用户名</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24">
+            <input nz-input formControlName="username" id="username"/>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="password">密码</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24">
+            <input nz-input formControlName="password" id="password"/>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item nz-row>
+          <nz-form-control [nzSpan]="14" [nzOffset]="6">
+            <button style="margin-right: 6px" nz-button nzType="default" (click)="testDbConfig()"
+                    [disabled]="!dbConfigFromGroup.valid" [nzLoading]="buttonLoading.testDbConfig">测试数据库连接
+            </button>
+            <button nz-button nzType="primary" nz-popconfirm
+                    nzPopconfirmTitle="确定保存？"
+                    (nzOnConfirm)="submitDbConfigForm()" [disabled]="!dbConfigFromGroup.valid"
+                    [nzLoading]="buttonLoading.submitDbConfigForm">保存数据库配置
+            </button>
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </nz-card>
+  </div>
+  <div style="margin-top: 16px">
+    <nz-card nzTitle="Elasticsearch配置">
+      <form nz-form [formGroup]="esConfigFromGroup">
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="enabled">
+            开启Elasticsearch
+          </nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24">
+            <label nz-checkbox formControlName="enabled" id="enabled">开启Elasticsearch</label>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item *ngIf="esConfigFromGroup.get('enabled').value">
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="uris">Elasticsearch地址</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24">
+            <nz-select nzMode="tags" formControlName="uris" id="uris" nzPlaceHolder="http://localhost:9200">
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item *ngIf="esConfigFromGroup.get('enabled').value">
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="esusername">用户名</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24">
+            <input nz-input formControlName="username" id="esusername"/>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item *ngIf="esConfigFromGroup.get('enabled').value">
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="espassword">密码</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24">
+            <input nz-input formControlName="password" id="espassword"/>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item *ngIf="esConfigFromGroup.get('enabled').value">
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="pathPrefix">请求路径前缀</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24">
+            <input nz-input formControlName="pathPrefix" id="pathPrefix"/>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item nz-row *ngIf="esConfigFromGroup.get('enabled').value">
+          <nz-form-control [nzSpan]="14" [nzOffset]="6">
+            <button nz-button nzType="primary" nz-popconfirm
+                    nzPopconfirmTitle="确定保存？"
+                    (nzOnConfirm)="submitEsConfigForm()" [disabled]="!esConfigFromGroup.valid"
+                    [nzLoading]="buttonLoading.submitEsConfigForm">保存ES配置
+            </button>
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </nz-card>
+  </div>
+  <div style="margin-top: 16px">
+    <nz-card nzTitle="应用配置">
+      <form nz-form [formGroup]="nasConfigFromGroup">
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="outDir">文件输出目录</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24">
+            <input nz-input formControlName="outDir" id="outDir"/>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="ffmpegBinDir">ffmpeg bin目录</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24">
+            <input nz-input formControlName="ffmpegBinDir" id="ffmpegBinDir"/>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="aria2cFile">aria2c文件</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24">
+            <input nz-input formControlName="aria2cFile" id="aria2cFile"/>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="serverUrl">服务端地址</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24">
+            <input nz-input formControlName="serverUrl" id="serverUrl"/>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="basicAuth.enable">基础认证配置</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24">
+            <label nz-checkbox [(ngModel)]="enableBasicAuth" (nzCheckedChange)="basicAuthEnableChange()"
+                   [ngModelOptions]="{standalone: true}"
+                   id="basicAuth.enable">开启基础认证</label>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item formGroupName="basicAuth" *ngIf="enableBasicAuth">
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="basicAuth.username">用户名</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="用户名必填">
+            <input nz-input formControlName="username" id="basicAuth.username"/>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item formGroupName="basicAuth" *ngIf="enableBasicAuth">
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="basicAuth.password">密码</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="密码必填">
+            <input nz-input formControlName="password" id="basicAuth.password"/>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item formGroupName="basicAuth" *ngIf="enableBasicAuth">
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="basicAuth.ignorePath">忽略路径</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24">
+            <nz-select nzMode="tags" formControlName="ignorePath">
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item nz-row>
+          <nz-form-control [nzSpan]="14" [nzOffset]="6">
+            <button nz-button nzType="primary" nz-popconfirm
+                    nzPopconfirmTitle="确定保存？"
+                    (nzOnConfirm)="submitNasConfigForm()" [disabled]="!nasConfigFromGroup.valid"
+                    [nzLoading]="buttonLoading.submitNasConfigForm">保存应用配置
+            </button>
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </nz-card>
+  </div>
+  <div style="margin-top: 16px">
+    <ng-template #addDatasource>
+      <button nz-button nzType="dashed" style="margin-right: 12px" (click)="addDatasourceConfigFromGroup()">
+        <span nz-icon nzType="plus"></span>
+        新增数据源
+      </button>
+    </ng-template>
+    <nz-card nzTitle="数据源配置" [nzExtra]="addDatasource">
+      <form nz-form [formGroup]="datasourceConfigFromGroup">
+        <div *ngFor="let item of datasourceConfigFromGroupArray.controls;let i=index" [formGroup]="getGroup(item)">
+          <nz-form-item>
+            <nz-form-label [nzSm]="6" [nzXs]="24" [nzFor]="i+'name'" nzRequired>数据源名称</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="数据源名称必填">
+              <input nz-input formControlName="name" [id]="i+'name'"/>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired [nzFor]="i+'className'">数据源类型</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="数据源类型必填">
+              <nz-select formControlName="className" [id]="i+'className'" (ngModelChange)="dataSourceTypeChange(item)"
+                         nzPlaceHolder="请选择数据源类型">
+                <nz-option nzValue="top.itning.yunshunas.music.datasource.impl.FileDataSource"
+                           nzLabel="文件系统"></nz-option>
+                <nz-option nzValue="top.itning.yunshunas.music.datasource.impl.TencentCosDataSource"
+                           nzLabel="腾讯云COS"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item *ngIf="enableFileDataSource(item)">
+            <nz-form-label [nzSm]="6" [nzXs]="24" [nzFor]="i+'musicFileDir'">音乐文件目录</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24">
+              <input nz-input formControlName="musicFileDir" [id]="i+'musicFileDir'"/>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item *ngIf="enableFileDataSource(item)">
+            <nz-form-label [nzSm]="6" [nzXs]="24" [nzFor]="i+'lyricFileDir'">歌词文件目录</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24">
+              <input nz-input formControlName="lyricFileDir" [id]="i+'lyricFileDir'"/>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item *ngIf="enableFileDataSource(item)">
+            <nz-form-label [nzSm]="6" [nzXs]="24" [nzFor]="i+'urlPrefix'">文件数据源URL前缀</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24">
+              <input nz-input placeholder="https://example.com" formControlName="urlPrefix" [id]="i+'urlPrefix'"/>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item *ngIf="enableTencentCosDataSource(item)">
+            <nz-form-label [nzSm]="6" [nzXs]="24" [nzFor]="i+'secretId'" nzRequired>腾讯云SECRETID</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="腾讯云SECRETID必填">
+              <input nz-input formControlName="secretId" [id]="i+'secretId'"/>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item *ngIf="enableTencentCosDataSource(item)">
+            <nz-form-label [nzSm]="6" [nzXs]="24" [nzFor]="i+'secretKey'" nzRequired>腾讯云SECRETKEY</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="腾讯云SECRETKEY必填">
+              <input nz-input formControlName="secretKey" [id]="i+'secretKey'"/>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item *ngIf="enableTencentCosDataSource(item)">
+            <nz-form-label [nzSm]="6" [nzXs]="24" [nzFor]="i+'regionName'" nzRequired>COS bucket地域</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="腾讯云bucket地域必填">
+              <input nz-input formControlName="regionName" [id]="i+'regionName'"/>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item *ngIf="enableTencentCosDataSource(item)">
+            <nz-form-label [nzSm]="6" [nzXs]="24" [nzFor]="i+'bucketName'" nzRequired>COS Bucket名称</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="腾讯云BucketName必填">
+              <input nz-input formControlName="bucketName" [id]="i+'bucketName'"/>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item *ngIf="enableTencentCosDataSource(item)">
+            <nz-form-label [nzSm]="6" [nzXs]="24" [nzFor]="i+'cdnUrl'">腾讯云内容分发网络（CDN）域名</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24">
+              <input nz-input placeholder="https://example.com" formControlName="cdnUrl" [id]="i+'cdnUrl'"/>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label [nzSm]="6" [nzXs]="24" [nzFor]="i+'convertAudioToMp3BeforeUploading'" nzRequired>
+              上传之前将音频文件转成MP3后再上传
+            </nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24">
+              <label nz-checkbox formControlName="convertAudioToMp3BeforeUploading"
+                     [id]="i+'convertAudioToMp3BeforeUploading'">开启</label>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label [nzSm]="6" [nzXs]="24" [nzFor]="i+'canWrite'" nzRequired>上传时（写操作）存储到这个数据源
+            </nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24">
+              <label nz-checkbox formControlName="canWrite" [id]="i+'canWrite'">开启</label>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label [nzSm]="6" [nzXs]="24" [nzFor]="i+'canRead'" nzRequired>下载时（读操作）从这个数据源读取
+            </nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24">
+              <label nz-checkbox formControlName="canRead" [id]="i+'canRead'">开启</label>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item nz-row>
+            <nz-form-control [nzSpan]="14" [nzOffset]="6">
+              <button nz-button nzType="default" nzDanger nz-popconfirm
+                      nzPopconfirmTitle="确定移除？"
+                      (nzOnConfirm)="removeDatasourceConfigFromGroup(i)">移除数据源
+              </button>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-divider></nz-divider>
+        </div>
+        <nz-form-item *ngIf="datasourceConfigFromGroupArray.controls.length>0">
+          <nz-form-control [nzSpan]="14" [nzOffset]="6">
+            <button nz-button nzType="primary" nz-popconfirm
+                    nzPopconfirmTitle="确定保存？"
+                    (nzOnConfirm)="submitDataSourceConfigForm()" [disabled]="!datasourceConfigFromGroup.valid"
+                    [nzLoading]="buttonLoading.submitDataSourceConfigForm">
+              保存数据源配置
+            </button>
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </nz-card>
+  </div>
+  <div style="margin-top: 16px">
+    <ng-template #addFtp>
+      <button nz-button nzType="dashed" style="margin-right: 12px" (click)="addFtpConfigFromGroup()">
+        <span nz-icon nzType="plus"></span>
+        新增FTP服务
+      </button>
+    </ng-template>
+    <nz-card nzTitle="FTP服务器配置" [nzExtra]="addFtp">
+      <form nz-form [formGroup]="ftpConfigFromGroup">
+        <div *ngFor="let item of ftpConfigFromGroupArray.controls;let i=index" [formGroup]="getGroup(item)">
+          <nz-form-item>
+            <nz-form-label [nzSm]="6" [nzXs]="24" [nzFor]="i+'name_ftp'" nzRequired>FTP服务名称</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="FTP服务名称必填">
+              <input nz-input formControlName="name" [id]="i+'name_ftp'"/>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired [nzFor]="i+'port'">端口</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="端口必填">
+              <nz-input-number formControlName="port" [id]="i+'port'" [nzMin]="0" [nzMax]="65535"
+                               [nzStep]="1"></nz-input-number>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label [nzSm]="6" [nzXs]="24" [nzFor]="i+'serverAddress'">服务地址</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24">
+              <input nz-input placeholder="0.0.0.0" formControlName="serverAddress" [id]="i+'serverAddress'"/>
+            </nz-form-control>
+          </nz-form-item>
+          <div *ngFor="let itemUser of getFromArray(item.get('users')).controls;let ii=index"
+               [formGroup]="getGroup(itemUser)">
+            <nz-form-item>
+              <nz-form-label [nzSm]="6" [nzXs]="24" [nzFor]="ii+'enableAnonymousAccess'">
+                用户{{ii}}开启匿名访问
+              </nz-form-label>
+              <nz-form-control [nzSm]="14" [nzXs]="24">
+                <label nz-checkbox formControlName="enableAnonymousAccess"
+                       (nzCheckedChange)="enableAnonymousAccessChange(itemUser)"
+                       id="enableAnonymousAccess">开启匿名访问</label>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item *ngIf="!itemUser.get('enableAnonymousAccess').value">
+              <nz-form-label [nzSm]="6" [nzXs]="24" [nzFor]="ii+'ftp_username'" nzRequired>用户{{ii}}用户名
+              </nz-form-label>
+              <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="用户名必填">
+                <input nz-input formControlName="username" [id]="ii+'ftp_username'"/>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item *ngIf="!itemUser.get('enableAnonymousAccess').value">
+              <nz-form-label [nzSm]="6" [nzXs]="24" [nzFor]="ii+'ftp_password'" nzRequired>用户{{ii}}密码
+              </nz-form-label>
+              <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="密码必填">
+                <input nz-input formControlName="password" [id]="ii+'ftp_password'"/>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired [nzFor]="ii+'homeDir'">用户{{ii}}主目录</nz-form-label>
+              <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="主目录必填">
+                <input nz-input formControlName="homeDir" [id]="ii+'homeDir'"/>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item nz-row>
+              <nz-form-control [nzSpan]="14" [nzOffset]="6">
+                <button nz-button nzType="default" nzDanger nz-popconfirm
+                        nzPopconfirmTitle="确定移除？"
+                        (nzOnConfirm)="removeFtpUserConfigFromGroup(item.get('users'),ii)"
+                        [disabled]="getFromArray(item.get('users')).controls.length===1">
+                  移除用户 {{ii}}
+                </button>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <nz-form-item nz-row>
+            <nz-form-control [nzSpan]="14" [nzOffset]="6">
+              <button style="margin-right: 6px" nz-button nzType="default"
+                      (click)="addFtpUserConfigFromGroup(item.get('users'))">新增用户
+              </button>
+              <button nz-button nzType="default" nzDanger nz-popconfirm
+                      nzPopconfirmTitle="确定移除？"
+                      (nzOnConfirm)="removeFtpConfigFromGroup(i)">移除FTP服务
+              </button>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-divider></nz-divider>
+        </div>
+        <nz-form-item *ngIf="ftpConfigFromGroupArray.controls.length>0">
+          <nz-form-control [nzSpan]="14" [nzOffset]="6">
+            <button nz-button nzType="primary" nz-popconfirm
+                    nzPopconfirmTitle="确定保存？"
+                    (nzOnConfirm)="submitFtpConfigForm()" [disabled]="!ftpConfigFromGroup.valid"
+                    [nzLoading]="buttonLoading.submitFtpConfigForm">
+              保存FTP服务配置
+            </button>
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </nz-card>
+  </div>
+</div>

@@ -18,13 +18,20 @@ import {NzMessageModule} from 'ng-zorro-antd/message';
 import {NzIconModule} from 'ng-zorro-antd/icon';
 import {NzBreadCrumbModule} from 'ng-zorro-antd/breadcrumb';
 import {NzBackTopModule} from 'ng-zorro-antd/back-top';
+import {NzCardModule} from 'ng-zorro-antd/card';
+import {NzSelectModule} from 'ng-zorro-antd/select';
+import {NzCheckboxModule} from 'ng-zorro-antd/checkbox';
+import {NzDividerModule} from 'ng-zorro-antd/divider';
+import {NzInputNumberModule} from 'ng-zorro-antd/input-number';
 import {
   CodeOutline,
   CustomerServiceOutline,
   FolderOutline,
   MenuFoldOutline,
   MenuUnfoldOutline,
-  VideoCameraOutline
+  MinusCircleOutline,
+  PlusOutline,
+  VideoCameraOutline,
 } from '@ant-design/icons-angular/icons';
 
 const icons = [
@@ -33,7 +40,9 @@ const icons = [
   MenuUnfoldOutline,
   MenuFoldOutline,
   FolderOutline,
-  CodeOutline
+  CodeOutline,
+  PlusOutline,
+  MinusCircleOutline,
 ];
 
 const modules = [
@@ -54,7 +63,12 @@ const modules = [
   NzToolTipModule,
   NzMessageModule,
   NzBreadCrumbModule,
-  NzBackTopModule
+  NzBackTopModule,
+  NzCardModule,
+  NzSelectModule,
+  NzCheckboxModule,
+  NzDividerModule,
+  NzInputNumberModule
 ];
 
 @NgModule({

@@ -5,7 +5,7 @@
     <parent>
         <groupId>top.itning.yunshu-nas</groupId>
         <artifactId>nas-parent</artifactId>
-        <version>1.8.1.RELEASE</version>
+        <version>2.0.1.RELEASE</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -13,6 +13,7 @@
 
     <properties>
         <jarFileName>${project.version}</jarFileName>
+        <start-class>top.itning.yunshunas.YunshuNasApplication</start-class>
     </properties>
 
     <dependencies>
@@ -36,6 +37,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-websocket</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.ftpserver</groupId>
+            <artifactId>ftpserver-core</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

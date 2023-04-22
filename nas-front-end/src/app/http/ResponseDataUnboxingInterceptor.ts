@@ -27,6 +27,9 @@ export class ResponseDataUnboxingInterceptor implements HttpInterceptor {
             console.error(httpResponse);
             this.message.error(httpResponse.body.msg);
           }
+          if (!httpResponse.body) {
+            return event;
+          }
           const data: any = httpResponse.body.data;
           // clone and return
           return httpResponse.clone<any>({

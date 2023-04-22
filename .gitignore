@@ -31,3 +31,5 @@ build/
 rebel.xml
 application-prod.properties
 pom.xml.versionsBackup
+application-local.properties
+application-nas.properties
