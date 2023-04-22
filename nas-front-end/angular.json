@@ -47,7 +47,9 @@
             },
             "scripts": [],
             "allowedCommonJsDependencies": [
-              "music-metadata-browser"
+              "music-metadata-browser",
+              "dplayer",
+              "dayjs"
             ]
           },
           "configurations": {
