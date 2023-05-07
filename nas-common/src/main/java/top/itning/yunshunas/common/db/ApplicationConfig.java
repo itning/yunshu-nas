@@ -59,6 +59,7 @@ public class ApplicationConfig {
 
     @PostConstruct
     public void init() {
+        log.info("use default db path:{}", defaultDbPath);
         String jdbcUrl = "jdbc:sqlite:" + defaultDbPath;
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(jdbcUrl);
