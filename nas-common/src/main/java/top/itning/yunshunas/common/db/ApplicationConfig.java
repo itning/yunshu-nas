@@ -143,7 +143,16 @@ public class ApplicationConfig {
         config.setConnectionInitSql(dbEntry.getType().getDdlSql());
         if (Objects.nonNull(connectionTimeoutMs)) {
             config.setConnectionTimeout(connectionTimeoutMs);
+        } else {
+            // 从连接池获取连接时最大等待时间, 单位毫秒, 默认值 30秒, 至少 250ms
+            config.setConnectionTimeout(5000L);
         }
+        // 检测连接是否有效的超时时间
+        config.setValidationTimeout(3000L);
+        // 连接可以在池中的最大闲置时间
+        config.setIdleTimeout(5 * 60 * 1000L);
+        // 连接最大存活时间
+        config.setMaxLifetime(10 * 60 * 1000L);
         return new HikariDataSource(config);
     }
 
