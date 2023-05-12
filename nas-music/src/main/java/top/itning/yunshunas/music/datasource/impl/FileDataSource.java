@@ -58,7 +58,8 @@ public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDa
             return;
         }
 
-        if (musicDataSourceConfig.isConvertAudioToMp3BeforeUploading() && musicType != MusicType.MP3) {
+        boolean change2mp3 = musicDataSourceConfig.isConvertAudioToMp3BeforeUploading() && musicType != MusicType.MP3;
+        if (change2mp3) {
             //TODO itning 转换后和数据库里的音乐类型不匹配
             log.info("上传前将音频文件转成MP3 原始音频大小：{} 文件类型：{}", newMusicFile.length(), musicType);
             long start = System.currentTimeMillis();
@@ -96,7 +97,7 @@ public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDa
             log.info("拷贝文件从{}到{}", newMusicFile.getPath(), dest.getPath());
             destChannel.transferFrom(sourceChannel, 0, sourceChannel.size());
         } finally {
-            if (musicDataSourceConfig.isConvertAudioToMp3BeforeUploading()) {
+            if (change2mp3) {
                 deleteFile(newMusicFile.toPath());
             }
         }
