@@ -153,6 +153,8 @@ public class ApplicationConfig {
         config.setIdleTimeout(5 * 60 * 1000L);
         // 连接最大存活时间
         config.setMaxLifetime(10 * 60 * 1000L);
+        config.setMinimumIdle(5);
+        config.setMaximumPoolSize(10);
         return new HikariDataSource(config);
     }
 

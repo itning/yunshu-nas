@@ -7,7 +7,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,7 +20,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * @author itning
@@ -32,7 +30,6 @@ public class BasicFilter extends OncePerRequestFilter {
 
     private static final AntPathMatcher ANT_PATH_MATCHER = new AntPathMatcher();
     private static final String HEALTH_CHECK_PATH = "/health";
-    private static final String TRACE_ID_HEADER = "traceId";
 
     private final ApplicationConfig applicationConfig;
 
@@ -43,40 +40,26 @@ public class BasicFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        String traceId = request.getHeader(TRACE_ID_HEADER);
-        if (traceId == null) {
-            traceId = UUID.randomUUID().toString().replace("-", "");
-        }
-
-        MDC.put(TRACE_ID_HEADER, traceId);
-        log.debug("[{}] [{}] [{}]", request.getMethod(), request.getRequestURI(), request.getQueryString());
-        response.setHeader(TRACE_ID_HEADER, traceId);
-
         NasProperties nasProperties = applicationConfig.getSetting(NasProperties.class);
         if (Objects.isNull(nasProperties)) {
             filterChain.doFilter(request, response);
-            MDC.remove(TRACE_ID_HEADER);
             return;
         }
         if (!nasProperties.isEnableBasicAuth()) {
             filterChain.doFilter(request, response);
-            MDC.remove(TRACE_ID_HEADER);
             return;
         }
         NasProperties.BasicAuthConfig basicAuthConfig = nasProperties.getBasicAuth();
         if (Objects.isNull(basicAuthConfig)) {
             filterChain.doFilter(request, response);
-            MDC.remove(TRACE_ID_HEADER);
             return;
         }
         if (!CollectionUtils.isEmpty(basicAuthConfig.getIgnorePath()) && basicAuthConfig.getIgnorePath().stream().anyMatch(path -> ANT_PATH_MATCHER.match(path, request.getRequestURI()))) {
             filterChain.doFilter(request, response);
-            MDC.remove(TRACE_ID_HEADER);
             return;
         }
         if (HEALTH_CHECK_PATH.equals(request.getRequestURI())) {
             filterChain.doFilter(request, response);
-            MDC.remove(TRACE_ID_HEADER);
             return;
         }
         String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
@@ -95,8 +78,6 @@ public class BasicFilter extends OncePerRequestFilter {
                 }
             } catch (Exception e) {
                 log.error("认证出错", e);
-            } finally {
-                MDC.remove(TRACE_ID_HEADER);
             }
         }
 
@@ -108,6 +89,5 @@ public class BasicFilter extends OncePerRequestFilter {
         writer.write("<h1>401</h1>");
         writer.flush();
         writer.close();
-        MDC.remove(TRACE_ID_HEADER);
     }
 }
