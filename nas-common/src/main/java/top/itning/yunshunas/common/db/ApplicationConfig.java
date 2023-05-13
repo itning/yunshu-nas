@@ -62,6 +62,7 @@ public class ApplicationConfig {
         log.info("use default db path:{}", defaultDbPath);
         String jdbcUrl = "jdbc:sqlite:" + defaultDbPath;
         HikariConfig config = new HikariConfig();
+        config.setPoolName("SettingDataSourcePool-" + defaultDbPath);
         config.setJdbcUrl(jdbcUrl);
 
         String createTableQuery = """
@@ -137,6 +138,7 @@ public class ApplicationConfig {
 
     private HikariDataSource getDataSource(DbEntry dbEntry, Long connectionTimeoutMs) {
         HikariConfig config = new HikariConfig();
+        config.setPoolName("UserDataSourcePool-" + dbEntry.getId() + "-" + dbEntry.getName());
         config.setJdbcUrl(dbEntry.getJdbcUrl());
         config.setUsername(dbEntry.getUsername());
         config.setPassword(dbEntry.getPassword());
