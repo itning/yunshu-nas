@@ -23,6 +23,8 @@ export class AddComponent implements OnInit {
 
   lyric: string = '';
 
+  addLoading = false;
+
   private files: { [key: string]: File } = {};
 
   constructor(private musicService: MusicService,
@@ -51,11 +53,14 @@ export class AddComponent implements OnInit {
     for (let key in this.formGroup.value) {
       formData.append(key, this.formGroup.value[key]);
     }
+    this.addLoading = true;
     this.musicService.addMusic(formData).subscribe(data => {
+      this.addLoading = false;
       console.log(data);
       this.message.success('新增成功');
       this.router.navigateByUrl('/music/list').catch(console.error);
     }, error => {
+      this.addLoading = false;
       console.error(error);
       const errorMsg = error.error?.msg ?? '出错啦';
       this.message.error(errorMsg);
