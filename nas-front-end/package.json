@@ -32,7 +32,7 @@
     "@angular/cli": "^16.0.4",
     "@angular/compiler-cli": "^16.0.4",
     "@types/dplayer": "^1.25.2",
-    "@types/jasmine": "~4.3.1",
+    "@types/jasmine": "~4.3.2",
     "@types/node": "^20.2.5",
     "jasmine-core": "~4.6.0",
     "karma": "~6.4.2",
