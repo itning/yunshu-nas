@@ -17,7 +17,7 @@
     "@angular/forms": "^16.0.5",
     "@angular/platform-browser": "^16.0.5",
     "@angular/platform-browser-dynamic": "^16.0.5",
-    "@angular/router": "^16.0.5",
+    "@angular/router": "^16.1.0",
     "dayjs": "^1.11.8",
     "dplayer": "^1.27.1",
     "js-base64": "^3.7.5",
