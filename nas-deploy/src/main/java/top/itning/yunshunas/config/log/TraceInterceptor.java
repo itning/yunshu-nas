@@ -14,7 +14,8 @@ import java.util.UUID;
  */
 @Slf4j
 public class TraceInterceptor implements HandlerInterceptor {
-    private static final String TRACE_ID_HEADER = "TraceId";
+    private static final String TRACE_ID_LOG = "traceId";
+    private static final String TRACE_ID_HEADER = "X-TraceId";
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -23,7 +24,7 @@ public class TraceInterceptor implements HandlerInterceptor {
             traceId = UUID.randomUUID().toString().replace("-", "");
         }
 
-        MDC.put(TRACE_ID_HEADER, traceId);
+        MDC.put(TRACE_ID_LOG, traceId);
         log.debug("[{}] [{}{}]", request.getMethod(), request.getRequestURI(), request.getQueryString() == null ? "" : "?" + request.getQueryString());
         response.setHeader(TRACE_ID_HEADER, traceId);
         return true;
@@ -31,6 +32,6 @@ public class TraceInterceptor implements HandlerInterceptor {
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        MDC.remove(TRACE_ID_HEADER);
+        MDC.remove(TRACE_ID_LOG);
     }
 }
