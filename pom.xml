@@ -34,7 +34,7 @@
         <java.version>17</java.version>
         <skipTests>true</skipTests>
         <commons-io.version>2.13.0</commons-io.version>
-        <commons-codec.version>1.15</commons-codec.version>
+        <commons-codec.version>1.16.0</commons-codec.version>
         <guava.version>32.0.1-jre</guava.version>
         <java-webSocket.version>1.5.3</java-webSocket.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
