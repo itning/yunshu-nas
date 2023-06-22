@@ -6,14 +6,20 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
+import org.springframework.data.elasticsearch.core.IndexOperations;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.query.HighlightQuery;
 import org.springframework.data.elasticsearch.core.query.highlight.Highlight;
 import org.springframework.data.elasticsearch.core.query.highlight.HighlightField;
 import org.springframework.data.elasticsearch.core.query.highlight.HighlightFieldParameters;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import top.itning.yunshunas.music.config.DataSourceConfig;
 import top.itning.yunshunas.music.config.ElasticsearchConfig;
 import top.itning.yunshunas.music.datasource.CoverDataSource;
+import top.itning.yunshunas.music.datasource.DataSource;
 import top.itning.yunshunas.music.datasource.LyricDataSource;
 import top.itning.yunshunas.music.datasource.MusicDataSource;
 import top.itning.yunshunas.music.entity.Lyric;
@@ -22,9 +28,11 @@ import top.itning.yunshunas.music.entity.SearchResult;
 import top.itning.yunshunas.music.repository.MusicRepository;
 import top.itning.yunshunas.music.service.SearchService;
 
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -46,18 +54,24 @@ public class SearchServiceImpl implements SearchService {
     private final LyricDataSource lyricDataSource;
     private final CoverDataSource coverDataSource;
     private final ElasticsearchConfig elasticsearchConfig;
+    private final RestTemplate restTemplate;
+    private final Map<Class<? extends DataSource>, DataSourceConfig.DataSourceWrapper> readDataSourceMap;
 
     @Autowired
     public SearchServiceImpl(MusicRepository musicRepository,
                              MusicDataSource musicDataSource,
                              LyricDataSource lyricDataSource,
                              CoverDataSource coverDataSource,
-                             ElasticsearchConfig elasticsearchConfig) {
+                             ElasticsearchConfig elasticsearchConfig,
+                             RestTemplate restTemplate,
+                             Map<Class<? extends DataSource>, DataSourceConfig.DataSourceWrapper> readDataSourceMap) {
         this.musicRepository = musicRepository;
         this.musicDataSource = musicDataSource;
         this.lyricDataSource = lyricDataSource;
         this.coverDataSource = coverDataSource;
         this.elasticsearchConfig = elasticsearchConfig;
+        this.restTemplate = restTemplate;
+        this.readDataSourceMap = readDataSourceMap;
     }
 
     @Override
@@ -141,5 +155,42 @@ public class SearchServiceImpl implements SearchService {
                     return searchResult;
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void reInit() {
+        if (!elasticsearchConfig.enabled()) {
+            return;
+        }
+
+        IndexOperations lyricIndexOp = elasticsearchConfig.getElasticsearchTemplate().indexOps(Lyric.class);
+        if (lyricIndexOp.exists()) {
+            boolean success = lyricIndexOp.delete();
+            if (!success) {
+                log.error("delete index failed");
+            }
+        }
+        boolean success = lyricIndexOp.create();
+        if (!success) {
+            log.error("create index failed");
+        }
+
+        DataSourceConfig.DataSourceWrapper wrapper = readDataSourceMap.get(LyricDataSource.class);
+        LyricDataSource dataSource = (LyricDataSource) wrapper.dataSource();
+        List<Music> musicList = musicRepository.findAll();
+        for (Music music : musicList) {
+            URI uri = dataSource.getLyric(music.getLyricId());
+            ResponseEntity<String> responseEntity = restTemplate.getForEntity(uri, String.class);
+            if (!HttpStatus.OK.equals(responseEntity.getStatusCode())) {
+                log.warn("get music failed, status:{} uri:{}", responseEntity.getStatusCode(), uri);
+                continue;
+            }
+            String body = responseEntity.getBody();
+            if (StringUtils.isBlank(body)) {
+                log.warn("get body failed, status:{} uri:{}", responseEntity.getStatusCode(), uri);
+                continue;
+            }
+            this.saveOrUpdateLyric(music.getMusicId(), music.getLyricId(), body);
+        }
     }
 }

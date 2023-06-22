@@ -142,4 +142,10 @@ public class MusicController {
         }
         return RestModel.ok(null);
     }
+
+    @GetMapping("/reInitLyric")
+    public ResponseEntity<RestModel<Void>> reInitLyric() {
+        searchService.reInit();
+        return RestModel.created();
+    }
 }

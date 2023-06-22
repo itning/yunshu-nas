@@ -34,4 +34,9 @@ public interface SearchService {
      * @return 搜索结果
      */
     List<SearchResult> searchLyric(String keyword);
+
+    /**
+     * 重新初始化歌词es
+     */
+    void reInit();
 }
