@@ -1,0 +1,17 @@
+.git/
+.idea/
+.github/
+.fastRequest/
+nas-front-end/
+nas-common/
+nas-music/
+nas-video/
+pic/
+*.java
+*.log
+*.class
+*.db
+*.xml
+*.cmd
+*.versionsBackup
+README.md
