@@ -15,7 +15,7 @@
     "@angular/compiler": "^16.2.5",
     "@angular/core": "^16.2.5",
     "@angular/forms": "^16.2.5",
-    "@angular/platform-browser": "^16.2.5",
+    "@angular/platform-browser": "^16.2.6",
     "@angular/platform-browser-dynamic": "^16.2.5",
     "@angular/router": "^16.2.5",
     "dayjs": "^1.11.10",
