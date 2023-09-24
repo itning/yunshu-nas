@@ -18,7 +18,7 @@
     "@angular/platform-browser": "^16.2.5",
     "@angular/platform-browser-dynamic": "^16.2.5",
     "@angular/router": "^16.2.5",
-    "dayjs": "^1.11.9",
+    "dayjs": "^1.11.10",
     "dplayer": "^1.27.1",
     "js-base64": "^3.7.5",
     "music-metadata-browser": "2.4.3",
