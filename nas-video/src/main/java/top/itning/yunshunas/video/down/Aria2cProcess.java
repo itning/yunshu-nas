@@ -1,6 +1,5 @@
 package top.itning.yunshunas.video.down;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,9 +10,6 @@ import top.itning.yunshunas.common.db.ApplicationConfig;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import static top.itning.yunshunas.common.util.CommandUtils.process;
 
@@ -33,13 +29,8 @@ public class Aria2cProcess {
         if (StringUtils.isBlank(nasProperties.getAria2cFile())) {
             return;
         }
-        ThreadPoolExecutor synchronousBlockingSingleService = new ThreadPoolExecutor(1,
-                1,
-                0L,
-                TimeUnit.MILLISECONDS,
-                new LinkedBlockingQueue<>(),
-                new ThreadFactoryBuilder().setNameFormat("aria2c-pool-%d").build());
-        synchronousBlockingSingleService.submit(() -> {
+        Thread.Builder.OfVirtual virtual = Thread.ofVirtual().name("aria2c-pool-", 0);
+        virtual.start(() -> {
             List<String> command = new ArrayList<>();
             command.add(nasProperties.getAria2cFile());
             command.add("--rpc-listen-port");
