@@ -32,13 +32,13 @@
     "@angular/cli": "^17.1.1",
     "@angular/compiler-cli": "^17.1.1",
     "@types/dplayer": "^1.25.5",
-    "@types/jasmine": "~4.3.6",
+    "@types/jasmine": "~5.1.4",
     "@types/node": "^20.11.8",
     "jasmine-core": "~5.1.1",
     "karma": "~6.4.2",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.1",
-    "karma-jasmine": "~5.0.1",
+    "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "typescript": "~5.3.3"
   }
