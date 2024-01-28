@@ -1,7 +1,10 @@
 package top.itning.yunshunas.music.datasource.impl;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import top.itning.yunshunas.common.config.NasProperties;
 import top.itning.yunshunas.music.config.NasMusicProperties;
 import top.itning.yunshunas.music.constant.MusicType;
@@ -11,6 +14,7 @@ import top.itning.yunshunas.music.datasource.MusicDataSource;
 
 import java.io.*;
 import java.net.URI;
+import java.net.URL;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -118,7 +122,9 @@ public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDa
 
     @Override
     public URI getMusic(String musicId) {
-        return URI.create(musicDataSourceConfig.getUrlPrefix() + "/file?id=" + musicId);
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        URI uri = URI.create(request.getRequestURL().toString()).resolve("/");
+        return URI.create(uri + "file?id=" + musicId);
     }
 
     @Override
@@ -149,7 +155,9 @@ public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDa
 
     @Override
     public URI getLyric(String lyricId) {
-        return URI.create(musicDataSourceConfig.getUrlPrefix() + "/file/lyric?id=" + lyricId);
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        URI uri = URI.create(request.getRequestURL().toString()).resolve("/");
+        return URI.create(uri + "file/lyric?id=" + lyricId);
     }
 
     @Override
@@ -159,7 +167,9 @@ public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDa
 
     @Override
     public URI getCover(String musicId) {
-        return URI.create(musicDataSourceConfig.getUrlPrefix() + "/file/cover?id=" + musicId);
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        URI uri = URI.create(request.getRequestURL().toString()).resolve("/");
+        return URI.create(uri + "file/cover?id=" + musicId);
     }
 
     @Override

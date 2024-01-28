@@ -90,10 +90,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "yunshu-nas-admin:build:production"
+              "buildTarget": "yunshu-nas-admin:build:production"
             },
             "development": {
-              "browserTarget": "yunshu-nas-admin:build:development"
+              "buildTarget": "yunshu-nas-admin:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -101,7 +101,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "yunshu-nas-admin:build"
+            "buildTarget": "yunshu-nas-admin:build"
           }
         },
         "test": {

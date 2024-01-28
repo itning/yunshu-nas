@@ -35,3 +35,4 @@ application-local.properties
 application-nas.properties
 *.log
 *.db
+.fastRequest/
