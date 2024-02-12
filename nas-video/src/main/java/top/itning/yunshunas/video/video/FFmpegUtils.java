@@ -95,6 +95,16 @@ public class FFmpegUtils {
         )), -1);
     }
 
+    /**
+     * 将视频文件转换成M3U8（HLS）
+     *
+     * @param ffmpegPath  ffmpeg文件路径
+     * @param file        视频文件
+     * @param outFileName 输出文件名
+     * @param params      参数
+     * @param commandInfo 输出信息
+     * @throws IOException 转换失败
+     */
     public static void convertedToM3u8(String ffmpegPath,
                                        String file,
                                        String outFileName,
