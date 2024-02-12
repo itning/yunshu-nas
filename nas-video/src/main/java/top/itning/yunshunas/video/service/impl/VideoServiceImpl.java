@@ -64,7 +64,7 @@ public class VideoServiceImpl implements VideoService {
             fileEntities = Collections.emptyList();
         }
         return fileEntities
-                .parallelStream()
+                .stream()
                 .sorted((o1, o2) -> {
                     if (o1.isFile() && !o2.isFile()) {
                         return 1;
