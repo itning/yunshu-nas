@@ -96,7 +96,7 @@ public class FFmpegUtils {
     }
 
     /**
-     * 将视频文件转换成M3U8（HLS）
+     * 转换视频文件
      *
      * @param ffmpegPath  ffmpeg文件路径
      * @param file        视频文件
@@ -105,11 +105,11 @@ public class FFmpegUtils {
      * @param commandInfo 输出信息
      * @throws IOException 转换失败
      */
-    public static void convertedToM3u8(String ffmpegPath,
-                                       String file,
-                                       String outFileName,
-                                       ConvertedM3u8Params params,
-                                       Consumer<String> commandInfo) throws IOException {
+    public static void converterVideo(String ffmpegPath,
+                                      String file,
+                                      String outFileName,
+                                      ConverterParams params,
+                                      Consumer<String> commandInfo) throws IOException {
         List<String> command = new ArrayList<>();
         command.add(ffmpegPath);
         command.add("-y");
@@ -145,12 +145,16 @@ public class FFmpegUtils {
                 command.add(audioBitRate);
             });
         }
-        command.add("-hls_time");
-        command.add(Optional.ofNullable(params.getHlsTime()).orElse(10).toString());
-        command.add("-hls_list_size");
-        command.add(Optional.ofNullable(params.getHlsListSize()).orElse(0).toString());
-        command.add("-start_number");
-        command.add(Optional.ofNullable(params.getStartNumber()).orElse(0).toString());
+        if (Optional.ofNullable(params.getCover2hls()).orElse(true)) {
+            command.add("-hls_time");
+            command.add(Optional.ofNullable(params.getHlsTime()).orElse(10).toString());
+            command.add("-hls_list_size");
+            command.add(Optional.ofNullable(params.getHlsListSize()).orElse(0).toString());
+            command.add("-start_number");
+            command.add(Optional.ofNullable(params.getStartNumber()).orElse(0).toString());
+            command.add("-f");
+            command.add("hls");
+        }
         command.add(outFileName);
         command.add("-progress");
         command.add("-");
@@ -173,7 +177,8 @@ public class FFmpegUtils {
 
     @Data
     @Builder
-    public static class ConvertedM3u8Params {
+    public static class ConverterParams {
+        private Boolean cover2hls;
         private String videoCodec;
         private String audioCodec;
         private Integer startNumber;
@@ -185,8 +190,21 @@ public class FFmpegUtils {
         private String maxVideoBitRate;
         private String videoBufSize;
 
-        public static ConvertedM3u8Params defaultParams() {
-            return ConvertedM3u8Params.builder()
+        public static ConverterParams toHls() {
+            return ConverterParams.builder()
+                    .cover2hls(true)
+                    .videoCodec("libx264")
+                    .audioCodec("aac")
+                    .videoBitRate("5000k")
+                    .minVideoBitRate("2000k")
+                    .maxVideoBitRate("10000k")
+                    .videoBufSize("5000k")
+                    .build();
+        }
+
+        public static ConverterParams defaultParams() {
+            return ConverterParams.builder()
+                    .cover2hls(false)
                     .videoCodec("libx264")
                     .audioCodec("aac")
                     .videoBitRate("5000k")
