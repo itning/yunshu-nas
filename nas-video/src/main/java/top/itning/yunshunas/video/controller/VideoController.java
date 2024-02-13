@@ -74,7 +74,7 @@ public class VideoController {
      */
     @GetMapping("/video/{path}")
     public void videoForPath(@PathVariable String path, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        byte[] decode = Base64.getDecoder().decode(path.getBytes(StandardCharsets.UTF_8));
+        byte[] decode = Base64.getUrlDecoder().decode(path.getBytes(StandardCharsets.UTF_8));
         Path p = Paths.get(new String(decode, StandardCharsets.UTF_8));
         MultipartFileSender.fromPath(p)
                 .with(request)

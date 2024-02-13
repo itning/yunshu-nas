@@ -31,7 +31,7 @@ public class Link {
     }
 
     public static List<Link> build(String location) throws UnsupportedEncodingException {
-        byte[] decode = Base64.getDecoder().decode(location.getBytes(StandardCharsets.UTF_8));
+        byte[] decode = Base64.getUrlDecoder().decode(location.getBytes(StandardCharsets.UTF_8));
         String decodeLocation = new String(decode, StandardCharsets.UTF_8);
         String[] locationArray = decodeLocation.split(SPLIT_REGEX);
         List<Link> linkList = new ArrayList<>(locationArray.length);
@@ -46,7 +46,7 @@ public class Link {
         for (int i = 0; i < locationArray.length; i++) {
             Link link = new Link();
             link.setName(locationArray[i]);
-            link.setLink(Base64.getEncoder().encodeToString(last.toString().getBytes(StandardCharsets.UTF_8)));
+            link.setLink(Base64.getUrlEncoder().encodeToString(last.toString().getBytes(StandardCharsets.UTF_8)));
             if ((i + 1) != locationArray.length) {
                 last.append(File.separator).append(locationArray[i + 1]);
             }

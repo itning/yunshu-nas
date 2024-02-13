@@ -44,7 +44,7 @@ public class VideoServiceImpl implements VideoService {
         if (StringUtils.isBlank(location)) {
             files = File.listRoots();
         } else {
-            byte[] decode = Base64.getDecoder().decode(location);
+            byte[] decode = Base64.getUrlDecoder().decode(location);
             File file = new File(new String(decode, StandardCharsets.UTF_8));
             files = file.listFiles();
         }
@@ -57,7 +57,7 @@ public class VideoServiceImpl implements VideoService {
                 fileEntity.setSize(FileUtils.byteCountToDisplaySize(f.length()));
                 fileEntity.setFile(f.isFile());
                 fileEntity.setCanPlay(isVideoFile(f.getName()));
-                fileEntity.setLocation(Base64.getEncoder().encodeToString(f.getPath().getBytes(StandardCharsets.UTF_8)));
+                fileEntity.setLocation(Base64.getUrlEncoder().encodeToString(f.getPath().getBytes(StandardCharsets.UTF_8)));
                 fileEntities.add(fileEntity);
             }
         } else {
