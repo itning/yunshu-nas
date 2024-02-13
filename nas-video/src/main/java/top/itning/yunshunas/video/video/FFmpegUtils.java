@@ -154,6 +154,8 @@ public class FFmpegUtils {
             command.add(Optional.ofNullable(params.getStartNumber()).orElse(0).toString());
             command.add("-f");
             command.add("hls");
+            command.add("-hls_segment_filename");
+            command.add(Optional.ofNullable(params.getHlsSegmentFileName()).orElse("output_%03d.ts"));
         }
         command.add(outFileName);
         command.add("-progress");
@@ -184,6 +186,7 @@ public class FFmpegUtils {
         private Integer startNumber;
         private Integer hlsTime;
         private Integer hlsListSize;
+        private String hlsSegmentFileName;
         private String videoBitRate;
         private String audioBitRate;
         private String minVideoBitRate;
