@@ -25,7 +25,7 @@ export class ListComponent implements OnInit {
     this.route.params
       .pipe(
         filter(item => item['path'] !== null && item['path'] !== undefined),
-        map(item => encodeURIComponent(item['path'])),
+        map(item => item['path']),
       )
       .subscribe(path => {
         this.videoService.location(path).subscribe(data => this.data = data);
@@ -37,7 +37,7 @@ export class ListComponent implements OnInit {
   }
 
   go(item: FileEntity): void {
-    const path = encodeURIComponent(item.location);
+    const path = item.location;
     if (!item.file) {
       this.router.navigateByUrl(`/video/list/${path}`).catch(console.error);
     } else if (item.canPlay) {

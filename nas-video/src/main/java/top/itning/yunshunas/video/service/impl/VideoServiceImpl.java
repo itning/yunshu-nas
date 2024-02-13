@@ -10,9 +10,8 @@ import top.itning.yunshunas.video.service.VideoService;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -21,7 +20,7 @@ import java.util.stream.Collectors;
  */
 @Service
 public class VideoServiceImpl implements VideoService {
-    private static final String[] VIDEO_SUFFIX = new String[]{"mp4", "avi", "3gp", "wmv", "mkv", "mpeg", "rmvb"};
+    private static final Set<String> VIDEO_SUFFIX = Set.of("mp4", "avi", "3gp", "wmv", "mkv", "mpeg", "rmvb");
 
     private final IVideoRepository iVideoRepository;
 
@@ -45,7 +44,8 @@ public class VideoServiceImpl implements VideoService {
         if (StringUtils.isBlank(location)) {
             files = File.listRoots();
         } else {
-            File file = new File(location);
+            byte[] decode = Base64.getDecoder().decode(location);
+            File file = new File(new String(decode, StandardCharsets.UTF_8));
             files = file.listFiles();
         }
         List<FileEntity> fileEntities;
@@ -57,7 +57,7 @@ public class VideoServiceImpl implements VideoService {
                 fileEntity.setSize(FileUtils.byteCountToDisplaySize(f.length()));
                 fileEntity.setFile(f.isFile());
                 fileEntity.setCanPlay(isVideoFile(f.getName()));
-                fileEntity.setLocation(f.getPath());
+                fileEntity.setLocation(Base64.getEncoder().encodeToString(f.getPath().getBytes(StandardCharsets.UTF_8)));
                 fileEntities.add(fileEntity);
             }
         } else {
@@ -79,11 +79,6 @@ public class VideoServiceImpl implements VideoService {
 
     private boolean isVideoFile(String name) {
         String suffix = name.substring(name.lastIndexOf(".") + 1).toLowerCase();
-        for (String s : VIDEO_SUFFIX) {
-            if (s.equals(suffix)) {
-                return true;
-            }
-        }
-        return false;
+        return VIDEO_SUFFIX.contains(suffix);
     }
 }

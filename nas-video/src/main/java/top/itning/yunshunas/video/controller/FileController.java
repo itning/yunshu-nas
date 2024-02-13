@@ -36,7 +36,7 @@ public class FileController {
 
     @GetMapping("/location")
     @ResponseBody
-    public ResponseEntity<RestModel<List<FileEntity>>> location(String path) throws UnsupportedEncodingException {
+    public ResponseEntity<RestModel<List<FileEntity>>> location(@RequestParam String path) throws UnsupportedEncodingException {
         return RestModel.ok(videoService.getFileEntities(path));
     }
 

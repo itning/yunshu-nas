@@ -18,7 +18,7 @@
         <i *ngIf="item.file&&!item.canPlay" nz-icon nzType="file" nzTheme="outline"></i>
         <i *ngIf="item.file&&item.canPlay" nz-icon nzType="video-camera" nzTheme="outline"></i>
         <i *ngIf="!item.file" nz-icon nzType="folder" nzTheme="outline"></i>
-        <span *ngIf="item.name===''">{{item.location}}</span>
+        <span *ngIf="item.name===''">{{item.location | base64Decoder}}</span>
         <span *ngIf="item.name!==''">{{item.name}}</span>
       </td>
       <td>{{item.size}}</td>

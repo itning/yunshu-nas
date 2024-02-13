@@ -26,15 +26,15 @@ export class PlayComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.route.params.subscribe(path => {
-      const encodeURI = encodeURIComponent(path['path']);
+      const pathInfo = path['path'];
       this.dp = new DPlayer({
         container: this.videoPlayerElement.nativeElement,
         video: {
-          url: `${environment.backEndUrl}/video/${encodeURI}`,
+          url: `${environment.backEndUrl}/video/${pathInfo}`,
         },
         autoplay: true
       });
-      this.videoService.links(encodeURI).subscribe(data => this.breadcrumb = data);
+      this.videoService.links(pathInfo).subscribe(data => this.breadcrumb = data);
     });
   }
 
@@ -45,7 +45,7 @@ export class PlayComponent implements OnInit, OnDestroy {
   }
 
   go(item: FileEntity): void {
-    const path = encodeURIComponent(item.location);
+    const path = item.location;
     if (!item.file) {
       this.router.navigateByUrl(`/video/list/${path}`).catch(console.error);
     } else if (item.canPlay) {

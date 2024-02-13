@@ -23,6 +23,8 @@ import {NzSelectModule} from 'ng-zorro-antd/select';
 import {NzCheckboxModule} from 'ng-zorro-antd/checkbox';
 import {NzDividerModule} from 'ng-zorro-antd/divider';
 import {NzInputNumberModule} from 'ng-zorro-antd/input-number';
+import {Base64DecoderPipe} from "../../pipe/base64-decoder.pipe";
+
 import {
   CodeOutline,
   CustomerServiceOutline,
@@ -74,10 +76,11 @@ const modules = [
 @NgModule({
   declarations: [
     DateReadablePipe,
-    MusicTypeReadablePipe
+    MusicTypeReadablePipe,
+    Base64DecoderPipe
   ],
   imports: [...modules, NzIconModule.forRoot(icons)],
-  exports: [...modules, DateReadablePipe, MusicTypeReadablePipe]
+  exports: [...modules, DateReadablePipe, MusicTypeReadablePipe, Base64DecoderPipe]
 })
 export class SharedModule {
 }

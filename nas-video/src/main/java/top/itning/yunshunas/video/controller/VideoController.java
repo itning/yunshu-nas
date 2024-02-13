@@ -1,5 +1,7 @@
 package top.itning.yunshunas.video.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -9,12 +11,12 @@ import top.itning.yunshunas.common.util.MultipartFileSender;
 import top.itning.yunshunas.video.service.VideoService;
 import top.itning.yunshunas.video.video.VideoTransformHandler;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Base64;
 
 /**
  * @author itning
@@ -72,7 +74,8 @@ public class VideoController {
      */
     @GetMapping("/video/{path}")
     public void videoForPath(@PathVariable String path, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        Path p = Paths.get(path);
+        byte[] decode = Base64.getDecoder().decode(path.getBytes(StandardCharsets.UTF_8));
+        Path p = Paths.get(new String(decode, StandardCharsets.UTF_8));
         MultipartFileSender.fromPath(p)
                 .with(request)
                 .with(response)
