@@ -41,7 +41,7 @@ Elasticsearch(可选) = 7
 镜像仓库地址：[DockerHub-itning](https://hub.docker.com/r/itning/yunshu-nas/tags?page=1&ordering=last_updated)
 
 ```shell script
-docker run --name yunshu-nas -p 8888:8888 itning/yunshu-nas:latest
+docker run --name yunshu-nas -p 8888:8888 -e SERVER_URL=http://localhost:8888 itning/yunshu-nas:latest
 ```
 
 # 启动脚本（aria2c 可以不用）
