@@ -19,6 +19,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 'latest'
-      - run: cd nas-front-end
-      - run: npm install
-      - run: npm run build
+        working-directory: ./nas-front-end
+        run: |
+          npm install
+          npm run build
