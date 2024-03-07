@@ -1,4 +1,4 @@
-name: compile
+name: build_front_end
 
 on:
   pull_request:
