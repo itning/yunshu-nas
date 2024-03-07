@@ -19,7 +19,7 @@ jobs:
         run: mvn -B package --file pom.xml
 
       - name: Build Docker image
-        run: docker build -t itning/yunshu-nas-test:latest .
+        run: docker build -t itning/yunshu-nas:latest .
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
@@ -28,4 +28,4 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Push Docker image to Docker Hub
-        run: docker push itning/yunshu-nas-test:latest
+        run: docker push itning/yunshu-nas:latest
