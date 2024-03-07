@@ -12,14 +12,15 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        working-directory: ./nas-front-end
     steps:
       - uses: actions/checkout@v4
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 'latest'
-        working-directory: ./nas-front-end
-        run: |
-          npm install
-          npm run build
+      - run: cd nas-front-end
+      - run: npm install
+      - run: npm run build
