@@ -2,7 +2,19 @@ name: compile
 
 on:
   pull_request:
+    paths:
+      - nas-common/**
+      - nas-deploy/**
+      - nas-music/**
+      - nas-video/**
+      - pom.xml
   push:
+    paths:
+      - nas-common/**
+      - nas-deploy/**
+      - nas-music/**
+      - nas-video/**
+      - pom.xml
 
 jobs:
   build:
