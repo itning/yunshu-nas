@@ -1,6 +1,7 @@
 name: compile
 
 on:
+  workflow_dispatch:
   pull_request:
     paths:
       - nas-common/**
