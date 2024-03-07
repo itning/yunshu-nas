@@ -38,7 +38,7 @@ Elasticsearch(可选) = 7
 
 # Docker
 
-镜像仓库地址：[DockerHub-itning](https://hub.docker.com/r/itning/yunshu-nas/tags?page=1&ordering=last_updated)
+镜像仓库地址：[![Docker Pulls](https://img.shields.io/docker/pulls/itning/yunshu-nas.svg?style=flat&label=pulls&logo=docker)](https://hub.docker.com/r/itning/yunshu-nas/tags?page=1&ordering=last_updated)
 
 ```shell script
 docker run --name yunshu-nas -p 8888:8888 -e SERVER_URL=http://localhost:8888 itning/yunshu-nas:latest
