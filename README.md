@@ -19,6 +19,7 @@
 [![GitHub repo size in bytes](https://img.shields.io/github/repo-size/itning/yunshu-nas.svg)](https://github.com/itning/yunshu-nas)
 [![Hits](https://hitcount.itning.top?u=itning&r=yunshu-nas)](https://github.com/itning/hit-count)
 [![language](https://img.shields.io/badge/language-JAVA-green.svg)](https://github.com/itning/yunshu-nas)
+![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/itning/yunshu-nas/total)
 
 </div>
 
