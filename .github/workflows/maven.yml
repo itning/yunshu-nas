@@ -1,7 +1,7 @@
 # This workflow will build a Java project with Maven and create release
 # author: https://github.com/itning
 
-name: Java CI with Maven
+name: package&push
 
 on:
   push:
