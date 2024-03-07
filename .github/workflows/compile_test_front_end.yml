@@ -21,6 +21,5 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 'latest'
-      - run: cd nas-front-end
       - run: npm install
       - run: npm run build
