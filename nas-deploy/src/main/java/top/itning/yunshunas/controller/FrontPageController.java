@@ -2,6 +2,7 @@ package top.itning.yunshunas.controller;
 
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.info.BuildProperties;
@@ -12,7 +13,7 @@ import top.itning.yunshunas.common.config.NasProperties;
 import top.itning.yunshunas.common.db.ApplicationConfig;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.Optional;
 import java.util.Properties;
@@ -45,8 +46,22 @@ public class FrontPageController {
     }
 
     @GetMapping("/")
-    public String index(Model model) throws MalformedURLException {
-        URL url = Optional.ofNullable(applicationConfig.getSetting(NasProperties.class)).map(NasProperties::getServerUrl).orElse(new URL("http://localhost:" + port));
+    public String index(Model model) {
+        URL url = Optional.ofNullable(applicationConfig.getSetting(NasProperties.class))
+                .map(NasProperties::getServerUrl)
+                .orElseGet(() -> {
+                    try {
+                        final String serverUrlStr = System.getenv("SERVER_URL");
+                        if (StringUtils.isNotBlank(serverUrlStr)) {
+                            log.info("use env server url: {}", serverUrlStr);
+                            return new URI(serverUrlStr).toURL();
+                        } else {
+                            return new URI("http://localhost:" + port).toURL();
+                        }
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
         model.addAttribute("nasUrl", url);
         model.addAttribute("buildProperties", buildProperties);
         return "index";

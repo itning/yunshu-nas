@@ -16,16 +16,11 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import top.itning.yunshunas.common.event.ConfigChangeEvent;
 
 import java.io.File;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -97,15 +92,16 @@ public class ApplicationConfig {
                         if (CollectionUtils.isEmpty(results)) {
                             return null;
                         }
-                        String value = results.get(0);
+                        String value = results.getFirst();
                         return OBJECT_MAPPER.readValue(value, tClass);
                     }
                 });
+
         List<DbEntry> results = applicationJdbcTemplate.query("SELECT * FROM db ORDER BY id DESC LIMIT 1", new BeanPropertyRowMapper<>(DbEntry.class));
         if (CollectionUtils.isEmpty(results)) {
             return;
         }
-        dbEntry = results.get(0);
+        dbEntry = results.getFirst();
         log.info("Get DB Info: {}", dbEntry.getName());
         if (Objects.isNull(dbEntry)) {
             return;
@@ -228,19 +224,13 @@ public class ApplicationConfig {
     }
 
     public <T> T createSetting(T obj) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        int updated = applicationJdbcTemplate.update(connection -> {
-            try {
-                PreparedStatement ps = connection.prepareStatement("INSERT INTO setting(key, value) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
-                ps.setString(1, obj.getClass().getName());
-                ps.setString(2, OBJECT_MAPPER.writeValueAsString(obj));
-                return ps;
-            } catch (Exception e) {
-                throw new SQLException(e);
+        try {
+            int updated = applicationJdbcTemplate.update("INSERT INTO setting(key, value) VALUES (?, ?)", obj.getClass().getName(), OBJECT_MAPPER.writeValueAsString(obj));
+            if (updated != 1) {
+                return null;
             }
-        }, keyHolder);
-        if (updated != 1 && keyHolder.getKey() != null) {
-            return null;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
         settingCache.invalidate(obj.getClass());
         publishConfigChangeEvent(obj);
