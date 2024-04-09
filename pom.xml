@@ -33,7 +33,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>21</java.version>
         <skipTests>true</skipTests>
-        <commons-io.version>2.16.0</commons-io.version>
+        <commons-io.version>2.16.1</commons-io.version>
         <commons-codec.version>1.16.1</commons-codec.version>
         <guava.version>33.1.0-jre</guava.version>
         <java-webSocket.version>1.5.6</java-webSocket.version>
