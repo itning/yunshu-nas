@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import {DbInfoResponse} from "../http/model/DbInfoResponse";
 import {environment} from "../../environments/environment";
 import {Observable} from "rxjs";
