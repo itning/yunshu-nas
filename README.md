@@ -44,6 +44,7 @@ Elasticsearch(可选) = 7
 ```shell script
 docker run --name yunshu-nas -p 8888:8888 -e SERVER_URL=http://localhost:8888 itning/yunshu-nas:latest
 ```
+其中环境变量`SERVER_URL=http://localhost:8888`意味着前端访问后端的地址是`http://localhost:8888`
 
 # 启动脚本（aria2c 可以不用）
 
