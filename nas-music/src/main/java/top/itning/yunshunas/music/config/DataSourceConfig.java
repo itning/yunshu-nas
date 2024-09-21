@@ -61,9 +61,6 @@ public class DataSourceConfig implements ApplicationListener<ConfigChangeEvent> 
         if (Objects.isNull(nasProperties) || Objects.isNull(nasMusicProperties)) {
             return;
         }
-        if (Objects.isNull(nasProperties.getServerUrl())) {
-            nasProperties.setServerUrl(new URL("http://127.0.0.1:" + port));
-        }
         List<NasMusicProperties.MusicDataSourceConfig> dataSourceList = nasMusicProperties.getDataSource();
         if (CollectionUtils.isEmpty(dataSourceList)) {
             return;

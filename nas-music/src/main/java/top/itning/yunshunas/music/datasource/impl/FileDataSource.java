@@ -14,12 +14,12 @@ import top.itning.yunshunas.music.datasource.MusicDataSource;
 
 import java.io.*;
 import java.net.URI;
-import java.net.URL;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 
 /**
  * 文件系统歌曲与歌词数据源
@@ -44,14 +44,6 @@ public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDa
 
         if (StringUtils.isBlank(musicDataSourceConfig.getLyricFileDir())) {
             log.warn("datasource config lyric file dir is blank");
-        }
-
-        if (StringUtils.isBlank(musicDataSourceConfig.getUrlPrefix())) {
-            musicDataSourceConfig.setUrlPrefix(nasProperties.getServerUrl().toString());
-        }
-
-        if (musicDataSourceConfig.getUrlPrefix().endsWith("/")) {
-            musicDataSourceConfig.setUrlPrefix(musicDataSourceConfig.getUrlPrefix().substring(0, musicDataSourceConfig.getUrlPrefix().length() - 1));
         }
     }
 
@@ -122,9 +114,7 @@ public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDa
 
     @Override
     public URI getMusic(String musicId) {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-        URI uri = URI.create(request.getRequestURL().toString()).resolve("/");
-        return URI.create(uri + "file?id=" + musicId);
+        return URI.create(getOrigin() + "file?id=" + musicId);
     }
 
     @Override
@@ -155,9 +145,7 @@ public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDa
 
     @Override
     public URI getLyric(String lyricId) {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-        URI uri = URI.create(request.getRequestURL().toString()).resolve("/");
-        return URI.create(uri + "file/lyric?id=" + lyricId);
+        return URI.create(getOrigin() + "file/lyric?id=" + lyricId);
     }
 
     @Override
@@ -167,9 +155,7 @@ public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDa
 
     @Override
     public URI getCover(String musicId) {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-        URI uri = URI.create(request.getRequestURL().toString()).resolve("/");
-        return URI.create(uri + "file/cover?id=" + musicId);
+        return URI.create(getOrigin() + "file/cover?id=" + musicId);
     }
 
     @Override
@@ -188,5 +174,19 @@ public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDa
             log.error("删除文件失败，文件路径：{}", path, e);
         }
         return success;
+    }
+
+    private String getOrigin() {
+        // 优先级：数据源配置 > 服务端地址 > 访问的地址
+        String origin = Optional.ofNullable(musicDataSourceConfig.getUrlPrefix()).filter(StringUtils::isNotBlank).orElseGet(() -> {
+            if (null == nasProperties.getServerUrl()) {
+                HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+                URI uri = URI.create(request.getRequestURL().toString()).resolve("/");
+                return uri.toString();
+            } else {
+                return nasProperties.getServerUrl().toString();
+            }
+        });
+        return origin.endsWith("/") ? origin : origin + "/";
     }
 }
