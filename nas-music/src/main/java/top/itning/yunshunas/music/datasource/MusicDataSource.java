@@ -1,11 +1,8 @@
 package top.itning.yunshunas.music.datasource;
 
-import lombok.extern.slf4j.Slf4j;
 import top.itning.yunshunas.music.constant.MusicType;
 
-import java.io.Closeable;
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 
 /**
@@ -43,19 +40,10 @@ public interface MusicDataSource extends DataSource {
 
     /**
      * 获取音乐文件（如果文件不在本地则需要下载）
+     * 返回的永远是临时文件
      *
      * @param musicId 音乐ID
      * @return 音乐文件
      */
-    FileWrapper getMusicFile(String musicId);
-
-    @Slf4j
-    record FileWrapper(File file, boolean tempFile) implements Closeable {
-        @Override
-        public void close() throws IOException {
-            if (tempFile) {
-                log.info("删除临时文件：{} 结果：{}", file, file.delete());
-            }
-        }
-    }
+    File getMusicFile(String musicId) throws Exception;
 }

@@ -145,18 +145,14 @@ public class TencentCosDataSource implements MusicDataSource, LyricDataSource, C
     }
 
     @Override
-    public FileWrapper getMusicFile(String musicId) {
+    public File getMusicFile(String musicId) throws InterruptedException {
         File tempFile = new File(System.getProperty("java.io.tmpdir") + File.separator + musicId);
         if (tempFile.exists()) {
             log.warn("临时文件{}已存在，删除结果：{}", tempFile, tempFile.delete());
         }
         Download download = transferManager.download(musicDataSourceConfig.getBucketName(), musicDataSourceConfig.getRegionName(), tempFile);
-        try {
-            download.waitForCompletion();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        return new FileWrapper(tempFile, true);
+        download.waitForCompletion();
+        return tempFile;
     }
 
     @Override

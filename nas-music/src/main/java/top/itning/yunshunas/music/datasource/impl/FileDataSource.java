@@ -16,10 +16,7 @@ import top.itning.yunshunas.music.datasource.MusicDataSource;
 import java.io.*;
 import java.net.URI;
 import java.nio.channels.FileChannel;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.Optional;
 
 /**
@@ -119,8 +116,10 @@ public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDa
     }
 
     @Override
-    public FileWrapper getMusicFile(String musicId) {
-        return new FileWrapper(new File(musicDataSourceConfig.getMusicFileDir() + File.separator + musicId), false);
+    public File getMusicFile(String musicId) throws IOException {
+        Path path = Paths.get(System.getProperty("java.io.tmpdir"), musicId);
+        Files.copy(new File(musicDataSourceConfig.getMusicFileDir() + File.separator + musicId).toPath(), path, StandardCopyOption.REPLACE_EXISTING);
+        return path.toFile();
     }
 
     @Override
