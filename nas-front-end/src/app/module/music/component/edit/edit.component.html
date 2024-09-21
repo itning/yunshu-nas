@@ -28,7 +28,7 @@
     <nz-form-item>
       <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="type">歌曲类型</nz-form-label>
       <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="歌曲类型必填">
-        {{music?.type | musicTypeReadable}}
+        {{ music?.type | musicTypeReadable }}
       </nz-form-control>
     </nz-form-item>
     <nz-form-item>
@@ -50,7 +50,8 @@
       <nz-form-control [nzSpan]="14" [nzOffset]="6">
         <button nz-button nzType="primary" nz-popconfirm
                 nzPopconfirmTitle="确定修改？"
-                (nzOnConfirm)="submitForm()">修改
+                (nzOnConfirm)="submitForm()"
+                [nzLoading]="isUnderModification">修改
         </button>
       </nz-form-control>
     </nz-form-item>

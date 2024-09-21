@@ -196,41 +196,37 @@ public class UploadServiceImpl implements UploadService {
         MusicType musicType = MusicType.getMediaTypeEnum(music.getType()).orElseThrow(() -> new IllegalArgumentException("不支持的文件类型"));
         File file = musicDataSource.getMusicFile(musicId);
 
-        try {
-            if (!CollectionUtils.isEmpty(musicMetaInfo.getCoverPictures())) {
-                MusicMetaInfo.CoverPicture coverPicture = musicMetaInfo.getCoverPictures().get(0);
+        if (!CollectionUtils.isEmpty(musicMetaInfo.getCoverPictures())) {
+            MusicMetaInfo.CoverPicture coverPicture = musicMetaInfo.getCoverPictures().get(0);
 
-                if (null != coverPicture.getFile()) {
-                    coverPicture.setBinaryData(FileUtils.readFileToByteArray(coverPicture.getFile()));
+            if (null != coverPicture.getFile()) {
+                coverPicture.setBinaryData(FileUtils.readFileToByteArray(coverPicture.getFile()));
+            }
+            if (coverPicture.getBinaryData() != null && coverPicture.getBinaryData().length > 0) {
+                String mimeType = coverPicture.getMimeType();
+                if (StringUtils.isBlank(mimeType)) {
+                    mimeType = "image/png";
                 }
-                if (coverPicture.getBinaryData() != null && coverPicture.getBinaryData().length > 0) {
-                    String mimeType = coverPicture.getMimeType();
-                    if (StringUtils.isBlank(mimeType)) {
-                        mimeType = "image/png";
-                    }
-                    coverDataSource.deleteCover(musicId);
-                    coverDataSource.addCover(musicId, mimeType, coverPicture.getBinaryData());
-                }
+                coverDataSource.deleteCover(musicId);
+                coverDataSource.addCover(musicId, mimeType, coverPicture.getBinaryData());
             }
-
-            musicMetaInfoService.editMetaInfo(file, musicType, musicMetaInfo);
-            musicDataSource.deleteMusic(musicId);
-            musicDataSource.addMusic(file, musicType, musicId);
-
-            if (StringUtils.isNotBlank(musicMetaInfo.getTitle())) {
-                music.setName(musicMetaInfo.getTitle());
-            }
-
-            if (!CollectionUtils.isEmpty(musicMetaInfo.getArtists())) {
-                music.setSinger(musicMetaInfo.getArtists().get(0));
-            }
-
-            music.setType(musicType.getType());
-            music.setGmtModified(null);
-            musicRepository.update(music);
-        } finally {
-            log.debug("修改完成，删除临时文件：{} 结果：{}", file, file.delete());
         }
+
+        musicMetaInfoService.editMetaInfo(file, musicType, musicMetaInfo);
+        musicDataSource.deleteMusic(musicId);
+        musicDataSource.addMusic(file, musicType, musicId);
+
+        if (StringUtils.isNotBlank(musicMetaInfo.getTitle())) {
+            music.setName(musicMetaInfo.getTitle());
+        }
+
+        if (!CollectionUtils.isEmpty(musicMetaInfo.getArtists())) {
+            music.setSinger(musicMetaInfo.getArtists().get(0));
+        }
+
+        music.setType(musicType.getType());
+        music.setGmtModified(null);
+        musicRepository.update(music);
     }
 
     @Override

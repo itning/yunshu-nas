@@ -26,6 +26,8 @@ export class EditComponent implements OnInit {
 
   private files: { [key: string]: File } = {};
 
+  isUnderModification: boolean = false;
+
   constructor(private route: ActivatedRoute,
               private musicService: MusicService,
               private fb: UntypedFormBuilder,
@@ -69,6 +71,7 @@ export class EditComponent implements OnInit {
     for (let key in this.formGroup.value) {
       formData.append(key, this.formGroup.value[key]);
     }
+    this.isUnderModification = true;
     this.musicService.editMusic(formData).subscribe(data => {
       console.log(data);
       this.message.success('修改成功');
@@ -76,6 +79,7 @@ export class EditComponent implements OnInit {
     }, error => {
       console.error(error);
       const errorMsg = error.error?.msg ?? '出错啦';
+      this.isUnderModification = false;
       this.message.error(errorMsg);
     });
   }
