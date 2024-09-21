@@ -51,9 +51,12 @@ export class ResponseDataUnboxingInterceptor implements HttpInterceptor {
         if (error instanceof HttpErrorResponse) {
           console.error(`响应出错：${JSON.stringify(error.error)}`);
           console.error(error);
-          this.message.error(JSON.stringify(error.error));
+          if (error.status === 0) {
+            this.message.error(error.statusText);
+          } else {
+            this.message.error(JSON.stringify(error.error));
+          }
         }
-
         return throwError(() => new Error(error.error));
       })
     );
