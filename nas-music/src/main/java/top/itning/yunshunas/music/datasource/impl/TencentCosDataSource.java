@@ -10,6 +10,7 @@ import com.qcloud.cos.model.ObjectMetadata;
 import com.qcloud.cos.model.PutObjectRequest;
 import com.qcloud.cos.model.UploadResult;
 import com.qcloud.cos.region.Region;
+import com.qcloud.cos.transfer.Download;
 import com.qcloud.cos.transfer.TransferManager;
 import com.qcloud.cos.transfer.TransferManagerConfiguration;
 import com.qcloud.cos.transfer.Upload;
@@ -141,6 +142,21 @@ public class TencentCosDataSource implements MusicDataSource, LyricDataSource, C
             return URI.create(musicDataSourceConfig.getCdnUrl() + "/" + MUSIC_DIR_NAME + "/" + musicId);
         }
         return URI.create("https://" + musicDataSourceConfig.getBucketName() + ".cos." + musicDataSourceConfig.getRegionName() + ".myqcloud.com/" + MUSIC_DIR_NAME + "/" + musicId);
+    }
+
+    @Override
+    public FileWrapper getMusicFile(String musicId) {
+        File tempFile = new File(System.getProperty("java.io.tmpdir") + File.separator + musicId);
+        if (tempFile.exists()) {
+            log.warn("临时文件{}已存在，删除结果：{}", tempFile, tempFile.delete());
+        }
+        Download download = transferManager.download(musicDataSourceConfig.getBucketName(), musicDataSourceConfig.getRegionName(), tempFile);
+        try {
+            download.waitForCompletion();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        return new FileWrapper(tempFile, true);
     }
 
     @Override

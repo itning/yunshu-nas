@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
@@ -23,9 +22,6 @@ import top.itning.yunshunas.music.service.UploadService;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 /**
@@ -198,12 +194,7 @@ public class UploadServiceImpl implements UploadService {
     public void editMetaInfo(String musicId, MusicMetaInfo musicMetaInfo) throws Exception {
         Music music = musicRepository.findByMusicId(musicId).orElseThrow(() -> new IllegalArgumentException("音乐不存在"));
         MusicType musicType = MusicType.getMediaTypeEnum(music.getType()).orElseThrow(() -> new IllegalArgumentException("不支持的文件类型"));
-        URI uri = musicDataSource.getMusic(musicId);
-        File file = restTemplate.execute(uri, HttpMethod.GET, null, clientHttpResponse -> {
-            File musicTempFile = new File(System.getProperty("java.io.tmpdir") + File.separator + musicId);
-            Files.copy(clientHttpResponse.getBody(), musicTempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            return musicTempFile;
-        });
+        MusicDataSource.FileWrapper fileWrapper = musicDataSource.getMusicFile(musicId);
 
         if (!CollectionUtils.isEmpty(musicMetaInfo.getCoverPictures())) {
             MusicMetaInfo.CoverPicture coverPicture = musicMetaInfo.getCoverPictures().get(0);
@@ -221,9 +212,9 @@ public class UploadServiceImpl implements UploadService {
             }
         }
 
-        musicMetaInfoService.editMetaInfo(file, musicType, musicMetaInfo);
+        musicMetaInfoService.editMetaInfo(fileWrapper.file(), musicType, musicMetaInfo);
         musicDataSource.deleteMusic(musicId);
-        musicDataSource.addMusic(file, musicType, musicId);
+        musicDataSource.addMusic(fileWrapper.file(), musicType, musicId);
 
         if (StringUtils.isNotBlank(musicMetaInfo.getTitle())) {
             music.setName(musicMetaInfo.getTitle());
@@ -236,6 +227,7 @@ public class UploadServiceImpl implements UploadService {
         music.setType(musicType.getType());
         music.setGmtModified(null);
         musicRepository.update(music);
+        fileWrapper.close();
     }
 
     @Override

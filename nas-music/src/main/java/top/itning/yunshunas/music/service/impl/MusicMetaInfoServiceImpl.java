@@ -133,6 +133,9 @@ public class MusicMetaInfoServiceImpl implements MusicMetaInfoService {
         if (null == filenameExtension) {
             needRemoveExt = true;
             File tempFile = new File(musicFile.getPath() + "." + musicType.getExt());
+            if (tempFile.exists()) {
+                log.warn("临时文件{}已存在，删除结果：{}", tempFile, tempFile.delete());
+            }
             if (!musicFile.renameTo(tempFile)) {
                 throw new RuntimeException("重命名文件失败 源文件：" + musicFile + " 目标：" + tempFile);
             }

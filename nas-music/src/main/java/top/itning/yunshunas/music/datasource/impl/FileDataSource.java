@@ -119,6 +119,11 @@ public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDa
     }
 
     @Override
+    public FileWrapper getMusicFile(String musicId) {
+        return new FileWrapper(new File(musicDataSourceConfig.getMusicFileDir() + File.separator + musicId), false);
+    }
+
+    @Override
     public void addLyric(InputStream lyricInputStream, long length, String lyricId) throws Exception {
         if (StringUtils.isBlank(musicDataSourceConfig.getLyricFileDir())) {
             log.info("歌词目录未配置，跳过添加歌词");
