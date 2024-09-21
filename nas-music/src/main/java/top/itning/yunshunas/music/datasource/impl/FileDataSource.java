@@ -1,8 +1,9 @@
 package top.itning.yunshunas.music.datasource.impl;
 
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import top.itning.yunshunas.common.config.NasProperties;
@@ -27,9 +28,8 @@ import java.util.Optional;
  * @author itning
  * @since 2022/1/12 11:16
  */
-@Slf4j
 public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDataSource {
-
+    private final Logger log;
     private final NasMusicProperties.MusicDataSourceConfig musicDataSourceConfig;
     private final NasProperties nasProperties;
 
@@ -37,6 +37,7 @@ public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDa
                           NasProperties nasProperties) {
         this.musicDataSourceConfig = musicDataSourceConfig;
         this.nasProperties = nasProperties;
+        this.log = LoggerFactory.getLogger(FileDataSource.class.getName() + "(" + musicDataSourceConfig.getName() + ")");
 
         if (StringUtils.isBlank(musicDataSourceConfig.getMusicFileDir())) {
             log.warn("datasource config music file dir is blank");
