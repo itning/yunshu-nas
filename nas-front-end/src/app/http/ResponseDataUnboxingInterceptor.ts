@@ -1,5 +1,13 @@
-import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse, HttpStatusCode } from '@angular/common/http';
-import {Observable} from 'rxjs';
+import {
+  HttpErrorResponse,
+  HttpEvent,
+  HttpHandler,
+  HttpInterceptor,
+  HttpRequest,
+  HttpResponse,
+  HttpStatusCode
+} from '@angular/common/http';
+import {catchError, Observable, throwError} from 'rxjs';
 import {Injectable} from '@angular/core';
 import {map} from 'rxjs/operators';
 import {RestModel} from './model/RestModel';
@@ -37,6 +45,16 @@ export class ResponseDataUnboxingInterceptor implements HttpInterceptor {
           });
         }
         return event;
+      }),
+      catchError((error: HttpErrorResponse) => {
+        // 检查是否是 HttpErrorResponse 类型
+        if (error instanceof HttpErrorResponse) {
+          console.error(`响应出错：${JSON.stringify(error.error)}`);
+          console.error(error);
+          this.message.error(JSON.stringify(error.error));
+        }
+
+        return throwError(() => new Error(error.error));
       })
     );
   }

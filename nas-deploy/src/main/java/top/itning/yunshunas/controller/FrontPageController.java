@@ -56,13 +56,15 @@ public class FrontPageController {
                             log.info("use env server url: {}", serverUrlStr);
                             return new URI(serverUrlStr).toURL();
                         } else {
-                            return new URI("http://localhost:" + port).toURL();
+                            return null;
                         }
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
                 });
-        model.addAttribute("nasUrl", url);
+        if (null != url) {
+            model.addAttribute("nasUrl", url);
+        }
         model.addAttribute("buildProperties", buildProperties);
         return "index";
     }
