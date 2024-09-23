@@ -19,10 +19,7 @@ import top.itning.yunshunas.music.datasource.MusicDataSource;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * 数据源配置
@@ -56,9 +53,9 @@ public class DataSourceConfig implements ApplicationListener<ConfigChangeEvent> 
         coverDataSourceMap.clear();
         readDataSourceMap.clear();
 
-        NasProperties nasProperties = applicationConfig.getSetting(NasProperties.class);
+        NasProperties nasProperties = Optional.ofNullable(applicationConfig.getSetting(NasProperties.class)).orElse(new NasProperties());
         NasMusicProperties nasMusicProperties = applicationConfig.getSetting(NasMusicProperties.class);
-        if (Objects.isNull(nasProperties) || Objects.isNull(nasMusicProperties)) {
+        if (Objects.isNull(nasMusicProperties)) {
             return;
         }
         List<NasMusicProperties.MusicDataSourceConfig> dataSourceList = nasMusicProperties.getDataSource();
