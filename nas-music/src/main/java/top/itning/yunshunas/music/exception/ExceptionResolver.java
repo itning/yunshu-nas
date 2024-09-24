@@ -9,8 +9,11 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import top.itning.yunshunas.common.model.RestModel;
+
+import java.io.IOException;
 
 /**
  * @author itning
@@ -35,6 +38,11 @@ public class ExceptionResolver {
         restModel.setMsg(e.getMessage());
         response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
         return restModel;
+    }
+
+    @ExceptionHandler(value = AsyncRequestNotUsableException.class)
+    public void asyncRequestNotUsableException(AsyncRequestNotUsableException e) throws IOException {
+        log.warn("asyncRequestNotUsableException->{}", e.getMessage());
     }
 
     @ExceptionHandler(value = HttpRequestMethodNotSupportedException.class)

@@ -320,7 +320,7 @@ public final class MultipartFileSender {
             return (substring.length() > 0) ? Long.parseLong(substring) : -1;
         }
 
-        private static void copy(RandomAccessFile input, OutputStream output, long inputSize, long start, long length) {
+        private static void copy(RandomAccessFile input, OutputStream output, long inputSize, long start, long length) throws IOException {
             byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
             int read;
 
@@ -347,7 +347,8 @@ public final class MultipartFileSender {
                     }
                 }
             } catch (IOException e) {
-                logger.info("ClientAbortEstablishedConnection start:{} end:{} total:{} {}", start, length, inputSize, e.getMessage());
+                logger.warn("copy failed. start:{} end:{} total:{} {}", start, length, inputSize, e.getMessage());
+                throw e;
             }
         }
     }
