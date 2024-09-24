@@ -7,8 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
 import top.itning.yunshunas.music.constant.MusicType;
 import top.itning.yunshunas.music.service.FileService;
 
@@ -31,8 +29,8 @@ public class WebDavMusicController {
     }
 
     @GetMapping(NAME_SINGLE_EXT)
-    public void webDavIndex(@PathVariable String name, @PathVariable String single, @PathVariable String ext, @RequestHeader(required = false) String range, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        log.info("get name: [{}] single: [{}] ext: [{}]", name, single, ext);
+    public void webDavIndex(@PathVariable String name, @PathVariable String single, @PathVariable String ext, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        log.info("webdav request info. name: [{}] single: [{}] ext: [{}]", name, single, ext);
         Optional<MusicType> musicTypeOptional = MusicType.getFromExt(ext);
         if (musicTypeOptional.isEmpty()) {
             response.setStatus(HttpStatus.NOT_FOUND.value());
@@ -43,7 +41,7 @@ public class WebDavMusicController {
 
     @GetMapping(ID_ID_EXT)
     public void webDavIndexUseId(@PathVariable String id, @PathVariable String ext, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        log.info("get id: [{}] ext: [{}]", id, ext);
+        log.info("webdav request info. id: [{}] ext: [{}]", id, ext);
         fileService.getOneMusic(id, request, response);
     }
 }
