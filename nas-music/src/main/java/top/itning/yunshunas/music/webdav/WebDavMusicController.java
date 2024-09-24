@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
 import top.itning.yunshunas.music.constant.MusicType;
 import top.itning.yunshunas.music.service.FileService;
 
@@ -20,8 +21,8 @@ import java.util.Optional;
 @Slf4j
 @Controller
 public class WebDavMusicController {
-    public static final String NAME_SINGLE_EXT = "/{name} - {single}.{ext}";
-    public static final String ID_ID_EXT = "/id_{id}.{ext}";
+    public static final String NAME_SINGLE_EXT = "/webdav/{name} - {single}.{ext}";
+    public static final String ID_ID_EXT = "/webdav/id_{id}.{ext}";
 
     private final FileService fileService;
 

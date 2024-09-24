@@ -18,7 +18,7 @@ public class WebDavConfig {
                                                                                    PathPatternParser mvcPatternParser) {
         FilterRegistrationBean<WebDavFilter> registration = new FilterRegistrationBean<>();
         registration.setFilter(new WebDavFilter(musicRepository, mvcPatternParser));
-        registration.addUrlPatterns("/*");
+        registration.addUrlPatterns("/webdav/*");
         registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
         return registration;
     }

@@ -27,6 +27,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -101,6 +102,7 @@ public class WebDavFilter extends HttpFilter {
 
     private final MusicRepository musicRepository;
     private final PathPatternParser pathPatternParser;
+    private final List<String> filterUrlPatternMappings = new ArrayList<>();
 
     public WebDavFilter(MusicRepository musicRepository, PathPatternParser pathPatternParser) {
         this.musicRepository = musicRepository;
@@ -118,8 +120,18 @@ public class WebDavFilter extends HttpFilter {
                 response.setStatus(HttpStatus.OK.value());
             }
             case "PROPFIND" -> {
+                Optional.ofNullable(getFilterConfig().getServletContext().getFilterRegistration(getFilterConfig().getFilterName()))
+                        .ifPresent(filterRegistration -> filterUrlPatternMappings.addAll(filterRegistration.getUrlPatternMappings()));
+                if (filterUrlPatternMappings.stream().anyMatch(urlPatternMapping -> !urlPatternMapping.matches("^/(\\w+([\\w\\-]+\\w){0,1}/){0,}(\\*){0,}$"))) {
+                    throw new ServletException("Invalid URL pattern mapping for filter: " + this.getClass().getName());
+                }
+                final String contextPath = locateRequestContextPath(request);
                 Entry entry;
-                if (!"/".equalsIgnoreCase(request.getRequestURI())) {
+                String requestURI = request.getRequestURI();
+                if (requestURI.endsWith("/")) {
+                    requestURI = requestURI.substring(0, requestURI.length() - 1);
+                }
+                if (!contextPath.equalsIgnoreCase(requestURI)) {
                     PathPattern.PathMatchInfo matchInfo = getPathMatchInfo(request);
                     if (null == matchInfo) {
                         response.setStatus(HttpStatus.NOT_FOUND.value());
@@ -156,7 +168,7 @@ public class WebDavFilter extends HttpFilter {
                 } else {
                     entry = getMusicEntry();
                 }
-                final String contextPath = "";
+
 
                 try {
                     final Document document = this.readXmlRequest(request);
@@ -218,6 +230,27 @@ public class WebDavFilter extends HttpFilter {
         }
     }
 
+    private String locateRequestPath(final HttpServletRequest request) {
+        final String contextPath = request.getContextPath();
+        final String requestURI = URLDecoder.decode(request.getRequestURI(), StandardCharsets.UTF_8);
+        if (requestURI.startsWith(contextPath + "/"))
+            return requestURI.substring(contextPath.length());
+        if (requestURI.equals(contextPath))
+            return "/";
+        return requestURI;
+    }
+
+    private String locateRequestContextPath(final HttpServletRequest request) {
+        final String requestURI = this.locateRequestPath(request);
+        for (String urlPatternMapping : this.filterUrlPatternMappings) {
+            urlPatternMapping = urlPatternMapping.replaceAll("/+\\**$", "");
+            if (requestURI.startsWith(urlPatternMapping + "/")
+                    || requestURI.equals(urlPatternMapping))
+                return urlPatternMapping;
+        }
+        return "";
+    }
+
     private PathPattern.PathMatchInfo getPathMatchInfo(HttpServletRequest request) {
         final PathContainer pathContainer = PathContainer.parsePath(request.getRequestURI());
         PathPattern parse1 = pathPatternParser.parse(WebDavMusicController.NAME_SINGLE_EXT);
@@ -239,7 +272,7 @@ public class WebDavFilter extends HttpFilter {
         file.setReadOnly(true);
         file.setHidden(false);
         file.setPermitted(true);
-        file.setName(music.getName());
+        file.setName(music.getName() + " - " + music.getSinger() + "." + musicType.getExt());
         String fileName = StringEscapeUtils.escapeXml10(music.getName() + " - " + music.getSinger());
         if (FileNameValidator.isValidFileName(fileName)) {
             file.setPath("/" + fileName + "." + musicType.getExt());
@@ -318,7 +351,7 @@ public class WebDavFilter extends HttpFilter {
         xmlWriter.writeElement(WebDavFilter.WEBDAV_DEFAULT_XML_NAMESPACE, XML_RESPONSE, XmlWriter.ElementType.OPENING);
         xmlWriter.writeProperty(WebDavFilter.WEBDAV_DEFAULT_XML_NAMESPACE, XML_HREF, UriUtils.encodePath(contextUrl + entry.getPath(), StandardCharsets.UTF_8.name()));
 
-        final String displayName = UriUtils.encodePath(entry.getName(), StandardCharsets.UTF_8.name());
+        final String displayName = entry.getName();
 
         final String creationDate = Objects.nonNull(entry.getCreationDate()) ? formatDate(entry.getCreationDate(), DATETIME_FORMAT_CREATION_DATE) : null;
         final String lastModified = Objects.nonNull(entry.getLastModified()) ? formatDate(entry.getLastModified(), DATETIME_FORMAT_LAST_MODIFIED) : null;
