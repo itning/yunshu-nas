@@ -20,6 +20,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import top.itning.yunshunas.common.util.FileNameValidator;
 import top.itning.yunshunas.music.constant.MusicType;
+import top.itning.yunshunas.music.datasource.MusicDataSource;
 import top.itning.yunshunas.music.entity.Music;
 import top.itning.yunshunas.music.repository.MusicRepository;
 
@@ -101,11 +102,13 @@ public class WebDavFilter extends HttpFilter {
 
 
     private final MusicRepository musicRepository;
+    private final MusicDataSource musicDataSource;
     private final PathPatternParser pathPatternParser;
     private final List<String> filterUrlPatternMappings = new ArrayList<>();
 
-    public WebDavFilter(MusicRepository musicRepository, PathPatternParser pathPatternParser) {
+    public WebDavFilter(MusicRepository musicRepository, MusicDataSource musicDataSource, PathPatternParser pathPatternParser) {
         this.musicRepository = musicRepository;
+        this.musicDataSource = musicDataSource;
         this.pathPatternParser = pathPatternParser;
     }
 
@@ -264,7 +267,7 @@ public class WebDavFilter extends HttpFilter {
 
     private Entry.File getMusicFile(Music music) {
         Entry.File file = new Entry.File();
-        file.setContentLength(null);
+        file.setContentLength(musicDataSource.getFileSize(music.getMusicId()));
         MusicType musicType = MusicType.getMediaTypeEnum(music.getType()).orElse(MusicType.MP3);
         file.setContentType(musicType.getMediaType());
         file.setLastModified(music.getGmtModified());

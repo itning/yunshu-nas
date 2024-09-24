@@ -156,6 +156,12 @@ public class TencentCosDataSource implements MusicDataSource, LyricDataSource, C
     }
 
     @Override
+    public long getFileSize(String musicId) {
+        ObjectMetadata objectMetadata = cosClient.getObjectMetadata(musicDataSourceConfig.getBucketName(), musicId);
+        return objectMetadata.getContentLength();
+    }
+
+    @Override
     public void addLyric(InputStream lyricInputStream, long length, String lyricId) throws Exception {
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentType("text/plain; charset=utf-8");

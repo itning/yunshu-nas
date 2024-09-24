@@ -46,4 +46,7 @@ public interface MusicDataSource extends DataSource {
      * @return 音乐文件
      */
     File getMusicFile(String musicId) throws Exception;
+
+
+    long getFileSize(String musicId);
 }

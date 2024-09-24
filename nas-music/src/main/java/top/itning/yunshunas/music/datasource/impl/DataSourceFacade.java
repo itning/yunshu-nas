@@ -167,6 +167,11 @@ public class DataSourceFacade implements MusicDataSource, CoverDataSource, Lyric
         return ((MusicDataSource) readDataSourceMap.get(MusicDataSource.class).dataSource()).getMusicFile(musicId);
     }
 
+    @Override
+    public long getFileSize(String musicId) {
+        return ((MusicDataSource) readDataSourceMap.get(MusicDataSource.class).dataSource()).getFileSize(musicId);
+    }
+
     private boolean deleteFile(Path path) {
         boolean success = false;
         try {

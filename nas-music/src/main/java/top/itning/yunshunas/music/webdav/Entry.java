@@ -80,7 +80,7 @@ public abstract class Entry {
     @EqualsAndHashCode(callSuper = true)
     @Data
     public static class File extends Entry {
-        private Integer contentLength;
+        private Long contentLength;
         private String contentType;
         private Date lastModified;
         private Date creationDate;
