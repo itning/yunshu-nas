@@ -16,6 +16,7 @@ import top.itning.yunshunas.music.datasource.DataSource;
 import top.itning.yunshunas.music.datasource.LyricDataSource;
 import top.itning.yunshunas.music.datasource.MusicDataSource;
 import top.itning.yunshunas.music.dto.MusicMetaInfo;
+import top.itning.yunshunas.music.entity.Music;
 import top.itning.yunshunas.music.repository.MusicRepository;
 import top.itning.yunshunas.music.service.FileService;
 import top.itning.yunshunas.music.service.MusicMetaInfoService;
@@ -25,6 +26,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.springframework.http.HttpHeaders.*;
 
@@ -50,13 +52,31 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public void getOneMusic(String id, String range, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void getOneMusic(String id, HttpServletRequest request, HttpServletResponse response) throws Exception {
         String mediaType = musicRepository.findByMusicId(id)
                 .flatMap(music -> MusicType.getMediaType(music.getType()))
                 .orElse(MusicType.MP3.getMediaType());
         log.debug("Media Type: {}", mediaType);
         DataSourceConfig.DataSourceWrapper dataSourceWrapper = readDataSourceMap.get(MusicDataSource.class);
         MultipartFileSender.fromPath(Paths.get(dataSourceWrapper.config().getMusicFileDir(), id))
+                .setContentType(mediaType)
+                .with(request)
+                .with(response)
+                .no304CodeReturn()
+                .serveResource();
+    }
+
+    @Override
+    public void getOneMusic(String musicName, String singer, MusicType type, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        Optional<Music> result = musicRepository.findByNameAndSingerAndType(musicName, singer, type.getType());
+        if (result.isEmpty()) {
+            response.setStatus(HttpStatus.NOT_FOUND.value());
+            return;
+        }
+        Music music = result.get();
+        String mediaType = MusicType.getMediaType(music.getType()).orElse(MusicType.MP3.getMediaType());
+        DataSourceConfig.DataSourceWrapper dataSourceWrapper = readDataSourceMap.get(MusicDataSource.class);
+        MultipartFileSender.fromPath(Paths.get(dataSourceWrapper.config().getMusicFileDir(), music.getMusicId()))
                 .setContentType(mediaType)
                 .with(request)
                 .with(response)

@@ -42,6 +42,7 @@
         <qcloud.cos_api.version>5.6.233</qcloud.cos_api.version>
         <mysql.version>9.0.0</mysql.version>
         <ftpserver.version>1.2.0</ftpserver.version>
+        <commons-text.verson>1.12.0</commons-text.verson>
     </properties>
 
     <dependencies>
@@ -188,6 +189,13 @@
                 <artifactId>commons-codec</artifactId>
                 <version>${commons-codec.version}</version>
             </dependency>
+            <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-text</artifactId>
+                <version>${commons-text.verson}</version>
+            </dependency>
+
             <!-- https://mvnrepository.com/artifact/com.qcloud/cos_api -->
             <dependency>
                 <groupId>com.qcloud</groupId>

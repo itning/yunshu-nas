@@ -1,14 +1,16 @@
 package top.itning.yunshunas.music.exception;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import top.itning.yunshunas.common.model.RestModel;
-
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.ConstraintViolationException;
 
 /**
  * @author itning
@@ -32,6 +34,28 @@ public class ExceptionResolver {
         restModel.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         restModel.setMsg(e.getMessage());
         response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        return restModel;
+    }
+
+    @ExceptionHandler(value = HttpRequestMethodNotSupportedException.class)
+    @ResponseBody
+    public RestModel<?> httpRequestMethodNotSupportedException(HttpServletResponse response, HttpRequestMethodNotSupportedException e) throws JsonProcessingException {
+        log.warn("httpRequestMethodNotSupportedException-> {}", e.getBody());
+        RestModel<?> restModel = new RestModel<>();
+        restModel.setCode(HttpStatus.BAD_REQUEST.value());
+        restModel.setMsg(e.getMessage());
+        response.setStatus(HttpStatus.BAD_REQUEST.value());
+        return restModel;
+    }
+
+    @ExceptionHandler(value = NoResourceFoundException.class)
+    @ResponseBody
+    public RestModel<?> noResourceFoundException(HttpServletResponse response, NoResourceFoundException e) throws JsonProcessingException {
+        log.warn("noResourceFoundException-> {}", e.getBody());
+        RestModel<?> restModel = new RestModel<>();
+        restModel.setCode(HttpStatus.NOT_FOUND.value());
+        restModel.setMsg(e.getMessage());
+        response.setStatus(HttpStatus.NOT_FOUND.value());
         return restModel;
     }
 
