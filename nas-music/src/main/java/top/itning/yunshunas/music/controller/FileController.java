@@ -31,18 +31,16 @@ public class FileController {
     /**
      * 获取音乐
      *
-     * @param range    {@link org.springframework.http.HttpHeaders#RANGE}
      * @param id       歌曲ID
      * @param request  {@link HttpServletRequest}
      * @param response {@link HttpServletResponse}
      * @throws Exception 获取失败
      */
     @GetMapping
-    public void getMusic(@RequestHeader(required = false) String range,
-                         @NotNull(message = "ID不存在") String id,
+    public void getMusic(@NotNull(message = "ID不存在") String id,
                          HttpServletRequest request,
                          HttpServletResponse response) throws Exception {
-        fileService.getOneMusic(id, range, request, response);
+        fileService.getOneMusic(id, request, response);
     }
 
     /**

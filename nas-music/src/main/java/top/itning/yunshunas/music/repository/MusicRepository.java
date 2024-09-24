@@ -9,7 +9,7 @@ import java.util.Optional;
  * @author itning
  * @since 2020/9/5 11:15
  */
-public interface MusicRepository{
+public interface MusicRepository {
     Music save(Music music);
 
     boolean deleteById(Long id);
@@ -27,4 +27,6 @@ public interface MusicRepository{
     Optional<Music> findByMusicId(String musicId);
 
     Optional<Music> findById(Long id);
+
+    Optional<Music> findByNameAndSingerAndType(String name, String singer, Integer type);
 }

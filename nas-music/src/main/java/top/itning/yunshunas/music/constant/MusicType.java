@@ -52,6 +52,18 @@ public enum MusicType {
         return Optional.empty();
     }
 
+    public static Optional<MusicType> getFromExt(String ext) {
+        if (null == ext) {
+            return Optional.empty();
+        }
+        for (MusicType musicType : MusicType.values()) {
+            if (musicType.getExt().equals(ext)) {
+                return Optional.of(musicType);
+            }
+        }
+        return Optional.empty();
+    }
+
     /**
      * 根据文件名获取类型
      *

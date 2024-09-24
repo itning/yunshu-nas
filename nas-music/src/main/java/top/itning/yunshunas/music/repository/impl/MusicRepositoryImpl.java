@@ -12,7 +12,10 @@ import top.itning.yunshunas.music.repository.MusicRepository;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * @author ning.wang
@@ -116,7 +119,7 @@ public class MusicRepositoryImpl extends AbstractRepository implements MusicRepo
         if (CollectionUtils.isEmpty(result)) {
             return Optional.empty();
         }
-        return Optional.ofNullable(result.get(0));
+        return Optional.ofNullable(result.getFirst());
     }
 
     @Override
@@ -128,6 +131,22 @@ public class MusicRepositoryImpl extends AbstractRepository implements MusicRepo
         if (CollectionUtils.isEmpty(result)) {
             return Optional.empty();
         }
-        return Optional.ofNullable(result.get(0));
+        return Optional.ofNullable(result.getFirst());
+    }
+
+    @Override
+    public Optional<Music> findByNameAndSingerAndType(String name, String singer, Integer type) {
+        if (StringUtils.isAnyBlank(name, singer) || null == type) {
+            return Optional.empty();
+        }
+        List<Music> result = getJdbcTemplate().query("SELECT * FROM music WHERE name = ? AND singer= ? AND type = ?", ps -> {
+            ps.setString(1, name);
+            ps.setString(2, singer);
+            ps.setInt(3, type);
+        }, new BeanPropertyRowMapper<>(Music.class));
+        if (CollectionUtils.isEmpty(result)) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(result.getFirst());
     }
 }

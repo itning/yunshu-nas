@@ -5,15 +5,20 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.server.PathContainer;
 import org.springframework.web.util.UriUtils;
+import org.springframework.web.util.pattern.PathPattern;
+import org.springframework.web.util.pattern.PathPatternParser;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import top.itning.yunshunas.common.util.FileNameValidator;
 import top.itning.yunshunas.music.constant.MusicType;
 import top.itning.yunshunas.music.entity.Music;
 import top.itning.yunshunas.music.repository.MusicRepository;
@@ -32,6 +37,7 @@ import java.util.stream.IntStream;
  * @author itning
  * @since 2024/9/24 17:16
  */
+@Slf4j
 public class WebDavFilter extends HttpFilter {
     private static final String HEADER_DAV = "DAV";
     private static final String HEADER_MS_AUTHOR_VIA = "MS-Author-Via";
@@ -92,10 +98,13 @@ public class WebDavFilter extends HttpFilter {
      */
     private static final int WEBDAV_FIND_PROPERTY_NAMES = 2;
 
-    private final MusicRepository musicRepository;
 
-    public WebDavFilter(MusicRepository musicRepository) {
+    private final MusicRepository musicRepository;
+    private final PathPatternParser pathPatternParser;
+
+    public WebDavFilter(MusicRepository musicRepository, PathPatternParser pathPatternParser) {
         this.musicRepository = musicRepository;
+        this.pathPatternParser = pathPatternParser;
     }
 
     @Override
@@ -109,33 +118,44 @@ public class WebDavFilter extends HttpFilter {
                 response.setStatus(HttpStatus.OK.value());
             }
             case "PROPFIND" -> {
+                Entry entry;
                 if (!"/".equalsIgnoreCase(request.getRequestURI())) {
-                    response.setStatus(HttpStatus.NOT_FOUND.value());
-                    return;
+                    PathPattern.PathMatchInfo matchInfo = getPathMatchInfo(request);
+                    if (null == matchInfo) {
+                        response.setStatus(HttpStatus.NOT_FOUND.value());
+                        return;
+                    }
+                    Map<String, String> uriVariables = matchInfo.getUriVariables();
+                    String name = uriVariables.get("name");
+                    String single = uriVariables.get("single");
+                    String ext = uriVariables.get("ext");
+                    String id = uriVariables.get("id");
+                    log.debug("matchInfo from url: {}", uriVariables);
+                    if (null != id) {
+                        Optional<Music> musicOptional = musicRepository.findByMusicId(id);
+                        if (musicOptional.isEmpty()) {
+                            response.setStatus(HttpStatus.NOT_FOUND.value());
+                            return;
+                        }
+                        Music music = musicOptional.get();
+                        entry = getMusicFile(music);
+                    } else {
+                        Optional<MusicType> musicTypeOptional = MusicType.getFromExt(ext);
+                        if (musicTypeOptional.isEmpty()) {
+                            response.setStatus(HttpStatus.NOT_FOUND.value());
+                            return;
+                        }
+                        Optional<Music> musicOptional = musicRepository.findByNameAndSingerAndType(name, single, musicTypeOptional.get().getType());
+                        if (musicOptional.isEmpty()) {
+                            response.setStatus(HttpStatus.NOT_FOUND.value());
+                            return;
+                        }
+                        Music music = musicOptional.get();
+                        entry = getMusicFile(music);
+                    }
+                } else {
+                    entry = getMusicEntry();
                 }
-
-                Entry.Folder folder = new Entry.Folder();
-                folder.setParent("/");
-                folder.setPath("/");
-                folder.setName("");
-
-                for (Music music : musicRepository.findAll()) {
-                    Entry.File file = new Entry.File();
-                    file.setContentLength(null);
-                    MusicType musicType = MusicType.getMediaTypeEnum(music.getType()).orElse(MusicType.MP3);
-                    file.setContentType(musicType.getMediaType());
-                    file.setLastModified(music.getGmtModified());
-                    file.setCreationDate(music.getGmtCreate());
-                    file.setReadOnly(true);
-                    file.setHidden(false);
-                    file.setPermitted(true);
-                    file.setName(music.getName());
-                    file.setPath("/" + StringEscapeUtils.escapeXml10(music.getName() + "-" + music.getSinger()) + "." + musicType.getExt());
-                    file.setParent("/");
-                    folder.getCollection().add(file);
-                }
-
-                final Entry entry = folder;
                 final String contextPath = "";
 
                 try {
@@ -196,6 +216,51 @@ public class WebDavFilter extends HttpFilter {
             // HEAD/GET
             default -> chain.doFilter(request, response);
         }
+    }
+
+    private PathPattern.PathMatchInfo getPathMatchInfo(HttpServletRequest request) {
+        final PathContainer pathContainer = PathContainer.parsePath(request.getRequestURI());
+        PathPattern parse1 = pathPatternParser.parse(WebDavMusicController.NAME_SINGLE_EXT);
+        PathPattern.PathMatchInfo matchInfo1 = parse1.matchAndExtract(pathContainer);
+        if (null != matchInfo1) {
+            return matchInfo1;
+        }
+        PathPattern parse2 = pathPatternParser.parse(WebDavMusicController.ID_ID_EXT);
+        return parse2.matchAndExtract(pathContainer);
+    }
+
+    private Entry.File getMusicFile(Music music) {
+        Entry.File file = new Entry.File();
+        file.setContentLength(null);
+        MusicType musicType = MusicType.getMediaTypeEnum(music.getType()).orElse(MusicType.MP3);
+        file.setContentType(musicType.getMediaType());
+        file.setLastModified(music.getGmtModified());
+        file.setCreationDate(music.getGmtCreate());
+        file.setReadOnly(true);
+        file.setHidden(false);
+        file.setPermitted(true);
+        file.setName(music.getName());
+        String fileName = StringEscapeUtils.escapeXml10(music.getName() + " - " + music.getSinger());
+        if (FileNameValidator.isValidFileName(fileName)) {
+            file.setPath("/" + fileName + "." + musicType.getExt());
+        } else {
+            log.warn("The song name or artist name does not comply with the file system name specification: [{}] music id: {}", fileName, music.getMusicId());
+            file.setPath("/id_" + music.getMusicId() + "." + musicType.getExt());
+        }
+        file.setParent("/");
+        return file;
+    }
+
+    private Entry.Folder getMusicEntry() {
+        Entry.Folder folder = new Entry.Folder();
+        folder.setParent("/");
+        folder.setPath("/");
+        folder.setName("");
+
+        for (Music music : musicRepository.findAll()) {
+            folder.getCollection().add(getMusicFile(music));
+        }
+        return folder;
     }
 
     private int getDepth(final HttpServletRequest request) {
