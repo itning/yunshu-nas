@@ -35,7 +35,7 @@
         <skipTests>true</skipTests>
         <commons-io.version>2.18.0</commons-io.version>
         <commons-codec.version>1.17.1</commons-codec.version>
-        <guava.version>33.3.1-jre</guava.version>
+        <guava.version>33.4.0-jre</guava.version>
         <java-webSocket.version>1.5.7</java-webSocket.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <jaudiotagger.version>2.0.3</jaudiotagger.version>
