@@ -7,9 +7,10 @@ import * as musicMetadata from "music-metadata-browser";
 import {Router} from "@angular/router";
 
 @Component({
-  selector: 'app-add',
-  templateUrl: './add.component.html',
-  styleUrls: ['./add.component.scss']
+    selector: 'app-add',
+    templateUrl: './add.component.html',
+    styleUrls: ['./add.component.scss'],
+    standalone: false
 })
 export class AddComponent implements OnInit {
 

@@ -2,7 +2,8 @@ import {Pipe, PipeTransform} from '@angular/core';
 import * as dayjs from "dayjs";
 
 @Pipe({
-  name: 'dateReadable'
+    name: 'dateReadable',
+    standalone: false
 })
 export class DateReadablePipe implements PipeTransform {
 

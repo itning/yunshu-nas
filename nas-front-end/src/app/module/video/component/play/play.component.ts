@@ -7,9 +7,10 @@ import {FileEntity} from "../../../../http/model/FileEntity";
 import {VideoService} from "../../../../service/video.service";
 
 @Component({
-  selector: 'app-play',
-  templateUrl: './play.component.html',
-  styleUrls: ['./play.component.scss']
+    selector: 'app-play',
+    templateUrl: './play.component.html',
+    styleUrls: ['./play.component.scss'],
+    standalone: false
 })
 export class PlayComponent implements OnInit, OnDestroy {
 

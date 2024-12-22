@@ -3,9 +3,10 @@ import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
 import {environment} from "../../../../../environments/environment";
 
 @Component({
-  selector: 'app-download',
-  templateUrl: './download.component.html',
-  styleUrls: ['./download.component.scss']
+    selector: 'app-download',
+    templateUrl: './download.component.html',
+    styleUrls: ['./download.component.scss'],
+    standalone: false
 })
 export class DownloadComponent implements OnInit, OnDestroy {
 

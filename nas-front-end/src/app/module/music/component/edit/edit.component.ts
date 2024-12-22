@@ -10,9 +10,10 @@ import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
 import * as musicMetadata from 'music-metadata-browser';
 
 @Component({
-  selector: 'app-edit',
-  templateUrl: './edit.component.html',
-  styleUrls: ['./edit.component.scss']
+    selector: 'app-edit',
+    templateUrl: './edit.component.html',
+    styleUrls: ['./edit.component.scss'],
+    standalone: false
 })
 export class EditComponent implements OnInit {
 

@@ -14,9 +14,10 @@ import {SettingService} from "../../../../service/setting.service";
 import {NasConfigRequest} from "../../../../http/model/NasConfig";
 
 @Component({
-  selector: 'app-setting',
-  templateUrl: './setting.component.html',
-  styleUrls: ['./setting.component.scss']
+    selector: 'app-setting',
+    templateUrl: './setting.component.html',
+    styleUrls: ['./setting.component.scss'],
+    standalone: false
 })
 export class SettingComponent implements OnInit {
   dbConfigFromGroup: UntypedFormGroup;

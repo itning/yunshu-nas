@@ -1,7 +1,8 @@
 import {Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({
-  name: 'musicTypeReadable'
+    name: 'musicTypeReadable',
+    standalone: false
 })
 export class MusicTypeReadablePipe implements PipeTransform {
 
