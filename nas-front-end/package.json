@@ -16,7 +16,7 @@
     "@angular/core": "^19.0.5",
     "@angular/forms": "^19.0.5",
     "@angular/platform-browser": "^19.0.5",
-    "@angular/platform-browser-dynamic": "^19.0.5",
+    "@angular/platform-browser-dynamic": "^19.1.2",
     "@angular/router": "^19.0.5",
     "dayjs": "^1.11.13",
     "dplayer": "^1.27.1",
