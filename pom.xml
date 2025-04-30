@@ -40,7 +40,7 @@
         <mapstruct.version>1.6.3</mapstruct.version>
         <jaudiotagger.version>2.0.3</jaudiotagger.version>
         <qcloud.cos_api.version>5.6.245</qcloud.cos_api.version>
-        <mysql.version>9.2.0</mysql.version>
+        <mysql.version>9.3.0</mysql.version>
         <ftpserver.version>1.2.1</ftpserver.version>
         <commons-text.verson>1.13.1</commons-text.verson>
     </properties>
