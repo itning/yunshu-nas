@@ -9,7 +9,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
@@ -87,7 +86,7 @@ public class ApplicationConfig {
                 .expireAfterWrite(1, TimeUnit.HOURS)
                 .build(new CacheLoader<>() {
                     @Override
-                    public @Nullable Object load(Class<?> tClass) throws Exception {
+                    public Object load(Class<?> tClass) throws Exception {
                         List<String> results = applicationJdbcTemplate.query("SELECT value FROM setting WHERE key = ?", new SingleColumnRowMapper<>(String.class), tClass.getName());
                         if (CollectionUtils.isEmpty(results)) {
                             return null;
