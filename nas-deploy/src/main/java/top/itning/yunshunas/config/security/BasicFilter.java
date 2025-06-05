@@ -85,6 +85,7 @@ public class BasicFilter extends OncePerRequestFilter {
         response.setContentType(MediaType.TEXT_HTML_VALUE);
         response.setCharacterEncoding("utf-8");
         response.setHeader(HttpHeaders.WWW_AUTHENTICATE, "Basic realm=\"Access to the staging site\"");
+        response.setHeader(HttpHeaders.VARY, HttpHeaders.AUTHORIZATION);
         PrintWriter writer = response.getWriter();
         writer.write("<h1>401</h1>");
         writer.flush();
