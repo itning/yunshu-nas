@@ -1,5 +1,6 @@
 package top.itning.yunshunas.config.security;
 
+import com.google.common.util.concurrent.RateLimiter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,6 +33,8 @@ public class BasicFilter extends OncePerRequestFilter {
     private static final String HEALTH_CHECK_PATH = "/health";
 
     private final ApplicationConfig applicationConfig;
+
+    private final RateLimiter limiter = RateLimiter.create(1);
 
     public BasicFilter(ApplicationConfig applicationConfig) {
         this.applicationConfig = applicationConfig;
@@ -73,6 +76,13 @@ public class BasicFilter extends OncePerRequestFilter {
                         filterChain.doFilter(request, response);
                         return;
                     } else {
+                        if (!limiter.tryAcquire()) {
+                            response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
+                            response.setContentType(MediaType.TEXT_HTML_VALUE);
+                            response.setCharacterEncoding("utf-8");
+                            response.getWriter().write("<h1>429 Too Many Requests</h1>");
+                            return;
+                        }
                         log.warn("用户名/密码不正确 {} {}", usernameAndPassword[0], usernameAndPassword[1]);
                     }
                 }

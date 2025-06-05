@@ -16,6 +16,7 @@ import com.qcloud.cos.transfer.TransferManagerConfiguration;
 import com.qcloud.cos.transfer.Upload;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
 import top.itning.yunshunas.common.config.NasProperties;
 import top.itning.yunshunas.music.config.NasMusicProperties;
 import top.itning.yunshunas.music.constant.MusicType;
@@ -226,5 +227,14 @@ public class TencentCosDataSource implements MusicDataSource, LyricDataSource, C
             log.error("腾讯云COS封面数据源删除异常", e);
             return false;
         }
+    }
+
+    public void uploadMusicList(InputStream input) throws InterruptedException {
+        ObjectMetadata objectMetadata = new ObjectMetadata();
+        objectMetadata.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        PutObjectRequest putObjectRequest = new PutObjectRequest(musicDataSourceConfig.getBucketName(), "music", input, objectMetadata);
+        Upload upload = transferManager.upload(putObjectRequest);
+        UploadResult uploadResult = upload.waitForUploadResult();
+        log.info("腾讯云COS音乐数据源列表上传结果：{}", uploadResult.getKey());
     }
 }
