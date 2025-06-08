@@ -23,7 +23,10 @@ import top.itning.yunshunas.music.service.MusicMetaInfoService;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Optional;
@@ -64,6 +67,31 @@ public class FileServiceImpl implements FileService {
                 .with(response)
                 .no304CodeReturn()
                 .serveResource();
+    }
+
+    @Override
+    public void downloadMusic(String id, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        Music music = musicRepository.findByMusicId(id).orElse(null);
+        if (null == music) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "音乐不存在");
+            return;
+        }
+        MusicType musicType = MusicType.getMediaTypeEnum(music.getType()).orElse(MusicType.MP3);
+        DataSourceConfig.DataSourceWrapper dataSourceWrapper = readDataSourceMap.get(MusicDataSource.class);
+        Path path = Paths.get(dataSourceWrapper.config().getMusicFileDir(), id);
+        File musicFile = path.toFile();
+        if (!musicFile.isFile() || !musicFile.exists()) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "音乐不存在");
+            return;
+        }
+        response.setContentLengthLong(musicFile.length());
+        response.setContentType(musicType.getMediaType());
+        String fileName = String.format("%s - %s.%s", music.getName(), music.getSinger(), musicType.getExt());
+        String encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+        String headerValue = String.format("attachment; filename=\"%s\"; filename*=UTF-8''%s", encodedFileName, encodedFileName);
+        response.setHeader(CONTENT_DISPOSITION, headerValue);
+
+        Files.copy(path, response.getOutputStream());
     }
 
     @Override

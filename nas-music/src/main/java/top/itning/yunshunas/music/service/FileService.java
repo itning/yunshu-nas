@@ -22,6 +22,7 @@ public interface FileService {
      */
     void getOneMusic(String id, HttpServletRequest request, HttpServletResponse response) throws Exception;
 
+    void downloadMusic(String id, HttpServletRequest request, HttpServletResponse response) throws Exception;
 
     void getOneMusic(String musicName, String singer, MusicType type, HttpServletRequest request, HttpServletResponse response) throws Exception;
 
