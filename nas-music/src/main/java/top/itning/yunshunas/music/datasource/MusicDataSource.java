@@ -38,6 +38,8 @@ public interface MusicDataSource extends DataSource {
      */
     URI getMusic(String musicId);
 
+    URI getMusicDownloadURI(String musicId);
+
     /**
      * 获取音乐文件（如果文件不在本地则需要下载）
      * 返回的永远是临时文件

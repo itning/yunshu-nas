@@ -116,6 +116,11 @@ public class FileDataSource implements MusicDataSource, LyricDataSource, CoverDa
     }
 
     @Override
+    public URI getMusicDownloadURI(String musicId) {
+        return URI.create(getOrigin() + "file/download?id=" + musicId);
+    }
+
+    @Override
     public File getMusicFile(String musicId) throws IOException {
         Path path = Paths.get(System.getProperty("java.io.tmpdir"), musicId);
         Files.copy(new File(musicDataSourceConfig.getMusicFileDir() + File.separator + musicId).toPath(), path, StandardCopyOption.REPLACE_EXISTING);

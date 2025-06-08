@@ -24,6 +24,8 @@ public class MusicDTO implements Serializable {
 
     private URI musicUri;
 
+    private URI musicDownloadUri;
+
     private URI lyricUri;
 
     private URI coverUri;

@@ -146,6 +146,11 @@ public class TencentCosDataSource implements MusicDataSource, LyricDataSource, C
     }
 
     @Override
+    public URI getMusicDownloadURI(String musicId) {
+        return this.getMusic(musicId);
+    }
+
+    @Override
     public File getMusicFile(String musicId) throws InterruptedException {
         File tempFile = new File(System.getProperty("java.io.tmpdir") + File.separator + musicId);
         if (tempFile.exists()) {

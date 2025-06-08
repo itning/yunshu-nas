@@ -143,6 +143,7 @@ public class MusicManageServiceImpl implements MusicManageService {
                 musicDTO.setMusicUri(musicDataSource.getMusic(musicDTO.getMusicId()));
                 musicDTO.setLyricUri(lyricDataSource.getLyric(musicDTO.getLyricId()));
                 musicDTO.setCoverUri(coverDataSource.getCover(musicDTO.getMusicId()));
+                musicDTO.setMusicDownloadUri(musicDataSource.getMusicDownloadURI(musicDTO.getMusicId()));
             }
             log.info("未修改音乐信息");
             return musicDTO;
@@ -164,6 +165,7 @@ public class MusicManageServiceImpl implements MusicManageService {
         musicDTO.setMusicUri(musicDataSource.getMusic(musicDTO.getMusicId()));
         musicDTO.setLyricUri(lyricDataSource.getLyric(musicDTO.getLyricId()));
         musicDTO.setCoverUri(coverDataSource.getCover(musicDTO.getMusicId()));
+        musicDTO.setMusicDownloadUri(musicDataSource.getMusicDownloadURI(musicDTO.getMusicId()));
         return musicDTO;
     }
 

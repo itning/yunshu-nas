@@ -39,6 +39,7 @@ public class MusicServiceImpl implements MusicService {
             musicDTO.setMusicUri(musicDataSource.getMusic(musicDTO.getMusicId()));
             musicDTO.setLyricUri(lyricDataSource.getLyric(musicDTO.getLyricId()));
             musicDTO.setCoverUri(coverDataSource.getCover(musicDTO.getMusicId()));
+            musicDTO.setMusicDownloadUri(musicDataSource.getMusicDownloadURI(musicDTO.getMusicId()));
             return musicDTO;
         }).collect(Collectors.toList());
     }
@@ -51,6 +52,7 @@ public class MusicServiceImpl implements MusicService {
             musicDTO.setMusicUri(musicDataSource.getMusic(musicDTO.getMusicId()));
             musicDTO.setLyricUri(lyricDataSource.getLyric(musicDTO.getLyricId()));
             musicDTO.setCoverUri(coverDataSource.getCover(musicDTO.getMusicId()));
+            musicDTO.setMusicDownloadUri(musicDataSource.getMusicDownloadURI(musicDTO.getMusicId()));
             return musicDTO;
         }).collect(Collectors.toList());
     }
@@ -63,6 +65,7 @@ public class MusicServiceImpl implements MusicService {
             musicDTO.setMusicUri(musicDataSource.getMusic(musicDTO.getMusicId()));
             musicDTO.setLyricUri(lyricDataSource.getLyric(musicDTO.getLyricId()));
             musicDTO.setCoverUri(coverDataSource.getCover(musicDTO.getMusicId()));
+            musicDTO.setMusicDownloadUri(musicDataSource.getMusicDownloadURI(musicDTO.getMusicId()));
             return musicDTO;
         }).collect(Collectors.toList());
     }
@@ -75,6 +78,7 @@ public class MusicServiceImpl implements MusicService {
             musicDTO.setMusicUri(musicDataSource.getMusic(musicDTO.getMusicId()));
             musicDTO.setLyricUri(lyricDataSource.getLyric(musicDTO.getLyricId()));
             musicDTO.setCoverUri(coverDataSource.getCover(musicDTO.getMusicId()));
+            musicDTO.setMusicDownloadUri(musicDataSource.getMusicDownloadURI(musicDTO.getMusicId()));
             return musicDTO;
         }).collect(Collectors.toList());
     }
