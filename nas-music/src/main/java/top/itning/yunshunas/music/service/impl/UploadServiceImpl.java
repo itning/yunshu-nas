@@ -121,6 +121,7 @@ public class UploadServiceImpl implements UploadService {
         musicDTO.setMusicUri(musicDataSource.getMusic(musicDTO.getMusicId()));
         musicDTO.setLyricUri(lyricDataSource.getLyric(musicDTO.getLyricId()));
         musicDTO.setCoverUri(coverDataSource.getCover(musicDTO.getMusicId()));
+        musicDTO.setMusicDownloadUri(musicDataSource.getMusicDownloadURI(musicDTO.getMusicId()));
         return musicDTO;
     }
 
@@ -187,6 +188,7 @@ public class UploadServiceImpl implements UploadService {
         musicDTO.setMusicUri(musicDataSource.getMusic(musicDTO.getMusicId()));
         musicDTO.setLyricUri(lyricDataSource.getLyric(musicDTO.getLyricId()));
         musicDTO.setCoverUri(coverDataSource.getCover(musicDTO.getMusicId()));
+        musicDTO.setMusicDownloadUri(musicDataSource.getMusicDownloadURI(musicDTO.getMusicId()));
         return musicDTO;
     }
 

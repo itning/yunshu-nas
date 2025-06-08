@@ -163,6 +163,11 @@ public class DataSourceFacade implements MusicDataSource, CoverDataSource, Lyric
     }
 
     @Override
+    public URI getMusicDownloadURI(String musicId) {
+        return ((MusicDataSource) readDataSourceMap.get(MusicDataSource.class).dataSource()).getMusicDownloadURI(musicId);
+    }
+
+    @Override
     public File getMusicFile(String musicId) throws Exception {
         return ((MusicDataSource) readDataSourceMap.get(MusicDataSource.class).dataSource()).getMusicFile(musicId);
     }

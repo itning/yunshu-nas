@@ -130,6 +130,7 @@ public class MusicManageApiController {
                 item.setMusicUri(music.getMusic(item.getMusicId()));
                 item.setLyricUri(music.getLyric(item.getLyricId()));
                 item.setCoverUri(music.getCover(item.getMusicId()));
+                item.setMusicDownloadUri(music.getMusicDownloadURI(item.getMusicId()));
             }).toList();
             RestModel<List<MusicDTO>> up = new RestModel<>();
             up.setCode(200);
