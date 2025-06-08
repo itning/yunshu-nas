@@ -43,6 +43,13 @@ public class FileController {
         fileService.getOneMusic(id, request, response);
     }
 
+    @GetMapping("/download")
+    public void downloadMusic(@NotNull(message = "ID不存在") String id,
+                         HttpServletRequest request,
+                         HttpServletResponse response) throws Exception {
+        fileService.downloadMusic(id, request, response);
+    }
+
     /**
      * 获取歌词
      *
