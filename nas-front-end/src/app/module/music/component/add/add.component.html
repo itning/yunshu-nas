@@ -1,58 +1,76 @@
 <div>
   <form nz-form [formGroup]="formGroup">
-    <nz-form-item *ngIf="musicUri">
-      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="name">歌名</nz-form-label>
-      <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="歌名必填">
-        <input nz-input formControlName="name" id="name" readonly/>
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item *ngIf="musicUri">
-      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="singer">歌手</nz-form-label>
-      <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="歌手必填">
-        <input nz-input formControlName="singer" id="singer" readonly/>
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item *ngIf="musicUri">
-      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="cover">封面</nz-form-label>
-      <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="封面必填">
-        <img *ngIf="coverUri"
-          nz-image
-          width="200px"
-          height="200px"
-          [nzSrc]="coverUri"
-          alt="封面"
-        />
-        <input type="file" nz-input id="cover" (change)="handleFile($event,'coverFile')" accept="image/*">
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item *ngIf="musicUri">
-      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="type">歌曲类型</nz-form-label>
-      <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="歌曲类型必填" *ngIf="type">
-        {{type | musicTypeReadable}}
-      </nz-form-control>
-    </nz-form-item>
+    @if (musicUri) {
+      <nz-form-item>
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="name">歌名</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="歌名必填">
+          <input nz-input formControlName="name" id="name" readonly/>
+        </nz-form-control>
+      </nz-form-item>
+    }
+    @if (musicUri) {
+      <nz-form-item>
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="singer">歌手</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="歌手必填">
+          <input nz-input formControlName="singer" id="singer" readonly/>
+        </nz-form-control>
+      </nz-form-item>
+    }
+    @if (musicUri) {
+      <nz-form-item>
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="cover">封面</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="封面必填">
+          @if (coverUri) {
+            <img
+              nz-image
+              width="200px"
+              height="200px"
+              [nzSrc]="coverUri"
+              alt="封面"
+              />
+          }
+          <input type="file" nz-input id="cover" (change)="handleFile($event,'coverFile')" accept="image/*">
+        </nz-form-control>
+      </nz-form-item>
+    }
+    @if (musicUri) {
+      <nz-form-item>
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="type">歌曲类型</nz-form-label>
+        @if (type) {
+          <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="歌曲类型必填">
+            {{type | musicTypeReadable}}
+          </nz-form-control>
+        }
+      </nz-form-item>
+    }
     <nz-form-item>
       <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="music">歌曲</nz-form-label>
       <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="歌曲必填">
-        <audio controls [src]="musicUri" *ngIf="musicUri"></audio>
+        @if (musicUri) {
+          <audio controls [src]="musicUri"></audio>
+        }
         <input type="file" (change)="handleFile($event,'musicFile')" nz-input id="music"
-               accept="audio/*">
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item *ngIf="musicUri">
-      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="lyric">歌词</nz-form-label>
-      <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="歌词必填">
-        <textarea rows="25" nz-input [value]="lyric" readonly *ngIf="lyric" ></textarea>
-        <input type="file" (change)="handleFile($event,'lyricFile')" nz-input id="lyric" accept=".lrc">
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item nz-row>
-      <nz-form-control [nzSpan]="14" [nzOffset]="6">
-        <button [nzLoading]="addLoading" nz-button nzType="primary" [disabled]="!musicUri" nz-popconfirm
-                nzPopconfirmTitle="确定新增？"
-                (nzOnConfirm)="submitForm()">新增
-        </button>
-      </nz-form-control>
-    </nz-form-item>
-  </form>
-</div>
+          accept="audio/*">
+        </nz-form-control>
+      </nz-form-item>
+      @if (musicUri) {
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="lyric">歌词</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="歌词必填">
+            @if (lyric) {
+              <textarea rows="25" nz-input [value]="lyric" readonly ></textarea>
+            }
+            <input type="file" (change)="handleFile($event,'lyricFile')" nz-input id="lyric" accept=".lrc">
+          </nz-form-control>
+        </nz-form-item>
+      }
+      <nz-form-item nz-row>
+        <nz-form-control [nzSpan]="14" [nzOffset]="6">
+          <button [nzLoading]="addLoading" nz-button nzType="primary" [disabled]="!musicUri" nz-popconfirm
+            nzPopconfirmTitle="确定新增？"
+            (nzOnConfirm)="submitForm()">新增
+          </button>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </div>

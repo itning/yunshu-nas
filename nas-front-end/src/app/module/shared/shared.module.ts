@@ -14,15 +14,12 @@ import {NzSwitchModule} from 'ng-zorro-antd/switch';
 import {NzPopconfirmModule} from 'ng-zorro-antd/popconfirm';
 import {NzTableModule} from 'ng-zorro-antd/table';
 import {NzToolTipModule} from 'ng-zorro-antd/tooltip';
-import {NzMessageModule} from 'ng-zorro-antd/message';
 import {NzIconModule} from 'ng-zorro-antd/icon';
 import {NzBreadCrumbModule} from 'ng-zorro-antd/breadcrumb';
-import {NzBackTopModule} from 'ng-zorro-antd/back-top';
 import {NzCardModule} from 'ng-zorro-antd/card';
 import {NzSelectModule} from 'ng-zorro-antd/select';
 import {NzCheckboxModule} from 'ng-zorro-antd/checkbox';
 import {NzDividerModule} from 'ng-zorro-antd/divider';
-import {NzInputNumberModule} from 'ng-zorro-antd/input-number';
 import {Base64DecoderPipe} from "../../pipe/base64-decoder.pipe";
 
 import {
@@ -35,6 +32,8 @@ import {
   PlusOutline,
   VideoCameraOutline,
 } from '@ant-design/icons-angular/icons';
+import {NzInputNumberModule} from "ng-zorro-antd/input-number";
+import {NzFloatButtonModule} from "ng-zorro-antd/float-button";
 
 const icons = [
   VideoCameraOutline,
@@ -63,9 +62,8 @@ const modules = [
   NzPopconfirmModule,
   NzTableModule,
   NzToolTipModule,
-  NzMessageModule,
   NzBreadCrumbModule,
-  NzBackTopModule,
+  NzFloatButtonModule,
   NzCardModule,
   NzSelectModule,
   NzCheckboxModule,

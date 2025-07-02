@@ -6,38 +6,40 @@
     <i nz-icon nzType="search"></i>
   </ng-template>
   <nz-table #rowTable
-            nzShowSizeChanger
-            nzShowQuickJumper
-            nzPageSize="100"
-            [nzData]="music"
-            [nzLoading]="loading"
-            [nzPageSizeOptions]="[ 100,200,500,1000,5000 ]"
-  >
+    nzShowSizeChanger
+    nzShowQuickJumper
+    nzPageSize="100"
+    [nzData]="music"
+    [nzLoading]="loading"
+    [nzPageSizeOptions]="[ 100,200,500,1000,5000 ]"
+    >
     <thead>
-    <tr>
-      <th nzColumnKey="cover" [nzWidth]="'100px'">封面</th>
-      <th nzColumnKey="name" [nzSortFn]="true">歌名</th>
-      <th nzColumnKey="singer" [nzSortFn]="true">歌手</th>
-      <th nzColumnKey="gmtCreate" [nzSortFn]="true" [nzSortOrder]="'descend'">创建时间</th>
-      <th nzColumnKey="gmtModified" [nzSortFn]="true">修改时间</th>
-      <th>操作</th>
-    </tr>
+      <tr>
+        <th nzColumnKey="cover" [nzWidth]="'100px'">封面</th>
+        <th nzColumnKey="name" [nzSortFn]="true">歌名</th>
+        <th nzColumnKey="singer" [nzSortFn]="true">歌手</th>
+        <th nzColumnKey="gmtCreate" [nzSortFn]="true" [nzSortOrder]="'descend'">创建时间</th>
+        <th nzColumnKey="gmtModified" [nzSortFn]="true">修改时间</th>
+        <th>操作</th>
+      </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let data of rowTable.data">
-      <td><img nz-image width="50px" height="50px" [nzSrc]="data.coverUri" alt="封面"/></td>
-      <td nz-tooltip [nzTooltipTitle]="data.musicId">{{ data.name }}</td>
-      <td>{{ data.singer }}</td>
-      <td>{{ data.gmtCreate | dateReadable}}</td>
-      <td>{{ data.gmtModified | dateReadable}}</td>
-      <td>
-        <a nz-button nzType="link" [href]="data.musicUri" target="_blank">试听</a>
-        <a nz-button nzType="link" [href]="data.lyricUri" target="_blank" nz-tooltip
-           [nzTooltipTitle]="data.lyricId">歌词</a>
-        <a nz-button nzType="link" [routerLink]="'/music/edit/'+data.musicId">修改</a>
-        <a nz-button nzType="link" nz-popconfirm nzPopconfirmTitle="确定删除？" (nzOnConfirm)="delete(data.musicId)">删除</a>
-      </td>
-    </tr>
+      @for (data of rowTable.data; track data) {
+        <tr>
+          <td><img nz-image width="50px" height="50px" [nzSrc]="data.coverUri" alt="封面"/></td>
+          <td nz-tooltip [nzTooltipTitle]="data.musicId">{{ data.name }}</td>
+          <td>{{ data.singer }}</td>
+          <td>{{ data.gmtCreate | dateReadable}}</td>
+          <td>{{ data.gmtModified | dateReadable}}</td>
+          <td>
+            <a nz-button nzType="link" [href]="data.musicUri" target="_blank">试听</a>
+            <a nz-button nzType="link" [href]="data.lyricUri" target="_blank" nz-tooltip
+            [nzTooltipTitle]="data.lyricId">歌词</a>
+            <a nz-button nzType="link" [routerLink]="'/music/edit/'+data.musicId">修改</a>
+            <a nz-button nzType="link" nz-popconfirm nzPopconfirmTitle="确定删除？" (nzOnConfirm)="delete(data.musicId)">删除</a>
+          </td>
+        </tr>
+      }
     </tbody>
   </nz-table>
 </div>

@@ -1,10 +1,12 @@
 <div #scrollBottom>
-  <nz-back-top></nz-back-top>
+  <nz-float-button-top></nz-float-button-top>
   <div>
     <nz-switch [(ngModel)]="autoScroll" nzCheckedChildren="自动滚动开" nzUnCheckedChildren="自动滚动关"></nz-switch>
     <button nz-button nzType="text" (click)="clearMsg()">清空</button>
   </div>
   <div>
-    <p *ngFor="let log of logData">{{log}}</p>
+    @for (log of logData; track log) {
+      <p>{{log}}</p>
+    }
   </div>
 </div>
