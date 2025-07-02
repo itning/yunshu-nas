@@ -18,7 +18,8 @@
           "builder": "@angular/build:application",
           "options": {
             "outputPath": {
-              "base": "dist/yunshu-nas-admin"
+              "base": "../nas-deploy/src/main/resources/static",
+              "browser": ""
             },
             "index": "src/index.html",
             "polyfills": [
