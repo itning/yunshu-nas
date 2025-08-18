@@ -31,7 +31,7 @@
     "@angular-devkit/core": "^20.1.5",
     "@angular/build": "^20.1.5",
     "@angular/cli": "^20.1.5",
-    "@angular/compiler-cli": "^20.1.6",
+    "@angular/compiler-cli": "^20.1.7",
     "@types/dplayer": "^1.25.5",
     "@types/jasmine": "~5.1.8",
     "@types/node": "^24.3.0",
