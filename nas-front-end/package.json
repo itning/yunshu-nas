@@ -33,7 +33,7 @@
     "@angular/cli": "^20.3.3",
     "@angular/compiler-cli": "^20.3.2",
     "@types/dplayer": "^1.25.5",
-    "@types/jasmine": "~5.1.9",
+    "@types/jasmine": "~5.1.11",
     "@types/node": "^24.5.2",
     "buffer": "^6.0.3",
     "events": "^3.3.0",
