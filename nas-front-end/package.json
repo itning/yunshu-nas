@@ -29,7 +29,7 @@
   },
   "devDependencies": {
     "@angular-devkit/core": "^20.3.8",
-    "@angular/build": "^20.3.8",
+    "@angular/build": "^20.3.9",
     "@angular/cli": "^20.3.8",
     "@angular/compiler-cli": "^20.3.9",
     "@types/dplayer": "^1.25.5",
