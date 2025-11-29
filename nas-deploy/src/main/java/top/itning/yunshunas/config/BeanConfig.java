@@ -1,12 +1,11 @@
 package top.itning.yunshunas.config;
 
-import org.springframework.boot.web.servlet.MultipartConfigFactory;
+import jakarta.servlet.MultipartConfigElement;
+import org.springframework.boot.servlet.MultipartConfigFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
-
-import jakarta.servlet.MultipartConfigElement;
 
 /**
  * @author itning

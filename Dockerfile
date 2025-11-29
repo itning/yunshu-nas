@@ -1,4 +1,4 @@
-FROM openjdk:21
+FROM amazoncorretto:21
 
 LABEL org.opencontainers.image.documentation="https://github.com/itning/yunshu-nas/blob/master/README.md"
 LABEL org.opencontainers.image.authors="itning@itning.top"
