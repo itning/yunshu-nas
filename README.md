@@ -35,7 +35,7 @@ MySQL8
 
 Sqlite
 
-Elasticsearch(可选) = 7
+Elasticsearch(可选) = 9
 
 # Docker
 
