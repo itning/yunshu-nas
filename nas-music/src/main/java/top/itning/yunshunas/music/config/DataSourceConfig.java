@@ -18,8 +18,8 @@ import top.itning.yunshunas.music.datasource.MusicDataSource;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 数据源配置
@@ -142,42 +142,42 @@ public class DataSourceConfig implements ApplicationListener<ConfigChangeEvent> 
     }
 
     private DataSource tryNewInstance(String name, Class<? extends DataSource> dataSourceClass, NasMusicProperties.MusicDataSourceConfig musicDataSourceConfig, NasProperties nasProperties) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        //TODO itning 重构 先查出所有的构造方法
-        DataSource dataSource = null;
-        try {
-            Constructor<? extends DataSource> declaredConstructor = dataSourceClass.getDeclaredConstructor();
-            dataSource = declaredConstructor.newInstance();
-        } catch (NoSuchMethodException e) {
-            log.debug("try new instance [{}] use [{}] constructor failed. for class name {}", name, e.getMessage(), dataSourceClass.getName());
-        }
-        if (Objects.isNull(dataSource)) {
+        Constructor<?>[] declaredConstructors = dataSourceClass.getDeclaredConstructors();
+
+        for (Constructor<?> constructor : declaredConstructors) {
             try {
-                Constructor<? extends DataSource> declaredConstructor = dataSourceClass.getDeclaredConstructor(NasMusicProperties.MusicDataSourceConfig.class);
-                dataSource = declaredConstructor.newInstance(musicDataSourceConfig);
-            } catch (NoSuchMethodException e) {
-                log.debug("try new instance [{}] use [{}] constructor failed. for class name {}", name, e.getMessage(), dataSourceClass.getName());
+                Class<?>[] parameterTypes = constructor.getParameterTypes();
+                Object[] args = prepareArgs(parameterTypes, musicDataSourceConfig, nasProperties);
+                if (args != null) {
+                    constructor.setAccessible(true);
+                    DataSource dataSource = (DataSource) constructor.newInstance(args);
+                    log.debug("success new instance [{}] use constructor with parameter types: {}", name,
+                            Arrays.stream(parameterTypes).map(Class::getName).collect(Collectors.joining(", ")));
+                    return dataSource;
+                }
+            } catch (Exception e) {
+                log.debug("try new instance [{}] use constructor failed. for class name {}, error: {}", name, dataSourceClass.getName(), e.getMessage());
             }
         }
-        if (Objects.isNull(dataSource)) {
-            try {
-                Constructor<? extends DataSource> declaredConstructor = dataSourceClass.getDeclaredConstructor(NasMusicProperties.MusicDataSourceConfig.class, NasProperties.class);
-                dataSource = declaredConstructor.newInstance(musicDataSourceConfig, nasProperties);
-            } catch (NoSuchMethodException e) {
-                log.debug("try new instance [{}] use [{}] constructors failed. for class name {}", name, e.getMessage(), dataSourceClass.getName());
+
+        throw new IllegalArgumentException("can not find datasource constructor");
+    }
+
+    private Object[] prepareArgs(Class<?>[] parameterTypes, NasMusicProperties.MusicDataSourceConfig musicDataSourceConfig, NasProperties nasProperties) {
+        Object[] args = new Object[parameterTypes.length];
+
+        for (int i = 0; i < parameterTypes.length; i++) {
+            Class<?> paramType = parameterTypes[i];
+            if (paramType.equals(NasMusicProperties.MusicDataSourceConfig.class)) {
+                args[i] = musicDataSourceConfig;
+            } else if (paramType.equals(NasProperties.class)) {
+                args[i] = nasProperties;
+            } else {
+                return null;
             }
         }
-        if (Objects.isNull(dataSource)) {
-            try {
-                Constructor<? extends DataSource> declaredConstructor = dataSourceClass.getDeclaredConstructor(NasProperties.class, NasMusicProperties.MusicDataSourceConfig.class);
-                dataSource = declaredConstructor.newInstance(nasProperties, musicDataSourceConfig);
-            } catch (NoSuchMethodException e) {
-                log.debug("try new instance [{}] use [{}] constructors failed. for class name {}", name, e.getMessage(), dataSourceClass.getName());
-            }
-        }
-        if (Objects.isNull(dataSource)) {
-            throw new IllegalArgumentException("can not find datasource constructor");
-        }
-        return dataSource;
+
+        return args;
     }
 
 }
