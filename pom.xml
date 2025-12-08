@@ -42,7 +42,7 @@
         <qcloud.cos_api.version>5.6.259</qcloud.cos_api.version>
         <mysql.version>9.5.0</mysql.version>
         <ftpserver.version>1.2.1</ftpserver.version>
-        <commons-text.verson>1.14.0</commons-text.verson>
+        <commons-text.verson>1.15.0</commons-text.verson>
     </properties>
 
     <dependencies>
