@@ -39,7 +39,7 @@
         <java-webSocket.version>1.6.0</java-webSocket.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <jaudiotagger.version>2.0.3</jaudiotagger.version>
-        <qcloud.cos_api.version>5.6.259</qcloud.cos_api.version>
+        <qcloud.cos_api.version>5.6.260.1</qcloud.cos_api.version>
         <mysql.version>9.5.0</mysql.version>
         <ftpserver.version>1.2.1</ftpserver.version>
         <commons-text.verson>1.15.0</commons-text.verson>
