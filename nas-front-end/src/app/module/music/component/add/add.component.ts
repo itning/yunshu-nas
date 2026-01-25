@@ -1,16 +1,16 @@
-import {Component, OnInit, SecurityContext} from '@angular/core';
-import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
-import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
-import {MusicService} from "../../../../service/music.service";
-import {NzMessageService} from "ng-zorro-antd/message";
+import { Component, OnInit, SecurityContext } from '@angular/core';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
+import { DomSanitizer, SafeUrl } from "@angular/platform-browser";
+import { MusicService } from "../../../../service/music.service";
+import { NzMessageService } from "ng-zorro-antd/message";
 import * as musicMetadata from "music-metadata-browser";
-import {Router} from "@angular/router";
+import { Router } from "@angular/router";
 
 @Component({
-    selector: 'app-add',
-    templateUrl: './add.component.html',
-    styleUrls: ['./add.component.scss'],
-    standalone: false
+  selector: 'app-add',
+  templateUrl: './add.component.html',
+  styleUrls: ['./add.component.scss'],
+  standalone: false
 })
 export class AddComponent implements OnInit {
 
@@ -29,10 +29,10 @@ export class AddComponent implements OnInit {
   private files: { [key: string]: File } = {};
 
   constructor(private musicService: MusicService,
-              private fb: UntypedFormBuilder,
-              private message: NzMessageService,
-              private sanitizer: DomSanitizer,
-              private router: Router) {
+    private fb: UntypedFormBuilder,
+    private message: NzMessageService,
+    private sanitizer: DomSanitizer,
+    private router: Router) {
   }
 
   ngOnInit(): void {
@@ -76,11 +76,11 @@ export class AddComponent implements OnInit {
         this.musicUri = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(file));
         this.type = this.coverMusicType(file.type);
         musicMetadata.parseBlob(file).then(data => {
-          this.formGroup.patchValue({name: data.common.title});
-          this.formGroup.patchValue({singer: data.common.artist});
+          this.formGroup.patchValue({ name: data.common.title });
+          this.formGroup.patchValue({ singer: data.common.artist });
           const picture = data.common.picture;
           if (picture && picture[0]) {
-            this.coverUri = this.sanitizer.sanitize(SecurityContext.URL, this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(new Blob([picture[0].data]))))
+            this.coverUri = this.sanitizer.sanitize(SecurityContext.URL, this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(new Blob([new Uint8Array(picture[0].data)]))))
           }
         })
         break;

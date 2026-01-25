@@ -97,7 +97,7 @@ export class EditComponent implements OnInit {
           this.formGroup.patchValue({singer: data.common.artist});
           const picture = data.common.picture;
           if (picture && picture[0]) {
-            this.music.coverUri = this.sanitizer.sanitize(SecurityContext.URL, this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(new Blob([picture[0].data]))))
+            this.music.coverUri = this.sanitizer.sanitize(SecurityContext.URL, this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(new Blob([new Uint8Array(picture[0].data)]))))
           }
         })
         break;
