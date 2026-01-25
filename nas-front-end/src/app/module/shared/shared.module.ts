@@ -13,7 +13,7 @@ import {NzMenuModule} from 'ng-zorro-antd/menu';
 import {NzSwitchModule} from 'ng-zorro-antd/switch';
 import {NzPopconfirmModule} from 'ng-zorro-antd/popconfirm';
 import {NzTableModule} from 'ng-zorro-antd/table';
-import {NzToolTipModule} from 'ng-zorro-antd/tooltip';
+import {NzTooltipModule} from 'ng-zorro-antd/tooltip';
 import {NzIconModule} from 'ng-zorro-antd/icon';
 import {NzBreadCrumbModule} from 'ng-zorro-antd/breadcrumb';
 import {NzCardModule} from 'ng-zorro-antd/card';
@@ -61,7 +61,7 @@ const modules = [
   NzSwitchModule,
   NzPopconfirmModule,
   NzTableModule,
-  NzToolTipModule,
+  NzTooltipModule,
   NzBreadCrumbModule,
   NzFloatButtonModule,
   NzCardModule,
