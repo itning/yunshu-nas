@@ -10,6 +10,8 @@ on:
       - nas-video/**
       - pom.xml
   push:
+    branches:
+      - master
     paths:
       - nas-common/**
       - nas-deploy/**
