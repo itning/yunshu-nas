@@ -6,6 +6,8 @@ on:
     paths:
       - nas-front-end/**
   push:
+    branches:
+      - master
     paths:
       - nas-front-end/**
 
