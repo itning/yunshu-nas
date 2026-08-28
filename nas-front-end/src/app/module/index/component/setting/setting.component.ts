@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {
   AbstractControl,
   FormArray,
@@ -17,6 +17,7 @@ import {NasConfigRequest} from "../../../../http/model/NasConfig";
     selector: 'app-setting',
     templateUrl: './setting.component.html',
     styleUrls: ['./setting.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class SettingComponent implements OnInit {

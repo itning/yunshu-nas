@@ -1,7 +1,7 @@
 <div>
-  <nz-input-group class="search_input" [nzSuffix]="suffixIconSearch">
+  <nz-input-wrapper class="search_input" [nzSuffix]="suffixIconSearch">
     <input type="text" nz-input placeholder="搜索歌名或歌手名..." (input)="onSearch($event)"/>
-  </nz-input-group>
+  </nz-input-wrapper>
   <ng-template #suffixIconSearch>
     <i nz-icon nzType="search"></i>
   </ng-template>

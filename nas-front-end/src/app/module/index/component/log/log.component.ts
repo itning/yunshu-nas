@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy} from '@angular/core';
 import {NzMessageService} from "ng-zorro-antd/message";
 import {environment} from "../../../../../environments/environment";
 
@@ -6,6 +6,7 @@ import {environment} from "../../../../../environments/environment";
     selector: 'app-log',
     templateUrl: './log.component.html',
     styleUrls: ['./log.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class LogComponent implements OnInit, OnDestroy {

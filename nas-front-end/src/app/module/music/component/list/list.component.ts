@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {Music} from "../../../../http/model/Music";
 import {MusicService} from "../../../../service/music.service";
 import {debounceTime, distinctUntilChanged, Subject} from "rxjs";
@@ -8,6 +8,7 @@ import {NzMessageService} from "ng-zorro-antd/message";
     selector: 'app-list',
     templateUrl: './list.component.html',
     styleUrls: ['./list.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ListComponent implements OnInit {

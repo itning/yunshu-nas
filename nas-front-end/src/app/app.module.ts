@@ -7,7 +7,7 @@ import {NZ_I18N, zh_CN} from 'ng-zorro-antd/i18n';
 import {registerLocaleData} from '@angular/common';
 import zh from '@angular/common/locales/zh';
 import {FormsModule} from '@angular/forms';
-import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {SharedModule} from "./module/shared/shared.module";
 import {MusicModule} from "./module/music/music.module";
@@ -16,6 +16,8 @@ import {ThemeService} from "./theme.service";
 import {httpInterceptorProviders} from "./http";
 import * as dayjs from "dayjs";
 import {VideoModule} from "./module/video/video.module";
+import { provideNzDateFnsAdapter } from 'ng-zorro-antd/core/time';
+
 
 registerLocaleData(zh);
 dayjs.locale('zh-cn')
@@ -43,7 +45,7 @@ export const AppInitializerProvider = provideAppInitializer(() => {
   providers: [AppInitializerProvider, {
     provide: NZ_I18N,
     useValue: zh_CN
-  }, httpInterceptorProviders, provideHttpClient(withInterceptorsFromDi())]
+  }, httpInterceptorProviders, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideNzDateFnsAdapter()]
 })
 export class AppModule {
 }

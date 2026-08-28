@@ -1,4 +1,4 @@
-import {Component, OnInit, SecurityContext} from '@angular/core';
+import {Component, OnInit, SecurityContext, ChangeDetectionStrategy} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {filter, mergeMap} from "rxjs";
 import {map} from "rxjs/operators";
@@ -13,6 +13,7 @@ import * as musicMetadata from 'music-metadata-browser';
     selector: 'app-edit',
     templateUrl: './edit.component.html',
     styleUrls: ['./edit.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class EditComponent implements OnInit {

@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy} from '@angular/core';
 import DPlayer from 'dplayer';
 import {ActivatedRoute, Router} from "@angular/router";
 import {environment} from "../../../../../environments/environment";
@@ -10,6 +10,7 @@ import {VideoService} from "../../../../service/video.service";
     selector: 'app-play',
     templateUrl: './play.component.html',
     styleUrls: ['./play.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class PlayComponent implements OnInit, OnDestroy {

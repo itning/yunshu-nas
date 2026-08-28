@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {VideoService} from "../../../../service/video.service";
 import {FileEntity} from "../../../../http/model/FileEntity";
 import {Link} from "../../../../http/model/Link";
@@ -10,6 +10,7 @@ import {map} from "rxjs/operators";
     selector: 'app-list',
     templateUrl: './list.component.html',
     styleUrls: ['./list.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ListComponent implements OnInit {

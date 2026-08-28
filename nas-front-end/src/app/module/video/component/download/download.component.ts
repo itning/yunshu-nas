@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy} from '@angular/core';
 import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
 import {environment} from "../../../../../environments/environment";
 
@@ -6,6 +6,7 @@ import {environment} from "../../../../../environments/environment";
     selector: 'app-download',
     templateUrl: './download.component.html',
     styleUrls: ['./download.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class DownloadComponent implements OnInit, OnDestroy {
