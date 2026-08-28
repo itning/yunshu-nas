@@ -20,7 +20,7 @@
     "@angular/router": "^22.1.4",
     "dayjs": "^1.11.21",
     "dplayer": "^1.27.1",
-    "js-base64": "^3.7.8",
+    "js-base64": "^3.9.3",
     "music-metadata-browser": "2.4.3",
     "ng-zorro-antd": "^22.0.1",
     "rxjs": "~7.8.2",
