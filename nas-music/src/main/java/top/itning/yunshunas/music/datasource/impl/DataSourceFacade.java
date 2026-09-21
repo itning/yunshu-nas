@@ -59,7 +59,7 @@ public class DataSourceFacade implements MusicDataSource, CoverDataSource, Lyric
 
     @Override
     public URI getCover(String musicId) {
-        return ((CoverDataSource) readDataSourceMap.get(CoverDataSource.class).dataSource()).getCover(musicId);
+        return ((CoverDataSource) readDataSource(CoverDataSource.class).dataSource()).getCover(musicId);
     }
 
     @Override
@@ -117,7 +117,7 @@ public class DataSourceFacade implements MusicDataSource, CoverDataSource, Lyric
 
     @Override
     public URI getLyric(String lyricId) {
-        return ((LyricDataSource) readDataSourceMap.get(LyricDataSource.class).dataSource()).getLyric(lyricId);
+        return ((LyricDataSource) readDataSource(LyricDataSource.class).dataSource()).getLyric(lyricId);
     }
 
     @Override
@@ -159,22 +159,32 @@ public class DataSourceFacade implements MusicDataSource, CoverDataSource, Lyric
 
     @Override
     public URI getMusic(String musicId) {
-        return ((MusicDataSource) readDataSourceMap.get(MusicDataSource.class).dataSource()).getMusic(musicId);
+        return ((MusicDataSource) readDataSource(MusicDataSource.class).dataSource()).getMusic(musicId);
     }
 
     @Override
     public URI getMusicDownloadURI(String musicId) {
-        return ((MusicDataSource) readDataSourceMap.get(MusicDataSource.class).dataSource()).getMusicDownloadURI(musicId);
+        return ((MusicDataSource) readDataSource(MusicDataSource.class).dataSource()).getMusicDownloadURI(musicId);
     }
 
     @Override
     public File getMusicFile(String musicId) throws Exception {
-        return ((MusicDataSource) readDataSourceMap.get(MusicDataSource.class).dataSource()).getMusicFile(musicId);
+        return ((MusicDataSource) readDataSource(MusicDataSource.class).dataSource()).getMusicFile(musicId);
     }
 
     @Override
     public long getFileSize(String musicId) {
-        return ((MusicDataSource) readDataSourceMap.get(MusicDataSource.class).dataSource()).getFileSize(musicId);
+        return ((MusicDataSource) readDataSource(MusicDataSource.class).dataSource()).getFileSize(musicId);
+    }
+
+    private DataSourceConfig.DataSourceWrapper readDataSource(Class<? extends DataSource> type) {
+        synchronized (readDataSourceMap) {
+            DataSourceConfig.DataSourceWrapper wrapper = readDataSourceMap.get(type);
+            if (wrapper == null) {
+                throw new IllegalStateException("音乐数据源未配置，请先配置可读数据源");
+            }
+            return wrapper;
+        }
     }
 
     private boolean deleteFile(Path path) {

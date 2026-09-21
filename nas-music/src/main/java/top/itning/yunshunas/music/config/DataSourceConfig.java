@@ -48,20 +48,25 @@ public class DataSourceConfig implements ApplicationListener<ConfigChangeEvent> 
     }
 
     public void init() throws Exception {
-        musicDataSourceMap.clear();
-        lyricDataSourceMap.clear();
-        coverDataSourceMap.clear();
-        readDataSourceMap.clear();
-
         NasProperties nasProperties = Optional.ofNullable(applicationConfig.getSetting(NasProperties.class)).orElse(new NasProperties());
         NasMusicProperties nasMusicProperties = applicationConfig.getSetting(NasMusicProperties.class);
+        init(nasProperties, nasMusicProperties);
+    }
+
+    private void init(NasProperties nasProperties, NasMusicProperties nasMusicProperties) throws Exception {
         if (Objects.isNull(nasMusicProperties)) {
+            log.warn("music data source configuration is not available; keep the current data sources");
             return;
         }
         List<NasMusicProperties.MusicDataSourceConfig> dataSourceList = nasMusicProperties.getDataSource();
         if (CollectionUtils.isEmpty(dataSourceList)) {
+            log.warn("music data source configuration is empty; keep the current data sources");
             return;
         }
+        Map<String, DataSourceWrapper> newMusicDataSourceMap = new HashMap<>();
+        Map<String, DataSourceWrapper> newLyricDataSourceMap = new HashMap<>();
+        Map<String, DataSourceWrapper> newCoverDataSourceMap = new HashMap<>();
+
         DataSourceWrapper readMusicDataSource = null;
         DataSourceWrapper readLyricDataSource = null;
         DataSourceWrapper readCoverDataSource = null;
@@ -70,7 +75,7 @@ public class DataSourceConfig implements ApplicationListener<ConfigChangeEvent> 
             DataSource dataSource = tryNewInstance(name, dataSourceConfig.getClassName(), dataSourceConfig, nasProperties);
             DataSourceWrapper dataSourceWrapper = new DataSourceWrapper(dataSource, dataSourceConfig);
             if (dataSource instanceof MusicDataSource) {
-                musicDataSourceMap.put(name, dataSourceWrapper);
+                newMusicDataSourceMap.put(name, dataSourceWrapper);
                 log.info("add music data source name:{} datasource:{}", name, dataSource);
                 if (Objects.isNull(readMusicDataSource) && dataSourceConfig.isCanRead()) {
                     readMusicDataSource = dataSourceWrapper;
@@ -78,7 +83,7 @@ public class DataSourceConfig implements ApplicationListener<ConfigChangeEvent> 
                 }
             }
             if (dataSource instanceof LyricDataSource) {
-                lyricDataSourceMap.put(name, dataSourceWrapper);
+                newLyricDataSourceMap.put(name, dataSourceWrapper);
                 log.info("add lyric data source name:{} datasource:{}", name, dataSource);
                 if (Objects.isNull(readLyricDataSource) && dataSourceConfig.isCanRead()) {
                     readLyricDataSource = dataSourceWrapper;
@@ -86,7 +91,7 @@ public class DataSourceConfig implements ApplicationListener<ConfigChangeEvent> 
                 }
             }
             if (dataSource instanceof CoverDataSource) {
-                coverDataSourceMap.put(name, dataSourceWrapper);
+                newCoverDataSourceMap.put(name, dataSourceWrapper);
                 log.info("add cover data source name:{} datasource:{}", name, dataSource);
                 if (Objects.isNull(readCoverDataSource) && dataSourceConfig.isCanRead()) {
                     readCoverDataSource = dataSourceWrapper;
@@ -105,16 +110,30 @@ public class DataSourceConfig implements ApplicationListener<ConfigChangeEvent> 
             throw new IllegalArgumentException("At least one cover data source set read is true");
         }
 
-        readDataSourceMap.put(MusicDataSource.class, readMusicDataSource);
-        readDataSourceMap.put(LyricDataSource.class, readLyricDataSource);
-        readDataSourceMap.put(CoverDataSource.class, readCoverDataSource);
+        synchronized (readDataSourceMap) {
+            musicDataSourceMap.clear();
+            musicDataSourceMap.putAll(newMusicDataSourceMap);
+            lyricDataSourceMap.clear();
+            lyricDataSourceMap.putAll(newLyricDataSourceMap);
+            coverDataSourceMap.clear();
+            coverDataSourceMap.putAll(newCoverDataSourceMap);
+            readDataSourceMap.clear();
+            readDataSourceMap.put(MusicDataSource.class, readMusicDataSource);
+            readDataSourceMap.put(LyricDataSource.class, readLyricDataSource);
+            readDataSourceMap.put(CoverDataSource.class, readCoverDataSource);
+        }
     }
 
     @SneakyThrows
     @Override
     public void onApplicationEvent(ConfigChangeEvent event) {
         if (event.getSource() instanceof NasMusicProperties) {
-            this.init();
+            try {
+                NasProperties nasProperties = Optional.ofNullable(applicationConfig.getSetting(NasProperties.class)).orElse(new NasProperties());
+                init(nasProperties, (NasMusicProperties) event.getSource());
+            } catch (Exception e) {
+                log.error("failed to reload music data source configuration", e);
+            }
         }
     }
 
