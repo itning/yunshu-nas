@@ -22,6 +22,6 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 'latest'
+          node-version: '24'
       - run: npm install
       - run: npm run build
